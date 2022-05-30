@@ -72,24 +72,6 @@ Similarly, this info could be used by the game engine to show the visual effects
 
 Trying to anticipate to every problem that may occur is impossible. Constant iteration will be mandatory, so it should be better to start with some foundations that are most probably needed. Those are the components and their dependencies, such as the AreaGenerator or AreaDescriptor
 
-## Area Descriptor
-
-Should be fairly shopisticated. Reference syntax:
-
-```
-let area_gen = AreaGen::new()
-area_gen.begin_group()
-            .dir(up)
-            .dir(down)
-            .dir(left)
-        .end_group()
-    .or()
-        .times(3)
-        .dir(right);
-```
-
-Should be serializable. Could be built with a tool.
-
 ## Libs to use 
 
 rlua
