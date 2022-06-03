@@ -1,4 +1,4 @@
-use std::{process::Child, collections::VecDeque};
+use std::{collections::VecDeque, cell::RefCell, rc::Rc};
 
 
 enum Op<T, E>{
@@ -58,47 +58,45 @@ impl<T, E> Tree<T, E>
 
 type Stack<T> = VecDeque<T>;
 
-pub struct AreaEx<T>
+pub struct AreaEx<'a, T>
 {
-    stack : Stack<ChildNode<T, RegexOp>>
+    root : ChildNode<T, RegexOp>,
+    stack : Stack<ChildNode<T, RegexOp>>,
+    focus : Option<&'a mut ChildNode<T, RegexOp>>
 }
 
-impl<T> AreaEx<T>
+impl<'a, T> AreaEx<'a, T>
 {
-    pub fn new() -> AreaEx<T>{
+    pub fn new() -> AreaEx<'a, T>{
         AreaEx { 
-            stack : Stack::new()
+            root : None,
+            stack : Stack::new(),
+            focus : None
         }
     }
 
-    pub fn dir(&mut self, dir : T) -> (){
+    pub fn dir(&'a mut self, dir : T) -> (){
         
-        if self.stack.is_empty()
+        if self.root.is_none()
         {
             let node : ChildNode<T, RegexOp> = Node::new_literal(dir);
-            self.stack.push_back(node);
+            self.root = node;
+            self.focus = Some(&mut self.root);
         }
         else
         {
-            let mut popped = self.stack.pop_back().unwrap();
-            let right : ChildNode<T, RegexOp> = Node::new_literal(dir);
+            let focus = self.focus.as_mut().unwrap().as_mut().unwrap();
+            let op = &focus.op;
+            match op{
+                Op::Literal(literal) =>{
+                    let right : ChildNode<T, RegexOp> = Node::new_literal(dir);
+                    let left = Node::new_literal(literal);
+                    let and = Node::new(Op::Operation(RegexOp::Concatenation),left, right);
+                }
+                Op::Operation(op) =>{
 
-            if let Some(popped) = popped
-            {
-                match popped.op {
-                    Op::Operation(e) => {
-                        let concat = Node::new(Op::Operation(RegexOp::Concatenation), popped.right, right);
-                        popped.right = concat;
-                        self.stack.push_back(Some(popped));
-                    }
-                    Op::Literal(l) =>{
-
-                    }
                 }
             }
-
-            let concat = Node::new(Op::Operation(RegexOp::Concatenation), left, right);
-            self.stack.push_back(concat);
         }
     }
 }
