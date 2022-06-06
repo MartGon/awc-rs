@@ -60,6 +60,8 @@ type Stack<T> = VecDeque<T>;
 
 pub struct AreaEx<'a, T>
 {
+    // Use indices to a Vec or HashMap instead of pointers
+
     root : ChildNode<T, RegexOp>,
     stack : Stack<ChildNode<T, RegexOp>>,
     focus : Option<&'a mut ChildNode<T, RegexOp>>
@@ -91,7 +93,7 @@ impl<'a, T> AreaEx<'a, T>
                 Op::Literal(literal) =>{
                     let right : ChildNode<T, RegexOp> = Node::new_literal(dir);
                     let left = Node::new_literal(literal);
-                    let and = Node::new(Op::Operation(RegexOp::Concatenation),left, right);
+                    let and = Node::new(Op::Operation(RegexOp::Concatenation), left, right);
                 }
                 Op::Operation(op) =>{
 
