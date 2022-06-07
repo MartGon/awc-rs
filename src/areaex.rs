@@ -1,105 +1,127 @@
-use std::{collections::VecDeque, cell::RefCell, rc::Rc};
+use std::fmt::Debug;
 
 
-enum Op<T, E>{
+
+pub trait Alphabet: Clone + Debug{ }
+
+#[derive(Clone, Debug)]
+enum Op<A: Alphabet, E: Clone>{
     Operation(E),
-    Literal(T)
+    Literal(A)
 }
 
-type ChildNode<T, E> = Option<Box<Node<T, E>>>;
-
-struct Node<T, E>
+#[derive(Clone, Debug)]
+struct Node<A: Alphabet, E: Clone>
 {
-    op : Op<T, E>,
-    left : ChildNode<T, E>,
-    pub right : ChildNode<T, E>
+    op : Op<A, E>
 }
 
-impl<T, E> Node<T, E>
+impl<A: Alphabet, E: Clone> Node<A, E>
 {
-    fn new(op : Op<T, E>, left : ChildNode<T, E>, right : ChildNode<T, E>) -> ChildNode<T, E>{
-        Some(Box::new(Node::<T, E>{
-            op,
-            left,
-            right
-        }))
-    }
-
-    fn new_literal(literal : T) -> ChildNode<T, E>
+    fn new(op : Op<A, E>) -> Node<A, E>
     {
-        Some(Box::new(Node::<T, E>{
-            op : Op::Literal(literal),
-            left : None,
-            right : None
-        }))
+        Node{
+            op 
+        }
     }
 }
 
+type NodeId = usize;
+
+#[derive(Clone, Debug)]
 enum RegexOp
 {
-    Alternation,
-    Concatenation,
-    Closure
+    Alternation(NodeId, NodeId),
+    Concatenation(NodeId, NodeId),
+    Closure(NodeId)
 }
 
-struct Tree<T, E>
+type Stack<T> = Vec<T>;
+
+#[derive(Debug)]
+pub struct AreaEx<A: Alphabet>
 {
-    head : ChildNode<T, E>
+    nodes : Vec<Node<A, RegexOp>>,
+    stack : Vec<NodeId>,
+    root : Option<NodeId>,
 }
 
-impl<T, E> Tree<T, E>
+impl<A: Alphabet> AreaEx<A>
 {
-    fn new() -> Tree<T, E>{
-        Tree { 
-            head: None 
-        }
-    }
-}
-
-type Stack<T> = VecDeque<T>;
-
-pub struct AreaEx<'a, T>
-{
-    // Use indices to a Vec or HashMap instead of pointers
-
-    root : ChildNode<T, RegexOp>,
-    stack : Stack<ChildNode<T, RegexOp>>,
-    focus : Option<&'a mut ChildNode<T, RegexOp>>
-}
-
-impl<'a, T> AreaEx<'a, T>
-{
-    pub fn new() -> AreaEx<'a, T>{
+    pub fn new() -> AreaEx<A>{
         AreaEx { 
-            root : None,
+            nodes : Vec::new(),
             stack : Stack::new(),
-            focus : None
+            root : None
         }
     }
 
-    pub fn dir(&'a mut self, dir : T) -> (){
+    pub fn dir(&mut self, dir : A) -> &mut AreaEx<A>{
         
-        if self.root.is_none()
-        {
-            let node : ChildNode<T, RegexOp> = Node::new_literal(dir);
-            self.root = node;
-            self.focus = Some(&mut self.root);
+        let node = Node::<A, RegexOp>::new(Op::Literal(dir));
+
+        let id = self.push_node(node);
+
+        if self.stack.is_empty(){
+            self.stack.push(id);
+            self.root = Some(id);
         }
-        else
+        else 
         {
-            let focus = self.focus.as_mut().unwrap().as_mut().unwrap();
-            let op = &focus.op;
-            match op{
-                Op::Literal(literal) =>{
-                    let right : ChildNode<T, RegexOp> = Node::new_literal(dir);
-                    let left = Node::new_literal(literal);
-                    let and = Node::new(Op::Operation(RegexOp::Concatenation), left, right);
+            let last_id = self.stack.pop().unwrap();
+            let mut last = self.get_node(last_id).unwrap().clone();
+            
+            match &mut last.op{
+                Op::Literal(_literal) =>{
+                    let and = Node::<A, RegexOp>::new(Op::Operation(RegexOp::Concatenation(last_id, id)));                    
+                    let and_id = self.push_node(and);
+                    self.root = Some(and_id);
+
+                    self.stack.push(and_id);
                 }
                 Op::Operation(op) =>{
+                    match op{
+                        RegexOp::Concatenation(_left, right) =>{
+                            let and = Node::<A, RegexOp>::new(Op::Operation(RegexOp::Concatenation(*right, id)));
+                            let and_id = self.push_node(and);
 
+                            *right = and_id;
+
+                            self.set_node(last_id, last);
+                            self.stack.push(and_id);
+                        }
+                        _ =>{
+
+                        }
+                    }
                 }
             }
         }
+
+        return self;
+    }
+
+    pub fn print(&self)
+    {
+        println!("Root node is {}", self.root.unwrap());
+        println!("Vec is {:?}", self.nodes);
+    }
+
+    fn get_node(&mut self, id : NodeId) -> Option<&mut Node<A, RegexOp>>
+    {
+        return self.nodes.get_mut(id);
+    }
+
+    fn set_node(&mut self, id : NodeId, node : Node<A, RegexOp>)
+    {
+        self.nodes[id] = node;
+    }
+
+    fn push_node(&mut self, node : Node<A, RegexOp>) -> NodeId
+    {
+        self.nodes.push(node);
+
+        return self.nodes.len() - 1;
     }
 }
 
