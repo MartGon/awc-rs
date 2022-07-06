@@ -12,8 +12,8 @@ area_gen.begin_group()
             .dir(left)
         .end_group()
     .or()
-        .times(3)
         .dir(right);
+        .times(3)
 ```
 
 Should be serializable. Could be built with a tool.
