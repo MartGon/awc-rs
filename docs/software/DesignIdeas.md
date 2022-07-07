@@ -72,6 +72,12 @@ Similarly, this info could be used by the game engine to show the visual effects
 
 Trying to anticipate to every problem that may occur is impossible. Constant iteration will be mandatory, so it should be better to start with some foundations that are most probably needed. Those are the components and their dependencies, such as the AreaGenerator or AreaDescriptor
 
-## Libs to use 
+## Crates to use 
 
 rlua
+pathfinding
+
+## Crates to check
+
+rs-tiled
+aseprite
