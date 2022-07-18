@@ -8,6 +8,8 @@ Everything is an entity. Entities have different types.
 - Components: Transform, Attack, Movement, Effect, Ability
 - System: Attack, Movement, Effect/Event
 
+**Option 2**: Component only model. Check zemeroth for inspiration. 
+
 ### Event System
 
 The effect component handles different events. 
@@ -76,8 +78,11 @@ Trying to anticipate to every problem that may occur is impossible. Constant ite
 
 rlua
 pathfinding
+ron
 
 ## Crates to check
 
 rs-tiled
 aseprite
+macroquad
+mlua

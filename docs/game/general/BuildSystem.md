@@ -24,7 +24,7 @@ Option 1 is generally preferred
 
 **Build Range**: Different units have different build range. Higher level engineers can build other units from afar.
 
-**Multiple workers**:  Once a unit build process start, another engineer can help the build process, reducing the number of turns needed to build that unit.s
+**Multiple workers**:  Once a unit build process start, another engineer can help the build process, reducing the number of turns needed to build that unit.    
 
 ## Example factory
 
