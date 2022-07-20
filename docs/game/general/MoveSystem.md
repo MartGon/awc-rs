@@ -11,6 +11,12 @@ Due to the fact that the map is 3D, **climbing** to another block can have an as
 
 ##  Movement patterns
 
+Various ways to define them:
+
+- Manhattan: Moves in a cross pattern
+- Regex: Movement must match a regular expression.
+- Function: Move up and left the same number of tiles
+
 
 ## Ideas
 
