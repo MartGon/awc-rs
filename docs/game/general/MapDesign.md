@@ -16,4 +16,8 @@ Destructible terrain bring a bunchs of problems or limitaions. It affects gamepl
 
 Using a 3d models and camera, pretty much fixes this problem.
 
-However, despite complex, partial solution can be used to solve this problem while sticking to an isometric 2d view. It'd have to be a combination of optionally hiding terrain and detecting when a given block is hidden out of the camera view by other block. Tycoon games had this problems in some degree
+However, despite complex, partial solution can be used to solve this problem while sticking to an isometric 2d view. It'd have to be a combination of optionally hiding terrain and detecting when a given block is hidden out of the camera view by other block. Tycoon games had this problems in some degree.
+
+**Tiles are Units**
+
+In this model, tiles could behave exactly like units. They've an HP bar that shows how close they're to being destroyed. For movement, units would only have a cost table that holds only units.
