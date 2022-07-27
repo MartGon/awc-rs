@@ -86,3 +86,7 @@ rs-tiled
 aseprite
 macroquad
 mlua
+image
+piston-2dgraphics
+egui
+glium
