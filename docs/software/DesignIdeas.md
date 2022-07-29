@@ -90,3 +90,5 @@ image
 piston-2dgraphics
 egui
 glium
+miniquad
+macroquad
