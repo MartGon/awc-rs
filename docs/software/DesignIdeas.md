@@ -79,6 +79,10 @@ Trying to anticipate to every problem that may occur is impossible. Constant ite
 rlua
 pathfinding
 ron
+miniquad
+egui
+egui-miniquad
+
 
 ## Crates to check
 
@@ -87,7 +91,6 @@ aseprite
 macroquad
 mlua
 image
-piston-2dgraphics
 egui
 glium
 miniquad
