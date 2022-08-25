@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 awc = { path = "../awc"}
 miniquad = "0.3.11"
+macroquad = "0.3"
