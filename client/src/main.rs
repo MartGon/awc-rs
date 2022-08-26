@@ -1,7 +1,11 @@
 use macroquad::prelude::*;
+use awc::component;
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
+
+    let pos = component::Position{x : 0, y : 0, z : 0};
+
     loop {
         clear_background(RED);
 

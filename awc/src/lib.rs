@@ -1,4 +1,6 @@
 
+pub mod component;
+
 pub fn test_lib(){
     println!("Testing this lib")
 }
