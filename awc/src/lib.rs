@@ -1,5 +1,11 @@
 
+mod unit;
+mod tile;
+mod movement;
+
 pub mod component;
+pub mod map;
+pub mod weapon;
 
 pub fn test_lib(){
     println!("Testing this lib")
