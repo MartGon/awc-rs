@@ -1,6 +1,7 @@
 
 mod unit;
 mod tile;
+mod player;
 mod movement;
 
 pub mod component;
