@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{weapon, movement};
 
-// TODO: Maybe could use generic for this module and tile. Merge on entity.rs
+// TODO: Maybe could use generics for this module and tile. Merge on entity.rs
 
 
 pub type TypeID = i32;

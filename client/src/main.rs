@@ -1,10 +1,10 @@
 use macroquad::prelude::*;
-use awc::component;
+use awc::{component, map};
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
 
-    let pos = component::Position{x : 0, y : 0, z : 0};
+    let pos = component::Position{pos : map::Pos{x : 0, y : 0, z : 0}};
 
     loop {
         clear_background(RED);

@@ -1,5 +1,5 @@
 
-use crate::{weapon, movement, unit, tile, player};
+use crate::{weapon, movement, unit, tile, player, map};
 
 pub type EntityID = i32;
 
@@ -28,9 +28,7 @@ pub struct Type
 
 pub struct Position
 {
-    pub x : i32,
-    pub y : i32,
-    pub z : i32
+    pub pos : map::Pos
 }
 
 pub enum Dir

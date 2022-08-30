@@ -4,9 +4,11 @@ mod tile;
 mod player;
 mod movement;
 
+pub mod event;
 pub mod component;
 pub mod map;
 pub mod weapon;
+pub mod game;
 
 pub fn test_lib(){
     println!("Testing this lib")
