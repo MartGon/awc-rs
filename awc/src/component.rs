@@ -1,8 +1,10 @@
 
 use crate::{weapon, movement, unit, tile, player, map};
+use component_derive::ComponentCollection;
 
 pub type EntityID = i32;
 
+#[derive(ComponentCollection)]
 pub enum Component
 {
     Type(Type),
