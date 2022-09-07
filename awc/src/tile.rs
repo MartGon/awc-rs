@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-
-
 pub type TypeID = i32;
 
 struct Template

@@ -1,3 +1,4 @@
+use convert_case::{Casing, Case};
 use proc_macro::{TokenStream};
 use quote::{quote, format_ident};
 use syn::{self, Data, Error};
@@ -17,21 +18,23 @@ fn impl_component_macro(ast: &syn::DeriveInput) -> TokenStream {
     let data = &ast.data;
     if let Data::Enum(data_enum) = data 
     {
-        let mut gen = quote! {
+        let field_types = data_enum.variants.iter().map(|f| &f.ident);
+        let field_names = data_enum.variants.iter().map(|f| format_ident!("{}s", f.ident.to_string().to_case(Case::Snake)));
+        let field_names_c = field_names.clone();
+        let gen = quote!{
+            use component_storage::ComponentStorage;
+            pub struct Components{
+                #( pub #field_names : ComponentStorage<i32, #field_types>), *
+            }
 
-        };
-        for variant in &data_enum.variants{
-            let ref variant_name = variant.ident;
-            let mut is_variant_func_name = format_ident!("is_{}", variant_name.to_string());
-            is_variant_func_name.set_span(variant_name.span());
-
-            let ts = quote! {
-                pub fn #is_variant_func_name() {
-                    println!("Hello, Macro! My name is {}!", stringify!(#name));
+            impl Components{
+                pub fn new() -> Self{
+                    Self{
+                        #( #field_names_c : ComponentStorage::new()), *
+                    }
                 }
-            };
-            gen.extend(ts.into_iter());
-        }
+            }
+        };
 
         gen.into()
     } 

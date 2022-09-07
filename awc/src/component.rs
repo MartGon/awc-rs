@@ -11,7 +11,7 @@ pub enum Component
     Position(Position),
     Direction(Direction),
     Health(Health),
-    Weapons(Weapons),
+    Armament(Armament),
     Movement(Movement),
     Owner(Owner),
     CaptureState(CaptureState)
@@ -51,7 +51,7 @@ pub struct Health
     pub health : f32
 }
 
-pub struct Weapons
+pub struct Armament
 {
     pub weapons : Vec<weapon::Weapon>,
 }

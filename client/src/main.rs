@@ -5,7 +5,7 @@ use awc::{component, map};
 async fn main() {
 
     let pos = component::Position{pos : map::Pos{x : 0, y : 0, z : 0}};
-    awc::component::is_Type();
+    let c = awc::component::Components::new();
 
     loop {
         clear_background(RED);

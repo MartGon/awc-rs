@@ -2,7 +2,8 @@
 
 members = [
     "awc",
-    "awc/src/component_derive",
+    "awc/src/component_storage",
+    "awc/src/component_storage/component_derive",    
     "client",
     "server",
 ]

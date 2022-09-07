@@ -6,4 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-component_derive = { path = "src/component_derive"}
+mlua = { version = "0.8", features = ["lua54", "vendored"] }
+component_derive = { path = "src/component_storage/component_derive"}
+component_storage = { path = "src/component_storage"}
