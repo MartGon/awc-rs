@@ -18,3 +18,9 @@ pub struct Map
     tiles : Vec<component::EntityID>,
     pub size : Size,
 }
+
+impl Map{
+    pub fn new() -> Map{
+        Map { tiles: Vec::new(), size: Size { width: 10, height: 10 } }
+    }
+}

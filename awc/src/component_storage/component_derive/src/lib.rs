@@ -24,7 +24,7 @@ fn impl_component_macro(ast: &syn::DeriveInput) -> TokenStream {
         let gen = quote!{
             use component_storage::ComponentStorage;
             pub struct Components{
-                #( pub #field_names : ComponentStorage<i32, #field_types>), *
+                #( pub #field_names : ComponentStorage<EntityID, #field_types>), *
             }
 
             impl Components{

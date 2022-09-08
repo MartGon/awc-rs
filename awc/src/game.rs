@@ -10,6 +10,12 @@ pub struct Game
     // pub entity factory
 }
 
+impl Game{
+    pub fn new() -> Game{
+        Game { map: map::Map::new(), players: HashMap::new() }
+    }
+}
+
 pub struct Turn
 {
     pub turn : i32,
