@@ -7,6 +7,7 @@ use awc::game::*;
 async fn main() {
 
     let game = Game::new();
+    
 
     let pos = component::Position{pos : map::Pos{x : 0, y : 0, z : 0}};
     let c = awc::component::Components::new();

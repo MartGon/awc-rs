@@ -9,8 +9,8 @@ pub enum Component
 {
     Type(Type),
     Position(Position),
-    Direction(Direction),
     Health(Health),
+    Direction(Direction),
     Armament(Armament),
     Movement(Movement),
     Owner(Owner),

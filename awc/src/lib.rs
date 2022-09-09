@@ -3,6 +3,7 @@ mod unit;
 mod tile;
 mod player;
 mod movement;
+mod table;
 
 pub mod event;
 pub mod component;
