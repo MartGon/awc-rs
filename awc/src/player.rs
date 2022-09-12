@@ -1,6 +1,7 @@
 use crate::table::TableID;
 use std::hash::Hash;
 
+#[derive(Copy)]
 pub struct ID(i32);
 
 impl TableID for ID{
@@ -11,7 +12,7 @@ impl TableID for ID{
 
 impl Default for ID{
     fn default() -> Self {
-        Self(0)
+        ID::new(0)
     }
 }
 
@@ -31,6 +32,18 @@ impl Hash for ID{
     }
 }
 
+impl Clone for ID{
+    fn clone(&self) -> Self {
+        Self(self.0.clone())
+    }
+}
+
+impl ID{
+    pub fn new(id : i32) -> ID{
+        Self(id)
+    }
+}
+
 pub type TeamID = ID;
 
 pub struct Player
@@ -41,7 +54,7 @@ pub struct Player
 }
 
 impl Player{
-    pub fn new(id : ID, teamId : TeamID) -> Player{
-        Player { id: id, funds: 0, team:  teamId}
+    pub fn new(id : ID, team : TeamID) -> Player{
+        Player { id: id, funds: 0, team:  team}
     }
 }

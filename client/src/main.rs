@@ -2,11 +2,13 @@ use macroquad::prelude::*;
 use macroquad::ui::*;
 use awc::{component, map};
 use awc::game::*;
+use awc::player::*;
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
 
-    let game = Game::new();
+    let mut game = Game::new();
+    game.create_player(TeamID::new(0));
     
 
     let pos = component::Position{pos : map::Pos{x : 0, y : 0, z : 0}};

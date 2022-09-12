@@ -1,7 +1,6 @@
 
 mod unit;
 mod tile;
-mod player;
 mod movement;
 mod table;
 
@@ -10,6 +9,7 @@ pub mod component;
 pub mod map;
 pub mod weapon;
 pub mod game;
+pub mod player;
 
 pub fn test_lib(){
     println!("Testing this lib")

@@ -14,8 +14,10 @@ impl Game{
         Game { map: map::Map::new(), players: Table::new(), components : component::Components::new() }
     }
 
-    pub fn create_player(self, team : TeamID) -> player::ID{
-        Player::new(players, teamId)
+    pub fn create_player(&mut self, team : TeamID) -> player::ID{
+        let player_id = self.players.next_id();
+        let player = Player::new(player_id, team);
+        self.players.new_entry(player)
     }
 }
 
