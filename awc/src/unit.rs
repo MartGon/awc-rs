@@ -5,7 +5,7 @@ use crate::{weapon, movement, component};
 // TODO: Maybe could use generics for this module and tile. Merge on entity.rs
 
 
-pub type TypeID = i32;
+pub type TypeID = super::ID;
 
 struct Template
 {

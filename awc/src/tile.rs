@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-pub type TypeID = i32;
+pub type TypeID = super::ID;
 
 struct Template
 {

@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 use macroquad::ui::*;
-use awc::{component, map};
+use awc::{component, component::Component, map};
 use awc::game::*;
 use awc::player::*;
 
@@ -8,11 +8,11 @@ use awc::player::*;
 async fn main() {
 
     let mut game = Game::new();
-    game.create_player(TeamID::new(0));
-    
+    let pid = game.create_player(TeamID::new(0));
 
     let pos = component::Position{pos : map::Pos{x : 0, y : 0, z : 0}};
-    let c = awc::component::Components::new();
+    let tile_id = game.create_tile();
+    game.components.insert(tile_id, Component::Position(pos));
 
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet.png"), Some(ImageFormat::Png));
     let spritesheet = Texture2D::from_image(&spritesheet);

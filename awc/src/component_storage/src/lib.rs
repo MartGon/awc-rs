@@ -16,6 +16,14 @@ impl<Id: Hash + Eq, V> ComponentStorage<Id, V> {
     pub fn new() -> Self{
         Self{components : HashMap::new()}
     }
+
+    pub fn insert(&mut self, id : Id, component : V) -> Option<V>{
+        self.components.insert(id, component)
+    }
+
+    pub fn entry(&mut self, id : &Id) -> Option<&mut V>{
+        self.components.get_mut(&id)
+    }
 }
 
 #[cfg(test)]

@@ -23,6 +23,10 @@ impl<ID : TableID + Default + Eq + Hash + Copy, T> Table<ID, T> {
         self.map.insert(id, t);
         id
     }
+
+    pub fn get_entry(&mut self, id : &ID) -> Option<&mut T>{
+        self.map.get_mut(id)
+    }
     
     pub fn next_id(&mut self) -> ID{
         self.last_id.next()
