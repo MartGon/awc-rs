@@ -5,6 +5,9 @@ use awc::{component, component::Component, map};
 use awc::game::*;
 use awc::player::*;
 
+mod spritesheet;
+use spritesheet::*;
+
 #[macroquad::main("BasicShapes")]
 async fn main() {
 
@@ -26,9 +29,9 @@ async fn main() {
     let spritesheet = Texture2D::from_image(&spritesheet);
 
     // Tile Sprites
-    let grass_rect = Some(Rect::new(238.0, 18.0, 16.0, 16.0));
-    let mountain_rect = Some(Rect::new(255.0, 18.0, 16.0, 16.0));
-    let water_rect = Some(Rect::new(12.0, 133.0, 16.0, 16.0));
+    let grass = Sprite::new_raw(238, 18, 16, 16);
+    let mountain = Sprite::new_raw(255, 18, 16, 16);
+    let water = Sprite::new_raw(12, 133, 16, 16);
 
     let tile_size = Vec2::new(32.0, 32.0);
     loop {
@@ -39,8 +42,7 @@ async fn main() {
         for x in 0..x_tiles{
             for y in 0..y_tiles{
                 let draw_pos = Vec2::new(x as f32 * tile_size.x, y as f32 * tile_size.y);
-                let dtp = DrawTextureParams{dest_size : Some(tile_size), source : water_rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
-                draw_texture_ex(spritesheet, draw_pos.x, draw_pos.y, WHITE, dtp);
+                water.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
             }
             
         }
@@ -49,8 +51,7 @@ async fn main() {
             
             let tile_pos = game.components().get_position(tile).unwrap();
             let draw_pos = Vec2::new(tile_pos.pos.x as f32 * tile_size.x, tile_pos.pos.y as f32 * tile_size.y);
-            let dtp = DrawTextureParams{dest_size : Some(tile_size), source : grass_rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
-            draw_texture_ex(spritesheet, draw_pos.x, draw_pos.y, WHITE, dtp);
+            grass.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
         }
         
         // Draw UI
