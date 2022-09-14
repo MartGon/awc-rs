@@ -1,4 +1,6 @@
-use crate::component;
+use std::{iter::Iterator, slice::Iter};
+
+use crate::component::{self, EntityID};
 
 pub struct Size
 {
@@ -22,5 +24,13 @@ pub struct Map
 impl Map{
     pub fn new() -> Map{
         Map { tiles: Vec::new(), size: Size { width: 10, height: 10 } }
+    }
+
+    pub fn add_tile(&mut self, id : EntityID){
+        self.tiles.push(id)
+    }
+
+    pub fn tiles(&self) -> Iter<EntityID>{
+        self.tiles.iter()
     }
 }

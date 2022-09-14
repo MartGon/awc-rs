@@ -21,8 +21,12 @@ impl<Id: Hash + Eq, V> ComponentStorage<Id, V> {
         self.components.insert(id, component)
     }
 
-    pub fn entry(&mut self, id : &Id) -> Option<&mut V>{
+    pub fn entry_mut(&mut self, id : &Id) -> Option<&mut V>{
         self.components.get_mut(&id)
+    }
+
+    pub fn entry(&self, id : &Id) -> Option<&V>{
+        self.components.get(&id)
     }
 }
 

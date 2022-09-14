@@ -3,7 +3,7 @@ use crate::{map, player::{self, TeamID, Player}, component::{self, EntityID, Ent
 pub struct Game
 {
     pub map : map::Map,
-    pub components : component::Components,
+    components : component::Components,
     players : Table<player::ID, player::Player>,
     // pub entity factory
 }
@@ -23,10 +23,19 @@ impl Game{
         self.players.get_entry(player_id)
     }
 
-    pub fn create_tile(&mut self) -> EntityID{
+    pub fn create_tile(&mut self, type_id : tile::TypeID) -> EntityID{
         let id = self.components.alloc_id();
-        self.components.insert(id, component::Component::Type{0 : component::Type { entity_type: EntityType::Tile(tile::TypeID::new(0))}});
+        self.components.insert(id, component::Component::Type{0 : component::Type { entity_type: EntityType::Tile(type_id)}});
+        self.map.add_tile(id);
         id
+    }
+
+    pub fn insert_component(&mut self, entity : EntityID, component : component::Component){
+        self.components.insert(entity, component)
+    }
+
+    pub fn components(&self) -> &component::Components{
+        &self.components
     }
 }
 

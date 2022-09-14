@@ -20,22 +20,27 @@ fn impl_component_macro(ast: &syn::DeriveInput) -> TokenStream {
     {
         let field_types = data_enum.variants.iter().map(|v| &v.ident);
         let field_types_gc = field_types.clone();
+        let field_types_gc_mut = field_types.clone();
         let field_types_ac = field_types.clone();
 
         let get_components_names = data_enum.variants.iter().map(|f| format_ident!("get_{}", f.ident.to_string().to_case(Case::Snake)));
+        let get_components_names_mut = data_enum.variants.iter().map(|f| format_ident!("get_{}_mut", f.ident.to_string().to_case(Case::Snake)));
 
         let field_names = data_enum.variants.iter().map(|f| format_ident!("{}s", f.ident.to_string().to_case(Case::Snake)));
         let field_names_c = field_names.clone();
         let field_names_gc = field_names.clone();
+        let field_names_gc_mut = field_names.clone();
         let field_names_ac = field_names.clone();
 
         let gen = quote!{
             use component_storage::ComponentStorage;
             use crate::table::TableID;
+            use std::collections::HashMap;
 
             pub struct Components{
                 #( pub #field_names : ComponentStorage<EntityID, #field_types>), *,
                 next_obj_id : EntityID,
+                ids : HashMap<EntityID, ()>
             }
 
             impl Components{
@@ -43,6 +48,7 @@ fn impl_component_macro(ast: &syn::DeriveInput) -> TokenStream {
                     Self{
                         #( #field_names_c : ComponentStorage::new()), *,
                         next_obj_id : EntityID::new(0),
+                        ids : HashMap::new(),
                     }
                 }
 
@@ -55,17 +61,26 @@ fn impl_component_macro(ast: &syn::DeriveInput) -> TokenStream {
                 }
 
                 #( 
-                    pub fn #get_components_names(&mut self, entity : &EntityID) -> Option<&mut #field_types_gc>{
+                    pub fn #get_components_names(&self, entity : &EntityID) -> Option<&#field_types_gc>{
                         self.#field_names_gc.entry(entity)
                     }
                 )*
 
-                /* Altenartively, could declare an ComponentType enum. Take that as param, then use match expresion to extract the correct one. */
+                #( 
+                    pub fn #get_components_names_mut(&mut self, entity : &EntityID) -> Option<&mut #field_types_gc_mut>{
+                        self.#field_names_gc_mut.entry_mut(entity)
+                    }
+                )*
 
                 pub fn alloc_id(&mut self) -> EntityID{
                     let id = self.next_obj_id;
                     self.next_obj_id = id.next();
+                    self.ids.insert(id, ());
                     id
+                }
+
+                pub fn ids(&self) -> Vec<EntityID>{
+                    self.ids.keys().copied().collect()
                 }
             }
         };

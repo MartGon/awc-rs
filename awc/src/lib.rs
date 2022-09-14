@@ -1,6 +1,5 @@
 
 mod unit;
-mod tile;
 mod movement;
 mod table;
 
@@ -10,6 +9,7 @@ pub mod map;
 pub mod weapon;
 pub mod game;
 pub mod player;
+pub mod tile;
 
 use crate::table::TableID;
 use std::hash::Hash;
