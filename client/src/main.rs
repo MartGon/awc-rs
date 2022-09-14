@@ -1,5 +1,7 @@
+use awc::component::EntityType;
 use awc::tile;
 use macroquad::prelude::*;
+use macroquad::rand;
 use macroquad::ui::*;
 use awc::{component, component::Component, map};
 use awc::game::*;
@@ -18,7 +20,7 @@ async fn main() {
     let land_size = IVec2::new(4, 4);
     for x in 0..land_size.x{
         for y in 0..land_size.y{
-            let tile_id = game.create_tile(tile::TypeID::new(0));
+            let tile_id = game.create_tile(tile::TypeID::new(rand::gen_range(0, 2)));
             let pos = component::Position{pos : map::Pos{x : x, y : y, z : 0}};
             game.insert_component(tile_id, Component::Position(pos));
         }
@@ -51,7 +53,15 @@ async fn main() {
             
             let tile_pos = game.components().get_position(tile).unwrap();
             let draw_pos = Vec2::new(tile_pos.pos.x as f32 * tile_size.x, tile_pos.pos.y as f32 * tile_size.y);
-            grass.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
+            let ttype = game.components().get_type(tile).unwrap();
+            if let EntityType::Tile(ttype) = ttype.entity_type {
+                if ttype == tile::TypeID::new(0){
+                    grass.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
+                }
+                else{
+                    mountain.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
+                }
+            }
         }
         
         // Draw UI
