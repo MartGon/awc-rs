@@ -31,9 +31,16 @@ async fn main() {
     let spritesheet = Texture2D::from_image(&spritesheet);
 
     // Tile Sprites
-    let grass = Sprite::new_raw(238, 18, 16, 16);
-    let mountain = Sprite::new_raw(255, 18, 16, 16);
-    let water = Sprite::new_raw(12, 133, 16, 16);
+    let mut grass = Sprite::new_raw(238, 18, 16, 16);
+    let mut mountain = Sprite::new_raw(255, 18, 16, 16);
+    let mut water = AnimatedSprite::new(UVec2::new(16, 16), &[
+        Animation::new("idle".to_string(), 4, &[
+            AnimationFrame::new(ivec2(12, 133)),
+            AnimationFrame::new(ivec2(31, 133)),
+            AnimationFrame::new(ivec2(48, 133)),
+            AnimationFrame::new(ivec2(65, 133)),
+        ])
+    ]);
 
     let tile_size = Vec2::new(32.0, 32.0);
     loop {
