@@ -31,6 +31,7 @@ impl Drawable for Sprite{
     fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
         let rect = Some(Rect::new(self.pos.x as f32, self.pos.y as f32, self.size.x as f32, self.size.y as f32));
         let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_f32()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
+        spritesheet.set_filter(FilterMode::Nearest);
         draw_texture_ex(*spritesheet, draw_dest.x, draw_dest.y, WHITE, dtp)
     }
 }
@@ -72,6 +73,7 @@ impl Drawable for AnimatedSprite{
         let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_f32()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
 
         self.update();
+        spritesheet.set_filter(FilterMode::Nearest);
         draw_texture_ex(*spritesheet, draw_dest.x, draw_dest.y, WHITE, dtp)
     }
 }

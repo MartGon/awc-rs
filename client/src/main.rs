@@ -31,9 +31,10 @@ async fn main() {
     let spritesheet = Texture2D::from_image(&spritesheet);
 
     // Tile Sprites
-    let mut grass = Sprite::new_raw(238, 18, 16, 16);
-    let mut mountain = Sprite::new_raw(255, 18, 16, 16);
-    let mut water = AnimatedSprite::new(UVec2::new(16, 16), &[
+    let tile_size = Vec2::new(16.0, 16.0);
+    let mut grass = Sprite::new_raw(238, 18, tile_size.x as i32, tile_size.y as i32);
+    let mut mountain = Sprite::new_raw(255, 18, tile_size.x as i32, tile_size.y as i32);
+    let mut water = AnimatedSprite::new(tile_size.as_u32(), &[
         Animation::new("idle".to_string(), 4, &[
             AnimationFrame::new(ivec2(12, 133)),
             AnimationFrame::new(ivec2(31, 133)),
@@ -42,16 +43,18 @@ async fn main() {
         ])
     ]);
 
-    let tile_size = Vec2::new(32.0, 32.0);
+    
     loop {
         clear_background(RED);
-        let x_tiles = (screen_width() / tile_size.x) as i32 + 1;
-        let y_tiles = (screen_height() / tile_size.y) as i32 + 1;
+        let scale = vec2(2.0, 2.0);
+        let draw_size = tile_size * scale;
+        let x_tiles = (screen_width() / draw_size.x) as i32 + 1;
+        let y_tiles = (screen_height() / draw_size.y) as i32 + 1;
 
         for x in 0..x_tiles{
             for y in 0..y_tiles{
-                let draw_pos = Vec2::new(x as f32 * tile_size.x, y as f32 * tile_size.y);
-                water.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
+                let draw_pos = Vec2::new(x as f32 * draw_size.x, y as f32 * draw_size.y);
+                water.draw_scaled(&spritesheet, draw_pos, scale);
             }
             
         }
@@ -59,14 +62,14 @@ async fn main() {
         for tile in game.map.tiles(){
             
             let tile_pos = game.components().get_position(tile).unwrap();
-            let draw_pos = Vec2::new(tile_pos.pos.x as f32 * tile_size.x, tile_pos.pos.y as f32 * tile_size.y);
+            let draw_pos = Vec2::new(tile_pos.pos.x as f32 * draw_size.x, tile_pos.pos.y as f32 * draw_size.y);
             let ttype = game.components().get_type(tile).unwrap();
             if let EntityType::Tile(ttype) = ttype.entity_type {
                 if ttype == tile::TypeID::new(0){
-                    grass.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
+                    grass.draw_scaled(&spritesheet, draw_pos, scale);
                 }
                 else{
-                    mountain.draw_scaled(&spritesheet, draw_pos, Vec2::new(2.0, 2.0));
+                    mountain.draw_scaled(&spritesheet, draw_pos, scale);
                 }
             }
         }
