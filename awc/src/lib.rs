@@ -15,7 +15,7 @@ use crate::table::TableID;
 use std::hash::Hash;
 
 #[derive(Copy)]
-pub struct ID(i32);
+pub struct ID(pub i32);
 
 impl TableID for ID{
     fn next(&self) -> Self {

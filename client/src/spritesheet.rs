@@ -1,13 +1,17 @@
-
-use std::ops::Index;
-
-use macroquad::prelude::{*, cast::IVec2Cast};
+use macroquad::prelude::*;
 
 pub trait Drawable{
     fn draw(&mut self, spritesheet : &Texture2D, draw_dest : Vec2);
     fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2);
 }
 
+#[derive(Clone)]
+pub enum SpriteType{
+    Sprite(Sprite),
+    AnimatedSprite(AnimatedSprite)
+}
+
+#[derive(Clone)]
 pub struct Sprite{
     pos : IVec2,
     size : IVec2,
@@ -36,6 +40,7 @@ impl Drawable for Sprite{
     }
 }
 
+#[derive(Clone)]
 pub struct AnimatedSprite{
     pub size : UVec2,
     pub animations : Vec<Animation>,

@@ -1,4 +1,4 @@
-use crate::{map, player::{self, TeamID, Player}, component::{self, EntityID, EntityType, Component, Position}, table::Table, tile};
+use crate::{map, player::{self, TeamID, Player}, component::{self, EntityID, EntityType}, table::Table, tile};
 
 pub struct Game
 {
@@ -30,12 +30,27 @@ impl Game{
         id
     }
 
+    pub fn get_tile_in_pos(&self, target_pos : map::Pos) -> Option<EntityID>{
+        for tile in self.map.tiles(){
+            let pos = self.components.get_position(tile).unwrap();
+            if pos.pos == target_pos{
+                return Some(tile.clone())
+            }
+        }
+
+        None
+    }
+
     pub fn insert_component(&mut self, entity : EntityID, component : component::Component){
         self.components.insert(entity, component)
     }
 
     pub fn components(&self) -> &component::Components{
         &self.components
+    }
+
+    pub fn components_mut(&mut self) -> &mut component::Components{
+        &mut self.components
     }
 }
 
