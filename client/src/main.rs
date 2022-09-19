@@ -12,6 +12,7 @@ mod spritesheet;
 mod tileset;
 
 use spritesheet::*;
+use tileset::Border;
 use tileset::BorderedTile;
 use tileset::Borders;
 
@@ -37,7 +38,7 @@ async fn main() {
     for tile in tiles{ 
             let pos = game.components_mut().get_position(&tile).unwrap();
             if pos.pos.x < land_size.y && pos.pos.y < land_size.y{
-                game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile::TypeID::new(rand::gen_range(1, 3)));
+                game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile::TypeID::new(rand::gen_range(1, 2)));
             }
         }
 
@@ -49,8 +50,8 @@ async fn main() {
     let tile_size = Vec2::new(16.0, 16.0);
     let mut grass = Sprite::new_raw(238, 18, tile_size.x as i32, tile_size.y as i32);
     let mut mountain = Sprite::new_raw(255, 18, tile_size.x as i32, tile_size.y as i32);
-    let mut water = BorderedTile::new(&[
-        (Borders{..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+    let mut water = BorderedTile::new(  
+        AnimatedSprite::new(tile_size.as_u32(), &[
             Animation::new("idle".to_string(), 4, &[
                 AnimationFrame::new(ivec2(12, 133)),
                 AnimationFrame::new(ivec2(31, 133)),
@@ -60,81 +61,47 @@ async fn main() {
                 AnimationFrame::new(ivec2(48, 133)),
                 AnimationFrame::new(ivec2(31, 133)),
                 AnimationFrame::new(ivec2(12, 133)),
-            ]),
-        ])),
-        (Borders{top: true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
-            Animation::new("idle".to_string(), 4, &[
-                AnimationFrame::new(ivec2(12, 150)),
-                AnimationFrame::new(ivec2(31, 150)),
-                AnimationFrame::new(ivec2(48, 150)),
-                AnimationFrame::new(ivec2(65, 150)),
-                AnimationFrame::new(ivec2(65, 150)),
-                AnimationFrame::new(ivec2(48, 150)),
-                AnimationFrame::new(ivec2(31, 150)),
-                AnimationFrame::new(ivec2(12, 150)),
-            ]),
-        ])),
-        (Borders{left : true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
-            Animation::new("idle".to_string(), 4, &[
-                AnimationFrame::new(ivec2(12, 218)),
-                AnimationFrame::new(ivec2(31, 218)),
-                AnimationFrame::new(ivec2(48, 218)),
-                AnimationFrame::new(ivec2(65, 218)),
-                AnimationFrame::new(ivec2(65, 218)),
-                AnimationFrame::new(ivec2(48, 218)),
-                AnimationFrame::new(ivec2(31, 218)),
-                AnimationFrame::new(ivec2(12, 218)),
-            ]),
-        ])),
-        (Borders{bottom : true, right : true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
-            Animation::new("idle".to_string(), 4, &[
-                AnimationFrame::new(ivec2(12, 252)),
-                AnimationFrame::new(ivec2(31, 252)),
-                AnimationFrame::new(ivec2(48, 252)),
-                AnimationFrame::new(ivec2(65, 252)),
-                AnimationFrame::new(ivec2(65, 252)),
-                AnimationFrame::new(ivec2(48, 252)),
-                AnimationFrame::new(ivec2(31, 252)),
-                AnimationFrame::new(ivec2(12, 252)),
-            ]),
-        ])),
-        (Borders{top_left : true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
-            Animation::new("idle".to_string(), 4, &[
-                AnimationFrame::new(ivec2(12, 286)),
-                AnimationFrame::new(ivec2(31, 286)),
-                AnimationFrame::new(ivec2(48, 286)),
-                AnimationFrame::new(ivec2(65, 286)),
-                AnimationFrame::new(ivec2(65, 286)),
-                AnimationFrame::new(ivec2(48, 286)),
-                AnimationFrame::new(ivec2(31, 286)),
-                AnimationFrame::new(ivec2(12, 286)),
-            ]),
-        ])),
-        (Borders{top_left : true, top : true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
-            Animation::new("idle".to_string(), 4, &[
-                AnimationFrame::new(ivec2(12, 150)),
-                AnimationFrame::new(ivec2(31, 150)),
-                AnimationFrame::new(ivec2(48, 150)),
-                AnimationFrame::new(ivec2(65, 150)),
-                AnimationFrame::new(ivec2(65, 150)),
-                AnimationFrame::new(ivec2(48, 150)),
-                AnimationFrame::new(ivec2(31, 150)),
-                AnimationFrame::new(ivec2(12, 150)),
-            ]),
-        ])),
-        (Borders{top_left : true, left : true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
-            Animation::new("idle".to_string(), 4, &[
-                AnimationFrame::new(ivec2(12, 218)),
-                AnimationFrame::new(ivec2(31, 218)),
-                AnimationFrame::new(ivec2(48, 218)),
-                AnimationFrame::new(ivec2(65, 218)),
-                AnimationFrame::new(ivec2(65, 218)),
-                AnimationFrame::new(ivec2(48, 218)),
-                AnimationFrame::new(ivec2(31, 218)),
-                AnimationFrame::new(ivec2(12, 218)),
-            ]),
-        ])),
-    ]);
+            ])
+        ]),
+        &[
+            (Borders{top: Border::Some(tile::TypeID::new(1)), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new("idle".to_string(), 4, &[
+                    AnimationFrame::new(ivec2(12, 150)),
+                    AnimationFrame::new(ivec2(31, 150)),
+                    AnimationFrame::new(ivec2(48, 150)),
+                    AnimationFrame::new(ivec2(65, 150)),
+                    AnimationFrame::new(ivec2(65, 150)),
+                    AnimationFrame::new(ivec2(48, 150)),
+                    AnimationFrame::new(ivec2(31, 150)),
+                    AnimationFrame::new(ivec2(12, 150)),
+                ]),
+            ])),
+            (Borders{left : Border::Some(tile::TypeID::new(1)), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new("idle".to_string(), 4, &[
+                    AnimationFrame::new(ivec2(12, 218)),
+                    AnimationFrame::new(ivec2(31, 218)),
+                    AnimationFrame::new(ivec2(48, 218)),
+                    AnimationFrame::new(ivec2(65, 218)),
+                    AnimationFrame::new(ivec2(65, 218)),
+                    AnimationFrame::new(ivec2(48, 218)),
+                    AnimationFrame::new(ivec2(31, 218)),
+                    AnimationFrame::new(ivec2(12, 218)),
+                ]),
+            ])),
+            (Borders{top_left : Border::Some(tile::TypeID::new(1)),  ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), 
+            &[
+                Animation::new("idle".to_string(), 4, &[
+                    AnimationFrame::new(ivec2(12, 286)),
+                    AnimationFrame::new(ivec2(31, 286)),
+                    AnimationFrame::new(ivec2(48, 286)),
+                    AnimationFrame::new(ivec2(65, 286)),
+                    AnimationFrame::new(ivec2(65, 286)),
+                    AnimationFrame::new(ivec2(48, 286)),
+                    AnimationFrame::new(ivec2(31, 286)),
+                    AnimationFrame::new(ivec2(12, 286)),
+                ]),
+            ])),
+        ]);
     
     loop {
         clear_background(RED);
@@ -155,7 +122,7 @@ async fn main() {
                         if let Some(up) = game.get_tile_in_pos(up_pos){
                             let ttype = game.components().get_type(&up).unwrap();
                             if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.top = ttype.0 != 0;
+                                borders.top = Border::Some(ttype);
                             }
                         }
 
@@ -163,7 +130,7 @@ async fn main() {
                         if let Some(up) = game.get_tile_in_pos(left_pos){
                             let ttype = game.components().get_type(&up).unwrap();
                             if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.left = ttype.0 != 0;
+                                borders.left = Border::Some(ttype);
                             }
                         }
 
@@ -171,11 +138,13 @@ async fn main() {
                         if let Some(up) = game.get_tile_in_pos(top_left_pos){
                             let ttype = game.components().get_type(&up).unwrap();
                             if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.top_left = ttype.0 != 0;
+                                borders.top_left = Border::Some(ttype);
                             }
                         }
                         
-                        let sprite = water.sprite(&borders).unwrap();
+                        println!("Pos: {:?}", tile_pos);
+                        println!("Borders: {:?}", borders);
+                        let sprite = water.sprite(&borders);
                         sprite.draw_scaled(&spritesheet, draw_pos, scale);
                     },
                     1 => grass.draw_scaled(&spritesheet, draw_pos, scale),

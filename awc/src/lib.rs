@@ -14,7 +14,7 @@ pub mod tile;
 use crate::table::TableID;
 use std::hash::Hash;
 
-#[derive(Copy)]
+#[derive(Copy, Hash, Debug, PartialEq, Eq, Clone)]
 pub struct ID(pub i32);
 
 impl TableID for ID{
@@ -26,28 +26,6 @@ impl TableID for ID{
 impl Default for ID{
     fn default() -> Self {
         ID::new(0)
-    }
-}
-
-impl PartialEq for ID{
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
-    }
-}
-
-impl Eq for ID{
-    fn assert_receiver_is_total_eq(&self) {}
-}
-
-impl Hash for ID{
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.0.hash(state);
-    }
-}
-
-impl Clone for ID{
-    fn clone(&self) -> Self {
-        Self(self.0.clone())
     }
 }
 
