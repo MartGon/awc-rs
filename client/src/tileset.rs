@@ -20,6 +20,9 @@ pub struct Road{
     sprites : HashMap<RoadType, Sprite>
 }
 
+// This could be changed to a HashMap<IVec2 (offset), TileID>
+// It could also be renamed to neighbours or something along those lines
+// Add neighbour enum (None, Any, Some)
 #[derive(Hash, PartialEq, Eq, Clone, Copy, Default, Debug)]
 pub struct Borders{
     pub top : bool,

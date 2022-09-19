@@ -110,6 +110,30 @@ async fn main() {
                 AnimationFrame::new(ivec2(12, 286)),
             ]),
         ])),
+        (Borders{top_left : true, top : true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+            Animation::new("idle".to_string(), 4, &[
+                AnimationFrame::new(ivec2(12, 150)),
+                AnimationFrame::new(ivec2(31, 150)),
+                AnimationFrame::new(ivec2(48, 150)),
+                AnimationFrame::new(ivec2(65, 150)),
+                AnimationFrame::new(ivec2(65, 150)),
+                AnimationFrame::new(ivec2(48, 150)),
+                AnimationFrame::new(ivec2(31, 150)),
+                AnimationFrame::new(ivec2(12, 150)),
+            ]),
+        ])),
+        (Borders{top_left : true, left : true, ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+            Animation::new("idle".to_string(), 4, &[
+                AnimationFrame::new(ivec2(12, 218)),
+                AnimationFrame::new(ivec2(31, 218)),
+                AnimationFrame::new(ivec2(48, 218)),
+                AnimationFrame::new(ivec2(65, 218)),
+                AnimationFrame::new(ivec2(65, 218)),
+                AnimationFrame::new(ivec2(48, 218)),
+                AnimationFrame::new(ivec2(31, 218)),
+                AnimationFrame::new(ivec2(12, 218)),
+            ]),
+        ])),
     ]);
     
     loop {
