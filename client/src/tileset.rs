@@ -1,5 +1,6 @@
 use std::{collections::{HashMap}, hash::Hash};
 use awc::tile;
+use macroquad::prelude::IVec2;
 
 use crate::spritesheet;
 
@@ -29,17 +30,46 @@ impl PartialEq for Border{
     }
 }
 
-// TODO: This could be changed to a HashMap<IVec2 (offset), Border>
-#[derive(Hash, PartialEq, Eq, Clone, Default, Debug)]
+pub const OFFSET_MIN : i32 = -1;
+pub const OFFSET_MAX : i32 = 1;
+
+#[derive(Eq, Clone, Default, Debug)]
 pub struct Borders{
-    pub top : Border,
-    pub bottom : Border,
-    pub left : Border,
-    pub right : Border,
-    pub top_left : Border,
-    pub top_right : Border,
-    pub bottom_left : Border,
-    pub bottom_right : Border,
+    borders : HashMap<IVec2, Border>,
+}
+
+impl Borders{
+    pub fn new(borders : &[(IVec2, Border)]) -> Borders{
+        Borders { borders : borders.into_iter().cloned().collect() }
+    }
+
+    pub fn get_mut(&mut self, offset : &IVec2) -> Option<&mut Border>{
+        self.borders.get_mut(offset)
+    }
+
+    pub fn insert(&mut self,  offset : IVec2, border : Border){
+        self.borders.insert(offset, border);
+    }
+}
+
+impl PartialEq for Borders{
+    fn eq(&self, other: &Self) -> bool{
+        let res = true;
+        for (offset, lb) in self.borders.iter(){
+            if let Some(rb) = other.borders.get(offset){
+                if lb != rb {
+                    // Found tile in target didn't match mask
+                    return false;
+                }
+            }
+            else{
+                // Tile in border didn't contain mandatory tile in mask
+                return false;
+            }
+        }
+
+        res
+    }   
 }
 
 pub struct BorderedTile<S>{

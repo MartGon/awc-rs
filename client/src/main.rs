@@ -64,7 +64,7 @@ async fn main() {
             ])
         ]),
         &[
-            (Borders{top: Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+            (Borders::new(&[(ivec2(0, -1), Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 150)),
                     AnimationFrame::new(ivec2(31, 150)),
@@ -76,7 +76,7 @@ async fn main() {
                     AnimationFrame::new(ivec2(12, 150)),
                 ]),
             ])),
-            (Borders{left : Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(),&[
+            (Borders::new(&[(ivec2(-1, 0), Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(),&[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 218)),
                     AnimationFrame::new(ivec2(31, 218)),
@@ -88,7 +88,7 @@ async fn main() {
                     AnimationFrame::new(ivec2(12, 218)),
                 ]),
             ])),
-            (Borders{top_left : Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()),  ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+            (Borders::new(&[(ivec2(-1, -1), Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 286)),
                     AnimationFrame::new(ivec2(31, 286)),
@@ -117,32 +117,20 @@ async fn main() {
                 match ttype.0 {
                     0 => {
                         let mut borders = Borders::default();
-                        let up_pos = map::Pos::new(tile_pos.x, tile_pos.y - 1, 0);
-                        if let Some(up) = game.get_tile_in_pos(up_pos){
-                            let ttype = game.components().get_type(&up).unwrap();
-                            if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.top = Border::Some(vec![ttype]);
+                        for x in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
+                            for y in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
+                                let offset = ivec2(x, y);
+                                let pos = map::Pos::new(tile_pos.x + x, tile_pos.y + y, 0);
+
+                                if let Some(up) = game.get_tile_in_pos(&pos){
+                                    let ttype = game.components().get_type(&up).unwrap();
+                                    if let EntityType::Tile(ttype) = ttype.entity_type{
+                                        borders.insert(offset, Border::Some(vec![ttype]));
+                                    }
+                                }
                             }
                         }
 
-                        let left_pos = map::Pos::new(tile_pos.x - 1, tile_pos.y , 0);
-                        if let Some(up) = game.get_tile_in_pos(left_pos){
-                            let ttype = game.components().get_type(&up).unwrap();
-                            if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.left = Border::Some(vec![ttype]);
-                            }
-                        }
-
-                        let top_left_pos = map::Pos::new(tile_pos.x - 1, tile_pos.y - 1 , 0);
-                        if let Some(up) = game.get_tile_in_pos(top_left_pos){
-                            let ttype = game.components().get_type(&up).unwrap();
-                            if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.top_left = Border::Some(vec![ttype]);
-                            }
-                        }
-                        
-                        println!("Pos: {:?}", tile_pos);
-                        println!("Borders: {:?}", borders);
                         let sprite = water.sprite(&borders);
                         sprite.draw_scaled(&spritesheet, draw_pos, scale);
                     },

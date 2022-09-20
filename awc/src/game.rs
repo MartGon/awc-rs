@@ -30,10 +30,10 @@ impl Game{
         id
     }
 
-    pub fn get_tile_in_pos(&self, target_pos : map::Pos) -> Option<EntityID>{
+    pub fn get_tile_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
         for tile in self.map.tiles(){
             let pos = self.components.get_position(tile).unwrap();
-            if pos.pos == target_pos{
+            if pos.pos == *target_pos{
                 return Some(tile.clone())
             }
         }
