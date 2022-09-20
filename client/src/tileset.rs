@@ -6,58 +6,46 @@ use crate::spritesheet;
 
 // Some could hold a list of valid tile::TypeID.
 // E.g. For water border tiles, either grass or mountain are valid.
-#[derive(Clone, Hash, Debug, Eq)]
-pub enum Border{
+#[derive(Clone, Hash, Debug)]
+pub enum BorderMaskEntry{
     Any,
     Some(Vec<tile::TypeID>)
 }
 
-impl Default for Border{
-    fn default() -> Self {
-        Self::Any
+impl BorderMaskEntry {
+    
+    pub fn matches(&self, other : &tile::TypeID) -> bool{
+        match self{
+            BorderMaskEntry::Any => true,
+            BorderMaskEntry::Some(l) => l.contains(other),
+        }
     }
 }
 
-// It's not commutative. Left side acts as mask. Right side as target
-impl PartialEq for Border{
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::Some(l0), Self::Some(r0)) => l0.contains(r0.get(0).unwrap()),
-            (Self::Some(_l0), Self::Any) => false,
-            (Self::Any, Self::Some(_r0)) => true,
-            (Self::Any, Self::Any) => true,
-        }
+impl Default for BorderMaskEntry{
+    fn default() -> Self {
+        Self::Any
     }
 }
 
 pub const OFFSET_MIN : i32 = -1;
 pub const OFFSET_MAX : i32 = 1;
 
-#[derive(Eq, Clone, Default, Debug)]
-pub struct Borders{
-    borders : HashMap<IVec2, Border>,
+#[derive(Clone, Default, Debug)]
+pub struct BordersMask{
+    mask : HashMap<IVec2, BorderMaskEntry>,
 }
 
-impl Borders{
-    pub fn new(borders : &[(IVec2, Border)]) -> Borders{
-        Borders { borders : borders.into_iter().cloned().collect() }
+impl BordersMask{
+    pub fn new(borders : &[(IVec2, BorderMaskEntry)]) -> BordersMask{
+        BordersMask { mask : borders.into_iter().cloned().collect() }
     }
 
-    pub fn get_mut(&mut self, offset : &IVec2) -> Option<&mut Border>{
-        self.borders.get_mut(offset)
-    }
-
-    pub fn insert(&mut self,  offset : IVec2, border : Border){
-        self.borders.insert(offset, border);
-    }
-}
-
-impl PartialEq for Borders{
-    fn eq(&self, other: &Self) -> bool{
+    pub fn matches(&self, borders : &Borders) -> bool{
         let res = true;
-        for (offset, lb) in self.borders.iter(){
-            if let Some(rb) = other.borders.get(offset){
-                if lb != rb {
+        for (offset, lb) in self.mask.iter(){
+            if let Some(rb) = borders.get(offset){
+                if !lb.matches(rb) {
                     // Found tile in target didn't match mask
                     return false;
                 }
@@ -69,22 +57,37 @@ impl PartialEq for Borders{
         }
 
         res
-    }   
+    }
+}
+
+#[derive(Default)]
+pub struct Borders{
+    borders : HashMap<IVec2, tile::TypeID>,
+}
+
+impl Borders{
+    pub fn get(&self, offset : &IVec2) -> Option<&tile::TypeID>{
+        self.borders.get(offset)
+    }
+
+    pub fn insert(&mut self,  offset : IVec2, border : tile::TypeID){
+        self.borders.insert(offset, border);
+    }
 }
 
 pub struct BorderedTile<S>{
-    sprites : Vec<(Borders, S)>,
+    sprites : Vec<(BordersMask, S)>,
     default : S,
 }
 
 impl<S : spritesheet::Drawable + Clone> BorderedTile<S>{
-    pub fn new(default : S, sprites: &[(Borders, S)]) -> BorderedTile<S>{
+    pub fn new(default : S, sprites: &[(BordersMask, S)]) -> BorderedTile<S>{
         BorderedTile { default,  sprites: sprites.into_iter().cloned().collect() }
     }
 
     pub fn sprite(&mut self, border : &Borders) -> &mut S{
         for (b, sprite) in self.sprites.iter_mut(){   
-            if b == border{
+            if b.matches(border){
                 return sprite;
             }
         }

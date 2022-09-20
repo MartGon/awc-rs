@@ -12,9 +12,10 @@ mod spritesheet;
 mod tileset;
 
 use spritesheet::*;
-use tileset::Border;
+use tileset::BorderMaskEntry;
 use tileset::BorderedTile;
 use tileset::Borders;
+use tileset::BordersMask;
 
 
 #[macroquad::main("BasicShapes")]
@@ -64,7 +65,7 @@ async fn main() {
             ])
         ]),
         &[
-            (Borders::new(&[(ivec2(0, -1), Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 150)),
                     AnimationFrame::new(ivec2(31, 150)),
@@ -76,7 +77,7 @@ async fn main() {
                     AnimationFrame::new(ivec2(12, 150)),
                 ]),
             ])),
-            (Borders::new(&[(ivec2(-1, 0), Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(),&[
+            (BordersMask::new(&[(ivec2(-1, 0), BorderMaskEntry::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(),&[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 218)),
                     AnimationFrame::new(ivec2(31, 218)),
@@ -88,7 +89,7 @@ async fn main() {
                     AnimationFrame::new(ivec2(12, 218)),
                 ]),
             ])),
-            (Borders::new(&[(ivec2(-1, -1), Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(-1, -1), BorderMaskEntry::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 286)),
                     AnimationFrame::new(ivec2(31, 286)),
@@ -125,7 +126,7 @@ async fn main() {
                                 if let Some(up) = game.get_tile_in_pos(&pos){
                                     let ttype = game.components().get_type(&up).unwrap();
                                     if let EntityType::Tile(ttype) = ttype.entity_type{
-                                        borders.insert(offset, Border::Some(vec![ttype]));
+                                        borders.insert(offset, ttype);
                                     }
                                 }
                             }
