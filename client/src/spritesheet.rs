@@ -91,8 +91,19 @@ pub struct Animation{
 }
 
 impl Animation{
+
+    #[allow(dead_code)]
     pub fn new(name : String, fps : u32, frames : &[AnimationFrame]) -> Animation{
-        Animation { name: name, frames: frames.to_vec(), fps: fps }
+        Animation { name, frames: frames.to_vec(), fps: fps }
+    }
+    
+    #[allow(dead_code)]
+    pub fn new_short(name : String, fps : u32, frames_pos : &[IVec2]) -> Animation{
+        Animation { name, fps : fps, frames : frames_pos.into_iter().map(|x| AnimationFrame::new(x.clone())).collect()}
+    }
+
+    pub fn new_shorter(name : String, fps : u32, frame_y : i32, frames_x : &[i32]) -> Animation{
+        Animation { name, fps : fps, frames : frames_x.into_iter().map(|x| AnimationFrame::new(ivec2(*x, frame_y))).collect()}
     }
 }
 

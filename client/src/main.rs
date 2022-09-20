@@ -53,52 +53,24 @@ async fn main() {
     let mut mountain = Sprite::new_raw(255, 18, tile_size.x as i32, tile_size.y as i32);
     let mut water = BorderedTile::new(  
         AnimatedSprite::new(tile_size.as_u32(), &[
-            Animation::new("idle".to_string(), 4, &[
-                AnimationFrame::new(ivec2(12, 133)),
-                AnimationFrame::new(ivec2(31, 133)),
-                AnimationFrame::new(ivec2(48, 133)),
-                AnimationFrame::new(ivec2(65, 133)),
-                AnimationFrame::new(ivec2(65, 133)),
-                AnimationFrame::new(ivec2(48, 133)),
-                AnimationFrame::new(ivec2(31, 133)),
-                AnimationFrame::new(ivec2(12, 133)),
+            Animation::new_shorter("idle".to_string(), 4, 133, &[
+                12, 31, 48, 65, 65, 48, 31, 12,
             ])
         ]),
         &[
             (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
-                Animation::new("idle".to_string(), 4, &[
-                    AnimationFrame::new(ivec2(12, 150)),
-                    AnimationFrame::new(ivec2(31, 150)),
-                    AnimationFrame::new(ivec2(48, 150)),
-                    AnimationFrame::new(ivec2(65, 150)),
-                    AnimationFrame::new(ivec2(65, 150)),
-                    AnimationFrame::new(ivec2(48, 150)),
-                    AnimationFrame::new(ivec2(31, 150)),
-                    AnimationFrame::new(ivec2(12, 150)),
+                Animation::new_shorter("idle".to_string(), 4, 150, &[
+                    12, 31, 48, 65, 65, 48, 31, 12,
                 ]),
             ])),
             (BordersMask::new(&[(ivec2(-1, 0), BorderMaskEntry::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(),&[
-                Animation::new("idle".to_string(), 4, &[
-                    AnimationFrame::new(ivec2(12, 218)),
-                    AnimationFrame::new(ivec2(31, 218)),
-                    AnimationFrame::new(ivec2(48, 218)),
-                    AnimationFrame::new(ivec2(65, 218)),
-                    AnimationFrame::new(ivec2(65, 218)),
-                    AnimationFrame::new(ivec2(48, 218)),
-                    AnimationFrame::new(ivec2(31, 218)),
-                    AnimationFrame::new(ivec2(12, 218)),
+                Animation::new_shorter("idle".to_string(), 4, 218, &[
+                    12, 31, 48, 65, 65, 48, 31, 12,
                 ]),
             ])),
             (BordersMask::new(&[(ivec2(-1, -1), BorderMaskEntry::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()))]),  AnimatedSprite::new(tile_size.as_u32(), &[
-                Animation::new("idle".to_string(), 4, &[
-                    AnimationFrame::new(ivec2(12, 286)),
-                    AnimationFrame::new(ivec2(31, 286)),
-                    AnimationFrame::new(ivec2(48, 286)),
-                    AnimationFrame::new(ivec2(65, 286)),
-                    AnimationFrame::new(ivec2(65, 286)),
-                    AnimationFrame::new(ivec2(48, 286)),
-                    AnimationFrame::new(ivec2(31, 286)),
-                    AnimationFrame::new(ivec2(12, 286)),
+                Animation::new_shorter("idle".to_string(), 4, 286, &[
+                    12, 31, 48, 65, 65, 48, 31, 12,
                 ]),
             ])),
         ]);
