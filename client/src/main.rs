@@ -38,7 +38,7 @@ async fn main() {
     for tile in tiles{ 
             let pos = game.components_mut().get_position(&tile).unwrap();
             if pos.pos.x < land_size.y && pos.pos.y < land_size.y{
-                game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile::TypeID::new(rand::gen_range(1, 2)));
+                game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile::TypeID::new(rand::gen_range(1, 3)));
             }
         }
 
@@ -64,7 +64,7 @@ async fn main() {
             ])
         ]),
         &[
-            (Borders{top: Border::Some(tile::TypeID::new(1)), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+            (Borders{top: Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 150)),
                     AnimationFrame::new(ivec2(31, 150)),
@@ -76,7 +76,7 @@ async fn main() {
                     AnimationFrame::new(ivec2(12, 150)),
                 ]),
             ])),
-            (Borders{left : Border::Some(tile::TypeID::new(1)), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
+            (Borders{left : Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()), ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(),&[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 218)),
                     AnimationFrame::new(ivec2(31, 218)),
@@ -88,8 +88,7 @@ async fn main() {
                     AnimationFrame::new(ivec2(12, 218)),
                 ]),
             ])),
-            (Borders{top_left : Border::Some(tile::TypeID::new(1)),  ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), 
-            &[
+            (Borders{top_left : Border::Some([tile::TypeID::new(1), tile::TypeID::new(2)].to_vec()),  ..Default::default()},  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new("idle".to_string(), 4, &[
                     AnimationFrame::new(ivec2(12, 286)),
                     AnimationFrame::new(ivec2(31, 286)),
@@ -122,7 +121,7 @@ async fn main() {
                         if let Some(up) = game.get_tile_in_pos(up_pos){
                             let ttype = game.components().get_type(&up).unwrap();
                             if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.top = Border::Some(ttype);
+                                borders.top = Border::Some(vec![ttype]);
                             }
                         }
 
@@ -130,7 +129,7 @@ async fn main() {
                         if let Some(up) = game.get_tile_in_pos(left_pos){
                             let ttype = game.components().get_type(&up).unwrap();
                             if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.left = Border::Some(ttype);
+                                borders.left = Border::Some(vec![ttype]);
                             }
                         }
 
@@ -138,7 +137,7 @@ async fn main() {
                         if let Some(up) = game.get_tile_in_pos(top_left_pos){
                             let ttype = game.components().get_type(&up).unwrap();
                             if let EntityType::Tile(ttype) = ttype.entity_type{
-                                borders.top_left = Border::Some(ttype);
+                                borders.top_left = Border::Some(vec![ttype]);
                             }
                         }
                         

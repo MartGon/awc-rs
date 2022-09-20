@@ -3,14 +3,12 @@ use awc::tile;
 
 use crate::spritesheet;
 
-// This could be changed to a HashMap<IVec2 (offset), TileID>
-// It could also be renamed to neighbours or something along those lines
-// Add neighbour enum (None, Any, Some)
-
-#[derive(Clone, Copy, Hash, Debug, Eq)]
+// Some could hold a list of valid tile::TypeID.
+// E.g. For water border tiles, either grass or mountain are valid.
+#[derive(Clone, Hash, Debug, Eq)]
 pub enum Border{
     Any,
-    Some(tile::TypeID)
+    Some(Vec<tile::TypeID>)
 }
 
 impl Default for Border{
@@ -19,10 +17,11 @@ impl Default for Border{
     }
 }
 
+// It's not commutative. Left side acts as mask. Right side as target
 impl PartialEq for Border{
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::Some(l0), Self::Some(r0)) => l0 == r0,
+            (Self::Some(l0), Self::Some(r0)) => l0.contains(r0.get(0).unwrap()),
             (Self::Some(_l0), Self::Any) => false,
             (Self::Any, Self::Some(_r0)) => true,
             (Self::Any, Self::Any) => true,
@@ -30,7 +29,8 @@ impl PartialEq for Border{
     }
 }
 
-#[derive(Hash, PartialEq, Eq, Clone, Copy, Default, Debug)]
+// TODO: This could be changed to a HashMap<IVec2 (offset), Border>
+#[derive(Hash, PartialEq, Eq, Clone, Default, Debug)]
 pub struct Borders{
     pub top : Border,
     pub bottom : Border,
