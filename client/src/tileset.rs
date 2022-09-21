@@ -4,7 +4,6 @@ use macroquad::prelude::IVec2;
 
 use crate::spritesheet;
 
-// Some could hold a list of valid tile::TypeID.
 // E.g. For water border tiles, either grass or mountain are valid.
 #[derive(Clone, Hash, Debug)]
 pub enum BorderMaskEntry{
@@ -14,6 +13,10 @@ pub enum BorderMaskEntry{
 
 impl BorderMaskEntry {
     
+    pub fn some(ids : &[i32]) -> BorderMaskEntry{
+        BorderMaskEntry::Some(ids.into_iter().map(|id| tile::TypeID::new(*id)).collect())
+    }
+
     pub fn matches(&self, other : &tile::TypeID) -> bool{
         match self{
             BorderMaskEntry::Any => true,
@@ -39,6 +42,10 @@ pub struct BordersMask{
 impl BordersMask{
     pub fn new(borders : &[(IVec2, BorderMaskEntry)]) -> BordersMask{
         BordersMask { mask : borders.into_iter().cloned().collect() }
+    }
+    
+    pub fn new_short( mask : BorderMaskEntry, offsets : &[IVec2]) -> BordersMask{
+        BordersMask{ mask : offsets.into_iter().map(|o|(*o, mask.clone())).collect()}
     }
 
     pub fn matches(&self, borders : &Borders) -> bool{

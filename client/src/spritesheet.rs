@@ -102,8 +102,12 @@ impl Animation{
         Animation { name, fps : fps, frames : frames_pos.into_iter().map(|x| AnimationFrame::new(x.clone())).collect()}
     }
 
-    pub fn new_shorter(name : String, fps : u32, frame_y : i32, frames_x : &[i32]) -> Animation{
+    pub fn new_shorter_x(name : String, fps : u32, frame_y : i32, frames_x : &[i32]) -> Animation{
         Animation { name, fps : fps, frames : frames_x.into_iter().map(|x| AnimationFrame::new(ivec2(*x, frame_y))).collect()}
+    }
+
+    pub fn new_shorter_y(name : String, fps : u32, frame_x : i32, frames_y : &[i32]) -> Animation{
+        Animation { name, fps : fps, frames : frames_y.into_iter().map(|y| AnimationFrame::new(ivec2(frame_x, *y))).collect()}
     }
 }
 
