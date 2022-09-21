@@ -36,15 +36,21 @@ async fn main() {
     
     let land_anchor = ivec2(2, 2);
     let land_size = IVec2::new(4, 4);
+    let corners = vec![ivec2(1, 1), ivec2(1, 6), ivec2(6, 6), ivec2(6, 1)];
+
     let tiles : Vec<EntityID> = game.map.tiles().cloned().collect();
     for tile in tiles{ 
-            let pos = game.components_mut().get_position(&tile).unwrap();
-            if pos.pos.x < land_size.x + land_anchor.x && pos.pos.y < land_size.y + land_anchor.y &&
-                pos.pos.x >= land_anchor.x && pos.pos.y >= land_anchor.y
-            {
-                game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile::TypeID::new(rand::gen_range(1, 3)));
-            }
+        let pos = game.components_mut().get_position(&tile).unwrap();
+        let pos = ivec2(pos.pos.x, pos.pos.y);
+        if pos.x < land_size.x + land_anchor.x && pos.y < land_size.y + land_anchor.y &&
+            pos.x >= land_anchor.x && pos.y >= land_anchor.y ||
+            corners.contains(&pos)
+        {
+            game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile::TypeID::new(rand::gen_range(1, 3)));
         }
+
+    }
+
 
     // Load SpriteSheet
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
@@ -61,18 +67,8 @@ async fn main() {
             ])
         ]),
         &[
-            // Grass on Bottom
-            (BordersMask::new(&[(ivec2(0, 1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 20, &[
-                    146, 216, 286, 356, 356, 286, 216, 146,
-                ]),
-            ])),
-            // Grass on Top
-            (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 20, &[
-                    112, 182, 252, 322, 322, 252, 182, 112,
-                ]),
-            ])),
+            
+            // ***** Corners ******* \\
             // Top-Right
             (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 37, &[
@@ -83,6 +79,31 @@ async fn main() {
             (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(-1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 3, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
+                ]),
+            ])),
+            // Bottom-Right
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 37, &[
+                    146, 216, 286, 356, 356, 286, 216, 146,
+                ]),
+            ])),
+            // Bottom-Left
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 3, &[
+                    146, 216, 286, 356, 356, 286, 216, 146,
+                ]),
+            ])),
+            // ***** Single Sides ****** \\
+            // Grass on Top
+            (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 20, &[
+                    112, 182, 252, 322, 322, 252, 182, 112,
+                ]),
+            ])),
+            // Grass on Bottom
+            (BordersMask::new(&[(ivec2(0, 1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 20, &[
+                    146, 216, 286, 356, 356, 286, 216, 146,
                 ]),
             ])),
             // Right
@@ -97,25 +118,27 @@ async fn main() {
                     129, 199, 269, 339, 339, 269, 129
                 ]),
             ])),
-            // Right-Top
+
+            // ***** Dot Corners ******* \\
+            // Right-Top Corner
             (BordersMask::new(&[(ivec2(1, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 71, &[
                     129, 199, 269, 339, 339, 269, 129
                 ]),
             ])),
-            // Left-Top
+            // Left-Top Corner
             (BordersMask::new(&[(ivec2(-1, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 88, &[
                     129, 199, 269, 339, 339, 269, 129
                 ]),
             ])),
-            // Right-Bottom
+            // Right-Bottom Corner
             (BordersMask::new(&[(ivec2(1, 1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 71, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
                 ]),
             ])),
-            // Left-Bottom
+            // Left-Bottom Corner
             (BordersMask::new(&[(ivec2(-1, 1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 88, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
@@ -123,14 +146,37 @@ async fn main() {
             ])),
         ]);
     
+    let mut tile_type = tile::TypeID::new(0);
     loop {
-        clear_background(RED);
 
         let scale = vec2(2.0, 2.0);
         let draw_size = tile_size * scale;
+        // Inpput handling \\
+        let (x, y) = mouse_position();
+        let tile_pos = (vec2(x, y) / draw_size).as_i32();
+        let tile_pos = awc::map::Pos::new(tile_pos.x, tile_pos.y, 0);
+
+        if is_mouse_button_released(MouseButton::Left){
+            if let Some(tile) = game.get_tile_in_pos(&tile_pos){
+                game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile_type);
+            }
+        }
+
+        if is_mouse_button_released(MouseButton::Right){
+            if let Some(tile) = game.get_tile_in_pos(&tile_pos){
+                if let EntityType::Tile(id) = game.components_mut().get_type_mut(&tile).unwrap().entity_type{
+                    tile_type = id;
+                }
+            }
+        }
+
+
+        // Drawing \\
+        clear_background(RED);
 
         for tile in game.map.tiles(){            
             let tile_pos = &game.components().get_position(tile).unwrap().pos;
+            //let tile_pos = awc::map::Pos::new(1, 2, 0);
             let draw_pos = Vec2::new(tile_pos.x as f32 * draw_size.x, tile_pos.y as f32 * draw_size.y);
 
             let ttype = game.components().get_type(tile).unwrap();
