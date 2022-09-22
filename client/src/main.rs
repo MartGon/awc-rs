@@ -3,7 +3,6 @@ use awc::component::EntityType;
 use awc::tile;
 use macroquad::prelude::*;
 use macroquad::rand;
-use macroquad::ui::*;
 use awc::{component, component::Component, map};
 use awc::game::*;
 use awc::player::*;
@@ -51,7 +50,6 @@ async fn main() {
 
     }
 
-
     // Load SpriteSheet
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
     let spritesheet = Texture2D::from_image(&spritesheet);
@@ -67,6 +65,33 @@ async fn main() {
             ])
         ]),
         &[
+
+
+            // ***** Surrounded by 3 ****** \\
+            // Top-Left-Right
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0), ivec2(-1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 54, &[
+                    112, 182, 252, 322, 322, 252, 182, 112,
+                ]),
+            ])),
+            // Left-Right-Bottom
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 54, &[
+                    146, 216, 286, 356, 356, 286, 216, 146,
+                ]),
+            ])),
+            // Bottom-Left-Top
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(0, -1)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 3, &[
+                    163, 233, 303, 373, 373, 303, 233, 163,
+                ]),
+            ])),
+            // Bottom-Right-Top
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0), ivec2(0, -1)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+                Animation::new_shorter_y("idle".to_string(), 4, 37, &[
+                    163, 233, 303, 373, 373, 303, 233, 163,
+                ]),
+            ])),
             
             // ***** Corners ******* \\
             // Top-Right
@@ -93,6 +118,7 @@ async fn main() {
                     146, 216, 286, 356, 356, 286, 216, 146,
                 ]),
             ])),
+
             // ***** Single Sides ****** \\
             // Grass on Top
             (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
