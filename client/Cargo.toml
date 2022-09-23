@@ -9,3 +9,4 @@ edition = "2021"
 awc = { path = "../awc"}
 miniquad = "0.3.11"
 macroquad = "0.3"
+mlua = { version = "0.8", features = ["lua54", "vendored"] }

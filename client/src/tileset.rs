@@ -1,6 +1,7 @@
 use std::{collections::{HashMap}, hash::Hash};
 use awc::tile;
 use macroquad::prelude::IVec2;
+use mlua::{UserData, UserDataMethods, MetaMethod};
 
 use crate::spritesheet;
 
@@ -37,6 +38,10 @@ pub const OFFSET_MAX : i32 = 1;
 #[derive(Clone, Default, Debug)]
 pub struct BordersMask{
     mask : HashMap<IVec2, BorderMaskEntry>,
+}
+
+impl UserData for BordersMask{
+    
 }
 
 impl BordersMask{
@@ -82,17 +87,26 @@ impl Borders{
     }
 }
 
-pub struct BorderedTile<S>{
-    sprites : Vec<(BordersMask, S)>,
-    default : S,
+pub struct BorderedTile{
+    sprites : Vec<(BordersMask, spritesheet::SpriteType)>,
+    default : spritesheet::SpriteType,
 }
 
-impl<S : spritesheet::Drawable + Clone> BorderedTile<S>{
-    pub fn new(default : S, sprites: &[(BordersMask, S)]) -> BorderedTile<S>{
+impl UserData for BorderedTile{
+
+}
+
+impl BorderedTile{
+
+    pub fn new_short(default : spritesheet::SpriteType) -> BorderedTile{
+        BorderedTile::new(default, &[])
+    }
+
+    pub fn new(default : spritesheet::SpriteType, sprites: &[(BordersMask, spritesheet::SpriteType)]) -> BorderedTile{
         BorderedTile { default,  sprites: sprites.into_iter().cloned().collect() }
     }
 
-    pub fn sprite(&mut self, border : &Borders) -> &mut S{
+    pub fn sprite(&mut self, border : &Borders) -> &mut spritesheet::SpriteType{
         for (b, sprite) in self.sprites.iter_mut(){   
             if b.matches(border){
                 return sprite;

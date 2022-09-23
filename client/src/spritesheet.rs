@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use mlua::UserData;
 
 pub trait Drawable{
     fn draw(&mut self, spritesheet : &Texture2D, draw_dest : Vec2);
@@ -9,6 +10,21 @@ pub trait Drawable{
 pub enum SpriteType{
     Sprite(Sprite),
     AnimatedSprite(AnimatedSprite)
+}
+impl UserData for SpriteType{
+    
+}
+
+pub fn sprite(pos : IVec2, size : IVec2) -> SpriteType{
+    SpriteType::Sprite(Sprite::new(pos, size))
+}
+
+pub fn sprite_raw(x : i32, y : i32, w : i32, h : i32) -> SpriteType{
+    SpriteType::Sprite(Sprite::new_raw(x, y, w, h))
+}
+
+pub fn animated_sprite(size : UVec2, animations : &[Animation],) -> SpriteType{
+    SpriteType::AnimatedSprite(AnimatedSprite::new(size, animations))
 }
 
 #[derive(Clone)]

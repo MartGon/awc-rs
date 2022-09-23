@@ -1,8 +1,8 @@
+use std::collections::HashMap;
+
 use awc::component::EntityID;
 use awc::component::EntityType;
 use awc::tile;
-use macroquad::prelude::*;
-use macroquad::rand;
 use awc::{component, component::Component, map};
 use awc::game::*;
 use awc::player::*;
@@ -16,10 +16,19 @@ use tileset::BorderedTile;
 use tileset::Borders;
 use tileset::BordersMask;
 
+use macroquad::prelude::*;
+use macroquad::rand;
+
+use mlua::prelude::*;
+use mlua::Table;
+
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
 
+    let lua = Lua::new();
+
+    // Create game
     let mut game = Game::new();
     let pid = game.create_player(TeamID::new(0));
 
@@ -54,12 +63,29 @@ async fn main() {
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
     let spritesheet = Texture2D::from_image(&spritesheet);
 
+    let table = lua.create_table().unwrap();
+    let globals = lua.globals();
+    globals.set("Tileset", table).expect("Error on setting tileset global");
+    let res_table = globals.get::<&str, Table>("Tileset").unwrap();
+
+    let func = lua.create_function(|_, (x, y, w, h) : (i32, i32, i32, i32)|{
+        Ok(sprite_raw(x, y, w, h))
+    }).expect("SpriteRaw function failed");
+    globals.set("new_sprite", func).expect("Error on setting global");
+
+    let func = lua.create_function(|_, (default, sprites) : (SpriteType, LuaTable)|{
+        let map : Vec<(BordersMask, SpriteType)> = sprites.pairs::<BordersMask, SpriteType>().into_iter()
+        .filter(|entry| entry.is_ok())
+        .map(|entry| entry.unwrap()).collect();
+        Ok(BorderedTile::new_short(default))
+    });
+
     // Tile Sprites
     let tile_size = Vec2::new(16.0, 16.0);
-    let mut grass = Sprite::new_raw(3, 14, tile_size.x as i32, tile_size.y as i32);
-    let mut mountain = Sprite::new_raw(71, 14, tile_size.x as i32, tile_size.y as i32);
-    let mut water = BorderedTile::new(  
-        AnimatedSprite::new(tile_size.as_u32(), &[
+    let grass = BorderedTile::new_short(sprite_raw(3, 14, tile_size.x as i32, tile_size.y as i32));
+    let mountain = BorderedTile::new_short(sprite_raw(71, 14, tile_size.x as i32, tile_size.y as i32));
+    let water = BorderedTile::new(  
+        animated_sprite(tile_size.as_u32(), &[
             Animation::new_shorter_y("idle".to_string(), 4, 20, &[
                 129, 199, 269, 339, 339, 269, 129
             ])
@@ -69,25 +95,25 @@ async fn main() {
 
             // ***** Surrounded by 3 ****** \\
             // Top-Left-Right
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0), ivec2(-1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0), ivec2(-1, 0)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 54, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
                 ]),
             ])),
             // Left-Right-Bottom
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(1, 0)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 54, &[
                     146, 216, 286, 356, 356, 286, 216, 146,
                 ]),
             ])),
             // Bottom-Left-Top
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(0, -1)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(0, -1)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 3, &[
                     163, 233, 303, 373, 373, 303, 233, 163,
                 ]),
             ])),
             // Bottom-Right-Top
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0), ivec2(0, -1)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0), ivec2(0, -1)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 37, &[
                     163, 233, 303, 373, 373, 303, 233, 163,
                 ]),
@@ -95,25 +121,25 @@ async fn main() {
             
             // ***** Corners ******* \\
             // Top-Right
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 37, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
                 ]),
             ])),
             // Top-Left
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(-1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(-1, 0)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 3, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
                 ]),
             ])),
             // Bottom-Right
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 37, &[
                     146, 216, 286, 356, 356, 286, 216, 146,
                 ]),
             ])),
             // Bottom-Left
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0)]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0)]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 3, &[
                     146, 216, 286, 356, 356, 286, 216, 146,
                 ]),
@@ -121,25 +147,25 @@ async fn main() {
 
             // ***** Single Sides ****** \\
             // Grass on Top
-            (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 20, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
                 ]),
             ])),
             // Grass on Bottom
-            (BordersMask::new(&[(ivec2(0, 1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(0, 1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 20, &[
                     146, 216, 286, 356, 356, 286, 216, 146,
                 ]),
             ])),
             // Right
-            (BordersMask::new(&[(ivec2(1, 0), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(1, 0), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 37, &[
                     129, 199, 269, 339, 339, 269, 129
                 ]),
             ])),
             // Left
-            (BordersMask::new(&[(ivec2(-1, 0), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(-1, 0), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 3, &[
                     129, 199, 269, 339, 339, 269, 129
                 ]),
@@ -147,31 +173,36 @@ async fn main() {
 
             // ***** Dot Corners ******* \\
             // Right-Top Corner
-            (BordersMask::new(&[(ivec2(1, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(1, -1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 71, &[
                     129, 199, 269, 339, 339, 269, 129
                 ]),
             ])),
             // Left-Top Corner
-            (BordersMask::new(&[(ivec2(-1, -1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(-1, -1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 88, &[
                     129, 199, 269, 339, 339, 269, 129
                 ]),
             ])),
             // Right-Bottom Corner
-            (BordersMask::new(&[(ivec2(1, 1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(1, 1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 71, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
                 ]),
             ])),
             // Left-Bottom Corner
-            (BordersMask::new(&[(ivec2(-1, 1), BorderMaskEntry::some(&[1, 2]))]),  AnimatedSprite::new(tile_size.as_u32(), &[
+            (BordersMask::new(&[(ivec2(-1, 1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_u32(), &[
                 Animation::new_shorter_y("idle".to_string(), 4, 88, &[
                     112, 182, 252, 322, 322, 252, 182, 112,
                 ]),
             ])),
         ]);
     
+    let mut tileset : HashMap<tile::TypeID, BorderedTile> = HashMap::new();
+    tileset.insert(tile::TypeID::new(0), water);
+    tileset.insert(tile::TypeID::new(1), grass);
+    tileset.insert(tile::TypeID::new(2), mountain);
+
     let mut tile_type = tile::TypeID::new(0);
     loop {
 
@@ -196,7 +227,6 @@ async fn main() {
             }
         }
 
-
         // Drawing \\
         clear_background(RED);
 
@@ -207,30 +237,31 @@ async fn main() {
 
             let ttype = game.components().get_type(tile).unwrap();
             if let EntityType::Tile(ttype) = ttype.entity_type {
-                match ttype.0 {
-                    0 => {
-                        let mut borders = Borders::default();
-                        for x in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
-                            for y in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
-                                let offset = ivec2(x, y);
-                                let pos = map::Pos::new(tile_pos.x + x, tile_pos.y + y, 0);
+                if let Some(tile_sprite) = tileset.get_mut(&ttype){
 
-                                if let Some(up) = game.get_tile_in_pos(&pos){
-                                    let ttype = game.components().get_type(&up).unwrap();
-                                    if let EntityType::Tile(ttype) = ttype.entity_type{
-                                        borders.insert(offset, ttype);
-                                    }
+                    // Calculate borders
+                    let mut borders = Borders::default();
+                    for x in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
+                        for y in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
+                            let offset = ivec2(x, y);
+                            let pos = map::Pos::new(tile_pos.x + x, tile_pos.y + y, 0);
+
+                            if let Some(up) = game.get_tile_in_pos(&pos){
+                                let ttype = game.components().get_type(&up).unwrap();
+                                if let EntityType::Tile(ttype) = ttype.entity_type{
+                                    borders.insert(offset, ttype);
                                 }
                             }
                         }
-
-                        let sprite = water.sprite(&borders);
-                        sprite.draw_scaled(&spritesheet, draw_pos, scale);
-                    },
-                    1 => grass.draw_scaled(&spritesheet, draw_pos, scale),
-                    2 => mountain.draw_scaled(&spritesheet, draw_pos, scale),
-                    _ => {},
-                };
+                    }
+                    
+                    // Draw tile
+                    let sprite = tile_sprite.sprite(&borders);
+                    match sprite{
+                        SpriteType::Sprite(s) => s.draw_scaled(&spritesheet, draw_pos, scale),
+                        SpriteType::AnimatedSprite(s) => s.draw_scaled(&spritesheet, draw_pos, scale)
+                    }
+                }
             }
         }
         
