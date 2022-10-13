@@ -1,12 +1,12 @@
 use std::{collections::{HashMap}, hash::Hash};
 use awc::tile;
 use macroquad::prelude::IVec2;
-use mlua::{UserData, UserDataMethods, MetaMethod};
+use serde::{Deserialize, Serialize};
 
 use crate::spritesheet;
 
 // E.g. For water border tiles, either grass or mountain are valid.
-#[derive(Clone, Hash, Debug)]
+#[derive(Clone, Hash, Debug, Deserialize, Serialize)]
 pub enum BorderMaskEntry{
     Any,
     Some(Vec<tile::TypeID>)
@@ -35,13 +35,9 @@ impl Default for BorderMaskEntry{
 pub const OFFSET_MIN : i32 = -1;
 pub const OFFSET_MAX : i32 = 1;
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct BordersMask{
     mask : HashMap<IVec2, BorderMaskEntry>,
-}
-
-impl UserData for BordersMask{
-    
 }
 
 impl BordersMask{
@@ -87,13 +83,10 @@ impl Borders{
     }
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct BorderedTile{
     sprites : Vec<(BordersMask, spritesheet::SpriteType)>,
     default : spritesheet::SpriteType,
-}
-
-impl UserData for BorderedTile{
-
 }
 
 impl BorderedTile{

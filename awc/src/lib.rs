@@ -11,10 +11,12 @@ pub mod game;
 pub mod player;
 pub mod tile;
 
+use serde::{Deserialize, Serialize};
+
 use crate::table::TableID;
 use std::hash::Hash;
 
-#[derive(Copy, Hash, Debug, PartialEq, Eq, Clone)]
+#[derive(Copy, Hash, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct ID(pub i32);
 
 impl TableID for ID{
