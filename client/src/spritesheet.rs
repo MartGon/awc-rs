@@ -1,18 +1,16 @@
 use macroquad::prelude::*;
-use mlua::UserData;
+use miniquad::FilterMode;
+use serde::{Deserialize, Serialize};
 
 pub trait Drawable{
     fn draw(&mut self, spritesheet : &Texture2D, draw_dest : Vec2);
     fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2);
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub enum SpriteType{
     Sprite(Sprite),
     AnimatedSprite(AnimatedSprite)
-}
-impl UserData for SpriteType{
-    
 }
 
 pub fn sprite(pos : IVec2, size : IVec2) -> SpriteType{
@@ -27,7 +25,7 @@ pub fn animated_sprite(size : UVec2, animations : &[Animation],) -> SpriteType{
     SpriteType::AnimatedSprite(AnimatedSprite::new(size, animations))
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct Sprite{
     pos : IVec2,
     size : IVec2,
@@ -50,13 +48,13 @@ impl Drawable for Sprite{
 
     fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
         let rect = Some(Rect::new(self.pos.x as f32, self.pos.y as f32, self.size.x as f32, self.size.y as f32));
-        let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_f32()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
+        let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_vec2()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
         spritesheet.set_filter(FilterMode::Nearest);
         draw_texture_ex(*spritesheet, draw_dest.x, draw_dest.y, WHITE, dtp)
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct AnimatedSprite{
     pub size : UVec2,
     pub animations : Vec<Animation>,
@@ -91,7 +89,7 @@ impl Drawable for AnimatedSprite{
     fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
         let frame = self.frame();        
         let rect = Some(Rect::new(frame.source.x as f32, frame.source.y as f32, self.size.x as f32, self.size.y as f32));
-        let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_f32()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
+        let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_vec2()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
 
         self.update();
         spritesheet.set_filter(FilterMode::Nearest);
@@ -99,7 +97,7 @@ impl Drawable for AnimatedSprite{
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct Animation{
     pub name : String,
     pub frames : Vec<AnimationFrame>,
@@ -127,7 +125,7 @@ impl Animation{
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct AnimationFrame{
     pub source : IVec2,
 }
