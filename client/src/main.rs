@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::fs;
 
 use awc::component::EntityID;
@@ -12,13 +11,9 @@ mod spritesheet;
 mod tileset;
 
 use spritesheet::*;
-use tileset::BorderMaskEntry;
-use tileset::BorderedTile;
-use tileset::Borders;
-use tileset::BordersMask;
 
 use macroquad::prelude::*;
-use macroquad::rand;
+use tileset::Borders;
 
 
 #[macroquad::main("BasicShapes")]
@@ -29,23 +24,23 @@ async fn main() {
     let pid = game.create_player(TeamID::new(0));
 
     // Init map
-    let water_size = IVec2::new(8, 8);
+    let water_size = UVec2::new(8, 8);
     for x in 0..water_size.x{
         for y in 0..water_size.y{
             let tile_id = game.create_tile(tile::TypeID::new(0));
-            let pos = component::Position{pos : map::Pos{x : x, y : y, z : 0}};
+            let pos = component::Position{pos: uvec2(x, y)};
             game.insert_component(tile_id, Component::Position(pos));
         }
     }
     
-    let land_anchor = ivec2(2, 2);
-    let land_size = IVec2::new(4, 4);
-    let corners = vec![ivec2(1, 1), ivec2(1, 6), ivec2(6, 6), ivec2(6, 1)];
+    let land_anchor = uvec2(2, 2);
+    let land_size = UVec2::new(4, 4);
+    let corners = vec![uvec2(1, 1), uvec2(1, 6), uvec2(6, 6), uvec2(6, 1)];
 
     let tiles : Vec<EntityID> = game.map.tiles().cloned().collect();
     for tile in tiles{ 
         let pos = game.components_mut().get_position(&tile).unwrap();
-        let pos = ivec2(pos.pos.x, pos.pos.y);
+        let pos = uvec2(pos.pos.x, pos.pos.y);
         if pos.x < land_size.x + land_anchor.x && pos.y < land_size.y + land_anchor.y &&
             pos.x >= land_anchor.x && pos.y >= land_anchor.y ||
             corners.contains(&pos)
@@ -59,7 +54,8 @@ async fn main() {
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
     let spritesheet = Texture2D::from_image(&spritesheet);
     
-    let tileset_str = fs::read_to_string("tileset.ron").expect("Error while reading tileset info file");
+    // Load tileset 
+    let tileset_str = fs::read_to_string("sprites/tileset.ron").expect("Error while reading tileset info file");
     let tileset = ron::from_str::<tileset::Tileset>(&tileset_str).expect("Error on deserialize tileset");
     let tile_size = Vec2::new(16.0, 16.0);
 
@@ -70,8 +66,7 @@ async fn main() {
         let draw_size = tile_size * scale;
         // Inpput handling \\
         let (x, y) = mouse_position();
-        let tile_pos = (vec2(x, y) / draw_size).as_ivec2();
-        let tile_pos = awc::map::Pos::new(tile_pos.x, tile_pos.y, 0);
+        let tile_pos = (vec2(x, y) / draw_size).as_uvec2();
 
         if is_mouse_button_released(MouseButton::Left){
             if let Some(tile) = game.get_tile_in_pos(&tile_pos){
@@ -91,7 +86,7 @@ async fn main() {
         clear_background(RED);
 
         for tile in game.map.tiles(){            
-            let tile_pos = &game.components().get_position(tile).unwrap().pos;
+            let tile_pos = &game.components().get_position(tile).unwrap().pos.as_ivec2();
             //let tile_pos = awc::map::Pos::new(1, 2, 0);
             let draw_pos = Vec2::new(tile_pos.x as f32 * draw_size.x, tile_pos.y as f32 * draw_size.y);
 
@@ -104,12 +99,13 @@ async fn main() {
                     for x in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
                         for y in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
                             let offset = ivec2(x, y);
-                            let pos = map::Pos::new(tile_pos.x + x, tile_pos.y + y, 0);
-
-                            if let Some(up) = game.get_tile_in_pos(&pos){
-                                let ttype = game.components().get_type(&up).unwrap();
-                                if let EntityType::Tile(ttype) = ttype.entity_type{
-                                    borders.insert(offset, ttype);
+                            let pos = *tile_pos + offset;
+                            if pos.x >= 0 && pos.y > 0 {
+                                if let Some(up) = game.get_tile_in_pos(&pos.as_uvec2()){
+                                    let ttype = game.components().get_type(&up).unwrap();
+                                    if let EntityType::Tile(ttype) = ttype.entity_type{
+                                        borders.insert(offset, ttype);
+                                    }
                                 }
                             }
                         }

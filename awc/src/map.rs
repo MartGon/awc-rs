@@ -1,6 +1,9 @@
-use std::{slice::Iter};
+use std::{slice::Iter, collections::HashMap};
 
-use crate::component::{self, EntityID};
+use glam::{UVec2, uvec2};
+use serde::{Serialize, Deserialize, ser::SerializeStruct};
+
+use crate::{component::{self, EntityID}, tile};
 
 pub struct Size
 {
@@ -8,19 +11,7 @@ pub struct Size
     pub height : i32
 }
 
-#[derive(PartialEq, Eq, Debug)]
-pub struct Pos
-{
-    pub x : i32,
-    pub y : i32,
-    pub z : i32,
-}
-
-impl Pos{
-    pub fn new(x : i32, y : i32, z : i32) -> Pos{
-        Pos{x, y, z}
-    }
-}
+pub type Pos = UVec2;
 
 pub struct Map
 {
@@ -39,5 +30,39 @@ impl Map{
 
     pub fn tiles(&self) -> Iter<EntityID>{
         self.tiles.iter()
+    }
+}
+
+
+pub struct Data
+{
+    alphabet : HashMap<tile::TypeID, char>,
+    size : UVec2,
+    tiles : HashMap<UVec2, tile::TypeID>,
+}
+
+impl Serialize for Data{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer {
+        let mut state = serializer.serialize_struct("Data", 2)?;
+        state.serialize_field("alphabet", &self.alphabet)?;
+        state.serialize_field("size", &self.size)?;
+        
+        let mut data = Vec::<char>::new();
+        for y in 0..self.size.y{
+            for x in 0..self.size.x{
+                let pos = uvec2(x, y);
+                if let Some(tile) = self.tiles.get(&pos){
+                    if let Some(entry) = self.alphabet.get(tile){
+                        data.push(entry.clone());
+                    }
+                }
+            }
+            data.push('\n');
+        }
+        state.serialize_field("tiles", &data)?;
+
+        state.end()
     }
 }
