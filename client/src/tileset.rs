@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::spritesheet;
 
+pub type Tileset = HashMap<awc::tile::TypeID, BorderedTile>;
+
 // E.g. For water border tiles, either grass or mountain are valid.
 #[derive(Clone, Hash, Debug, Deserialize, Serialize)]
 pub enum BorderMaskEntry{
@@ -99,12 +101,21 @@ impl BorderedTile{
         BorderedTile { default,  sprites: sprites.into_iter().cloned().collect() }
     }
 
-    pub fn sprite(&mut self, border : &Borders) -> &mut spritesheet::SpriteType{
+    pub fn sprite_mut(&mut self, border : &Borders) -> &mut spritesheet::SpriteType{
         for (b, sprite) in self.sprites.iter_mut(){   
             if b.matches(border){
                 return sprite;
             }
         }
         &mut self.default
+    }
+
+    pub fn sprite(&self, border : &Borders) -> &spritesheet::SpriteType{
+        for (b, sprite) in self.sprites.iter(){   
+            if b.matches(border){
+                return sprite;
+            }
+        }
+        &self.default
     }
 }

@@ -3,8 +3,11 @@ use miniquad::FilterMode;
 use serde::{Deserialize, Serialize};
 
 pub trait Drawable{
-    fn draw(&mut self, spritesheet : &Texture2D, draw_dest : Vec2);
-    fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2);
+    fn draw(&self, spritesheet : &Texture2D, draw_dest : Vec2);
+    fn draw_scaled(&self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2);
+
+    fn draw_mut(&mut self, spritesheet : &Texture2D, draw_dest : Vec2);
+    fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2);
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -42,15 +45,23 @@ impl Sprite{
 }
 
 impl Drawable for Sprite{
-    fn draw(&mut self, spritesheet : &Texture2D, draw_dest : Vec2) {
+    fn draw(&self, spritesheet : &Texture2D, draw_dest : Vec2) {
         self.draw_scaled(spritesheet, draw_dest, Vec2::new(1.0, 1.0));
     }
 
-    fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
+    fn draw_scaled(&self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
         let rect = Some(Rect::new(self.pos.x as f32, self.pos.y as f32, self.size.x as f32, self.size.y as f32));
         let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_vec2()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
         spritesheet.set_filter(FilterMode::Nearest);
         draw_texture_ex(*spritesheet, draw_dest.x, draw_dest.y, WHITE, dtp)
+    }
+
+    fn draw_mut(&mut self, spritesheet : &Texture2D, draw_dest : Vec2) {
+        todo!()
+    }
+
+    fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
+        todo!()
     }
 }
 
@@ -58,18 +69,15 @@ impl Drawable for Sprite{
 pub struct AnimatedSprite{
     pub size : UVec2,
     pub animations : Vec<Animation>,
-
-    current_animation : usize,
-    frame : usize,
 }
 
 impl AnimatedSprite{
     pub fn new(size : UVec2, animations : &[Animation],) -> AnimatedSprite{
-        AnimatedSprite {size, animations : animations.to_vec(), current_animation : 0, frame : 0}
+        AnimatedSprite {size, animations : animations.to_vec()}
     }
 
     pub fn frame(&self) -> &AnimationFrame{
-        let anim = &self.animations[self.current_animation];
+        let anim = &self.animations[0];
         let frame_time = get_time();
         let frame = (frame_time * anim.fps as f64) as usize % anim.frames.len();
 
@@ -82,18 +90,25 @@ impl AnimatedSprite{
 }
 
 impl Drawable for AnimatedSprite{
-    fn draw(&mut self, spritesheet : &Texture2D, draw_dest : Vec2) {
+    fn draw_mut(&mut self, spritesheet : &Texture2D, draw_dest : Vec2) {
+        self.draw_mut_scaled(spritesheet, draw_dest, Vec2::new(1.0, 1.0));
+    }
+
+    fn draw(&self, spritesheet : &Texture2D, draw_dest : Vec2) {
         self.draw_scaled(spritesheet, draw_dest, Vec2::new(1.0, 1.0));
     }
 
-    fn draw_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
+    fn draw_scaled(&self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
         let frame = self.frame();        
         let rect = Some(Rect::new(frame.source.x as f32, frame.source.y as f32, self.size.x as f32, self.size.y as f32));
         let dtp = DrawTextureParams{dest_size : Some(scale * self.size.as_vec2()), source : rect, rotation : 0.0,  flip_x : false, flip_y : false, pivot : None};
 
-        self.update();
         spritesheet.set_filter(FilterMode::Nearest);
         draw_texture_ex(*spritesheet, draw_dest.x, draw_dest.y, WHITE, dtp)
+    }
+
+    fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
+        todo!()
     }
 }
 

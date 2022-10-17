@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 use std::hash::Hash;
 
+use serde::{Deserialize, Serialize};
 
 pub trait TableID{
 
     fn next(&self) -> Self;
 }
 
-pub struct Table<ID, T>
+#[derive(Deserialize, Serialize)]
+pub struct Table<ID: Hash + Eq, T>
 {
     map : HashMap<ID, T>,
     last_id : ID,

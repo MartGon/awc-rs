@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fs;
 
 use awc::component::EntityID;
 use awc::component::EntityType;
@@ -19,14 +20,9 @@ use tileset::BordersMask;
 use macroquad::prelude::*;
 use macroquad::rand;
 
-use mlua::prelude::*;
-use mlua::Table;
-
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
-
-    let lua = Lua::new();
 
     // Create game
     let mut game = Game::new();
@@ -62,129 +58,10 @@ async fn main() {
     // Load SpriteSheet
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
     let spritesheet = Texture2D::from_image(&spritesheet);
-
-    // Tile Sprites
-    let tile_size = Vec2::new(16.0, 16.0);
-    let grass = BorderedTile::new_short(sprite_raw(3, 14, tile_size.x as i32, tile_size.y as i32));
-    let mountain = BorderedTile::new_short(sprite_raw(71, 14, tile_size.x as i32, tile_size.y as i32));
-    let water = BorderedTile::new(  
-        animated_sprite(tile_size.as_uvec2(), &[
-            Animation::new_shorter_y("idle".to_string(), 4, 20, &[
-                129, 199, 269, 339, 339, 269, 129
-            ])
-        ]),
-        &[
-
-
-            // ***** Surrounded by 3 ****** \\
-            // Top-Left-Right
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0), ivec2(-1, 0)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 54, &[
-                    112, 182, 252, 322, 322, 252, 182, 112,
-                ]),
-            ])),
-            // Left-Right-Bottom
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(1, 0)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 54, &[
-                    146, 216, 286, 356, 356, 286, 216, 146,
-                ]),
-            ])),
-            // Bottom-Left-Top
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0), ivec2(0, -1)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 3, &[
-                    163, 233, 303, 373, 373, 303, 233, 163,
-                ]),
-            ])),
-            // Bottom-Right-Top
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0), ivec2(0, -1)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 37, &[
-                    163, 233, 303, 373, 373, 303, 233, 163,
-                ]),
-            ])),
-            
-            // ***** Corners ******* \\
-            // Top-Right
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(1, 0)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 37, &[
-                    112, 182, 252, 322, 322, 252, 182, 112,
-                ]),
-            ])),
-            // Top-Left
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, -1), ivec2(-1, 0)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 3, &[
-                    112, 182, 252, 322, 322, 252, 182, 112,
-                ]),
-            ])),
-            // Bottom-Right
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(1, 0)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 37, &[
-                    146, 216, 286, 356, 356, 286, 216, 146,
-                ]),
-            ])),
-            // Bottom-Left
-            (BordersMask::new_short(BorderMaskEntry::some(&[1, 2]), &[ivec2(0, 1), ivec2(-1, 0)]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 3, &[
-                    146, 216, 286, 356, 356, 286, 216, 146,
-                ]),
-            ])),
-
-            // ***** Single Sides ****** \\
-            // Grass on Top
-            (BordersMask::new(&[(ivec2(0, -1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 20, &[
-                    112, 182, 252, 322, 322, 252, 182, 112,
-                ]),
-            ])),
-            // Grass on Bottom
-            (BordersMask::new(&[(ivec2(0, 1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 20, &[
-                    146, 216, 286, 356, 356, 286, 216, 146,
-                ]),
-            ])),
-            // Right
-            (BordersMask::new(&[(ivec2(1, 0), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 37, &[
-                    129, 199, 269, 339, 339, 269, 129
-                ]),
-            ])),
-            // Left
-            (BordersMask::new(&[(ivec2(-1, 0), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 3, &[
-                    129, 199, 269, 339, 339, 269, 129
-                ]),
-            ])),
-
-            // ***** Dot Corners ******* \\
-            // Right-Top Corner
-            (BordersMask::new(&[(ivec2(1, -1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 71, &[
-                    129, 199, 269, 339, 339, 269, 129
-                ]),
-            ])),
-            // Left-Top Corner
-            (BordersMask::new(&[(ivec2(-1, -1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 88, &[
-                    129, 199, 269, 339, 339, 269, 129
-                ]),
-            ])),
-            // Right-Bottom Corner
-            (BordersMask::new(&[(ivec2(1, 1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 71, &[
-                    112, 182, 252, 322, 322, 252, 182, 112,
-                ]),
-            ])),
-            // Left-Bottom Corner
-            (BordersMask::new(&[(ivec2(-1, 1), BorderMaskEntry::some(&[1, 2]))]),  animated_sprite(tile_size.as_uvec2(), &[
-                Animation::new_shorter_y("idle".to_string(), 4, 88, &[
-                    112, 182, 252, 322, 322, 252, 182, 112,
-                ]),
-            ])),
-        ]);
     
-    let mut tileset : HashMap<tile::TypeID, BorderedTile> = HashMap::new();
-    tileset.insert(tile::TypeID::new(0), water);
-    tileset.insert(tile::TypeID::new(1), grass);
-    tileset.insert(tile::TypeID::new(2), mountain);
+    let tileset_str = fs::read_to_string("tileset.ron").expect("Error while reading tileset info file");
+    let tileset = ron::from_str::<tileset::Tileset>(&tileset_str).expect("Error on deserialize tileset");
+    let tile_size = Vec2::new(16.0, 16.0);
 
     let mut tile_type = tile::TypeID::new(0);
     loop {
@@ -220,7 +97,7 @@ async fn main() {
 
             let ttype = game.components().get_type(tile).unwrap();
             if let EntityType::Tile(ttype) = ttype.entity_type {
-                if let Some(tile_sprite) = tileset.get_mut(&ttype){
+                if let Some(tile_sprite) = tileset.get(&ttype){
 
                     // Calculate borders
                     let mut borders = Borders::default();

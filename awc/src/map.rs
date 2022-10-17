@@ -1,4 +1,4 @@
-use std::{iter::Iterator, slice::Iter};
+use std::{slice::Iter};
 
 use crate::component::{self, EntityID};
 
