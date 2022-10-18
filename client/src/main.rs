@@ -27,9 +27,7 @@ async fn main() {
     let water_size = UVec2::new(8, 8);
     for x in 0..water_size.x{
         for y in 0..water_size.y{
-            let tile_id = game.create_tile(tile::TypeID::new(0));
-            let pos = component::Position{pos: uvec2(x, y)};
-            game.insert_component(tile_id, Component::Position(pos));
+            game.create_tile(tile::TypeID::new(0), uvec2(x, y)).expect("Invalid map position");
         }
     }
     

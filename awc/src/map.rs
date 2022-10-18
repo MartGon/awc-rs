@@ -5,12 +5,8 @@ use serde::{Serialize, Deserialize, ser::SerializeStruct};
 
 use crate::{component::{self, EntityID}, tile};
 
-pub struct Size
-{
-    pub width : i32,
-    pub height : i32
-}
 
+pub type Size = UVec2;
 pub type Pos = UVec2;
 
 pub struct Map
@@ -19,9 +15,14 @@ pub struct Map
     pub size : Size,
 }
 
+#[derive(Debug)]
+pub enum MapError{
+    InvalidPosition
+}
+
 impl Map{
     pub fn new() -> Map{
-        Map { tiles: Vec::new(), size: Size { width: 10, height: 10 } }
+        Map { tiles: Vec::new(), size: uvec2(10, 10) }
     }
 
     pub fn add_tile(&mut self, id : EntityID){
@@ -31,14 +32,18 @@ impl Map{
     pub fn tiles(&self) -> Iter<EntityID>{
         self.tiles.iter()
     }
+
+    pub fn is_pos_valid(&self, pos : Pos) -> bool{
+        return pos.x < self.size.x && pos.y < self.size.y;
+    }
 }
 
 
 pub struct Data
 {
-    alphabet : HashMap<tile::TypeID, char>,
-    size : UVec2,
-    tiles : HashMap<UVec2, tile::TypeID>,
+    pub alphabet : HashMap<tile::TypeID, char>,
+    pub size : UVec2,
+    pub tiles : HashMap<UVec2, tile::TypeID>,
 }
 
 impl Serialize for Data{

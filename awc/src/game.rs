@@ -1,4 +1,7 @@
-use crate::{map, player::{self, TeamID, Player}, component::{self, EntityID, EntityType}, table::Table, tile};
+use std::collections::HashMap;
+
+use crate::{map::{self, Data, MapError}, player::{self, TeamID, Player}, component::{self, EntityID, EntityType}, table::Table, tile};
+use crate::component::*;
 
 pub struct Game
 {
@@ -23,11 +26,17 @@ impl Game{
         self.players.get_entry(player_id)
     }
 
-    pub fn create_tile(&mut self, type_id : tile::TypeID) -> EntityID{
-        let id = self.components.alloc_id();
-        self.components.insert(id, component::Component::Type{0 : component::Type { entity_type: EntityType::Tile(type_id)}});
-        self.map.add_tile(id);
-        id
+    pub fn create_tile(&mut self, type_id : tile::TypeID, pos : map::Pos) -> Result<EntityID, MapError>{
+    
+        if self.map.is_pos_valid(pos){
+            let id = self.components.alloc_id();
+            self.components.insert(id, Component::Type{0 : component::Type { entity_type: EntityType::Tile(type_id)}});
+            self.components.insert(id, Component::Position(Position {pos}));
+            self.map.add_tile(id);
+            return Ok(id)
+        }
+
+        return Err(MapError::InvalidPosition);
     }
 
     pub fn get_tile_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
@@ -39,6 +48,24 @@ impl Game{
         }
 
         None
+    }
+
+    pub fn set_map_size(&mut self, size : map::Size){
+        self.map.size = size;
+
+        // TODO: Remove tiles out of range?
+    }
+
+    pub fn get_map_data(&self, alphabet : HashMap<tile::TypeID,char> ) -> map::Data{
+        map::Data{alphabet, size : self.map.size, tiles : self.map.tiles().map(|id| (
+            self.components.positions.entry(id).unwrap().pos, 
+            if let EntityType::Tile(tile_id) = self.components.types.entry(id).unwrap().entity_type{
+                tile_id
+            }
+            else{
+                panic!("WTF")
+            })
+        ).collect()}
     }
 
     pub fn insert_component(&mut self, entity : EntityID, component : component::Component){
