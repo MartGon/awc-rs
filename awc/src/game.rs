@@ -64,8 +64,8 @@ impl Game{
             }
             else{
                 panic!("WTF")
-            })
-        ).collect()}
+            })).collect()
+        }
     }
 
     pub fn insert_component(&mut self, entity : EntityID, component : component::Component){

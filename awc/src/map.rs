@@ -54,17 +54,18 @@ impl Serialize for Data{
         state.serialize_field("alphabet", &self.alphabet)?;
         state.serialize_field("size", &self.size)?;
         
-        let mut data = Vec::<char>::new();
+        let mut data = Vec::new();
         for y in 0..self.size.y{
+            let mut line = String::new();
             for x in 0..self.size.x{
                 let pos = uvec2(x, y);
                 if let Some(tile) = self.tiles.get(&pos){
                     if let Some(entry) = self.alphabet.get(tile){
-                        data.push(entry.clone());
+                        line.push(entry.clone());
                     }
                 }
             }
-            data.push('\n');
+            data.push(line);
         }
         state.serialize_field("tiles", &data)?;
 

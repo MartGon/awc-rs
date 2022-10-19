@@ -25,28 +25,29 @@ async fn main() {
 
     // Init map
     let water_size = UVec2::new(8, 8);
-    for x in 0..water_size.x{
-        for y in 0..water_size.y{
-            game.create_tile(tile::TypeID::new(0), uvec2(x, y)).expect("Invalid map position");
-        }
-    }
+    game.set_map_size(water_size);
     
     let land_anchor = uvec2(2, 2);
     let land_size = UVec2::new(4, 4);
     let corners = vec![uvec2(1, 1), uvec2(1, 6), uvec2(6, 6), uvec2(6, 1)];
-
-    let tiles : Vec<EntityID> = game.map.tiles().cloned().collect();
-    for tile in tiles{ 
-        let pos = game.components_mut().get_position(&tile).unwrap();
-        let pos = uvec2(pos.pos.x, pos.pos.y);
-        if pos.x < land_size.x + land_anchor.x && pos.y < land_size.y + land_anchor.y &&
-            pos.x >= land_anchor.x && pos.y >= land_anchor.y ||
-            corners.contains(&pos)
-        {
-            game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile::TypeID::new(rand::gen_range(1, 3)));
+    for x in 0..water_size.x{
+        for y in 0..water_size.y{
+            let pos = uvec2(x, y);
+            let tile_type = if  pos.x < land_size.x + land_anchor.x && pos.y < land_size.y + land_anchor.y &&
+                pos.x >= land_anchor.x && pos.y >= land_anchor.y ||
+                corners.contains(&pos){
+                    tile::TypeID::new(rand::gen_range(1, 3))
+            }
+            else
+            {
+                tile::TypeID::new(0)
+            };
+            game.create_tile(tile_type, pos).expect("Invalid map position");
         }
-
     }
+    let map_data = game.get_map_data([(tile::TypeID::new(0), ' '), (tile::TypeID::new(1), '#'), (tile::TypeID::new(2), 'M')].into_iter().collect());
+    let map_data_str = ron::to_string(&map_data).expect("Error on serialize map data");
+    fs::write("map_data.ron", &map_data_str).expect("Error on write map data");
 
     // Load SpriteSheet
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
