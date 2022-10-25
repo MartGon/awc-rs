@@ -1,7 +1,9 @@
+use std::{fmt, error};
 use std::{slice::Iter, collections::HashMap};
 
 use glam::{UVec2, uvec2};
-use serde::{Serialize, Deserialize, ser::SerializeStruct};
+use serde::de::Error;
+use serde::{Serialize, Deserialize};
 
 use crate::{component::{self, EntityID}, tile};
 
@@ -46,13 +48,16 @@ pub struct Data
     pub tiles : HashMap<UVec2, tile::TypeID>,
 }
 
+#[derive(Serialize, Deserialize)]
+struct FileData{
+    pub alphabet : HashMap<tile::TypeID, char>,
+    pub size : UVec2,
+    pub tiles : Vec<String>,
+}
+
 impl Serialize for Data{
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer {
-        let mut state = serializer.serialize_struct("Data", 2)?;
-        state.serialize_field("alphabet", &self.alphabet)?;
-        state.serialize_field("size", &self.size)?;
+    where S: serde::Serializer {
         
         let mut data = Vec::new();
         for y in 0..self.size.y{
@@ -67,8 +72,55 @@ impl Serialize for Data{
             }
             data.push(line);
         }
-        state.serialize_field("tiles", &data)?;
 
-        state.end()
+        let file_data = FileData{alphabet : self.alphabet.clone(), size : self.size, tiles : data};
+        file_data.serialize(serializer)
+    }
+}
+
+#[derive(Debug)]
+pub enum DeserializeError{
+    NotFoundInAlphabet(char)
+}
+
+
+impl error::Error for DeserializeError {}
+
+impl fmt::Display for DeserializeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use DeserializeError::*;
+        match self {
+            NotFoundInAlphabet(c) => write!(f, "Could not find char '{}' in alphabet", c),
+            // ...
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Data{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
+        let res = FileData::deserialize(deserializer);
+        
+        if let Ok(file_data) = res{
+            let mut data = Data{alphabet : file_data.alphabet, size : file_data.size, tiles : HashMap::new()};
+
+            for y  in 0..file_data.size.y{
+                let line = &file_data.tiles[y as usize];
+                for x in 0..file_data.size.x{
+                    if let Some(c) = line.chars().nth(x as usize){
+                        if let Some(tile_type) = data.alphabet.iter().find_map(|v| if *v.1 == c {Some(*v.0)} else {None}){
+                            data.tiles.insert(uvec2(x, y), tile_type);
+                        }
+                        else{
+                            return Err(DeserializeError::NotFoundInAlphabet(c)).map_err(D::Error::custom);
+                        }
+                    }
+                }
+            }
+
+            Ok(data)
+        }
+        else{
+            Err(res.err().unwrap())
+        }
     }
 }

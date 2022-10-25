@@ -68,6 +68,14 @@ impl Game{
         }
     }
 
+    pub fn load_map_data(&mut self, data : map::Data) -> Result<(), MapError>{
+        self.map = map::Map::new();
+        for (pos, tile) in data.tiles{
+            self.create_tile(tile, pos)?;
+        }
+        Ok(())
+    }
+
     pub fn insert_component(&mut self, entity : EntityID, component : component::Component){
         self.components.insert(entity, component)
     }
