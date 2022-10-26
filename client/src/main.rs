@@ -9,7 +9,9 @@ use awc::player::*;
 
 mod spritesheet;
 mod tileset;
+mod assets;
 
+use ron::ser::PrettyConfig;
 use spritesheet::*;
 
 use macroquad::prelude::*;
@@ -23,34 +25,8 @@ async fn main() {
     let mut game = Game::new();
     let pid = game.create_player(TeamID::new(0));
 
-    // Init map
-    /*
-    let water_size = UVec2::new(8, 8);
-    game.set_map_size(water_size);
-    
-    let land_anchor = uvec2(2, 2);
-    let land_size = UVec2::new(4, 4);
-    let corners = vec![uvec2(1, 1), uvec2(1, 6), uvec2(6, 6), uvec2(6, 1)];
-    for x in 0..water_size.x{
-        for y in 0..water_size.y{
-            let pos = uvec2(x, y);
-            let tile_type = if  pos.x < land_size.x + land_anchor.x && pos.y < land_size.y + land_anchor.y &&
-                pos.x >= land_anchor.x && pos.y >= land_anchor.y ||
-                corners.contains(&pos){
-                    tile::TypeID::new(rand::gen_range(1, 3))
-            }
-            else
-            {
-                tile::TypeID::new(0)
-            };
-            game.create_tile(tile_type, pos).expect("Invalid map position");
-        }
-    }
-    let map_data = game.get_map_data([(tile::TypeID::new(0), ' '), (tile::TypeID::new(1), '#'), (tile::TypeID::new(2), 'M')].into_iter().collect());
-    let map_data_str = ron::to_string(&map_data).expect("Error on serialize map data");
-    fs::write("map_data.ron", &map_data_str).expect("Error on write map data");
-    */
-    let map_data_str = fs::read_to_string("map_data.ron").expect("Could not read map data");
+    // Load map data
+    let map_data_str = fs::read_to_string("data/maps/map_data.ron").expect("Could not read map data");
     let map_data = ron::from_str::<map::Data>(&map_data_str).expect("Error on str -> ron");
     game.load_map_data(map_data).expect("Error on loading map data");
 
@@ -59,10 +35,16 @@ async fn main() {
     let spritesheet = Texture2D::from_image(&spritesheet);
     
     // Load tileset 
-    let tileset_str = fs::read_to_string("sprites/tileset.ron").expect("Error while reading tileset info file");
-    let tileset = ron::from_str::<tileset::Tileset>(&tileset_str).expect("Error on deserialize tileset");
-    let tile_size = Vec2::new(16.0, 16.0);
+    let tileset = tileset::load_from_master_file("sprites/tileset.ron");
+    let res = tileset.unwrap();
+    let tileset = res.0;
 
+    // TODO: Log errors
+    for (_id, e) in res.1{
+        println!("Error while loading {}", e);
+    }
+
+    let tile_size = Vec2::new(16.0, 16.0);
     let mut tile_type = tile::TypeID::new(0);
     loop {
 

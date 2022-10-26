@@ -1,0 +1,746 @@
+BorderedTile(
+    sprites: [
+        (
+            BordersMask(
+                mask: {
+                    IVec2(-1, 0): Some([
+                        ID(1),
+                        ID(2),
+                    ]),
+                    IVec2(1, 0): Some([
+                        ID(1),
+                        ID(2),
+                    ]),
+                    IVec2(0, -1): Some([
+                        ID(1),
+                        ID(2),
+                    ]),
+                },
+            ), Animated(AnimatedSprite(
+                size: UVec2(16, 16),
+                animations: [
+                    Animation(
+                        name: "idle",
+                        frames: [
+                            AnimationFrame(
+                                source: UVec2(54, 112),
+                            ),
+                            AnimationFrame(
+                                source: UVec2(54, 182),
+                            ),
+                            AnimationFrame(
+                                source: UVec2(54, 252),
+                            ),
+                            AnimationFrame(
+                                source: UVec2(54, 322),
+                            ),
+                            AnimationFrame(
+                                source: UVec2(54, 322),
+                            ),
+                            AnimationFrame(
+                                source: UVec2(54, 252),
+                            ),
+                            AnimationFrame(
+                                source: UVec2(54, 182),
+                            ),
+                            AnimationFrame(
+                                source: UVec2(54, 112),
+                            ),
+                        ],
+                        fps: 4,
+                    ),
+                ],
+            ))
+        ),
+        (BordersMask(
+            mask: {
+                IVec2(-1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(0, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(54, 146),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(54, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(54, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(54, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(54, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(54, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(54, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(54, 146),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(0, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(0, -1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(-1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(3, 163),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 233),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 303),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 373),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 373),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 303),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 233),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 163),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(0, -1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(0, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(37, 163),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 233),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 303),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 373),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 373),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 303),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 233),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 163),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(0, -1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(37, 112),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 112),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(-1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(0, -1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(3, 112),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 112),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(0, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(37, 146),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 146),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(0, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+                IVec2(-1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(3, 146),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 146),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(0, -1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(20, 112),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 112),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(0, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(20, 146),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 356),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 286),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 216),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(20, 146),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(37, 129),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 199),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(37, 129),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(-1, 0): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(3, 129),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 199),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(3, 129),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(1, -1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(71, 129),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 199),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 129),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(-1, -1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(88, 129),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 199),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 339),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 269),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 129),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(1, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(71, 112),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(71, 112),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+        (BordersMask(
+            mask: {
+                IVec2(-1, 1): Some([
+                    ID(1),
+                    ID(2),
+                ]),
+            },
+        ), Animated(AnimatedSprite(
+            size: UVec2(16, 16),
+            animations: [
+                Animation(
+                    name: "idle",
+                    frames: [
+                        AnimationFrame(
+                            source: UVec2(88, 112),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 322),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 252),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 182),
+                        ),
+                        AnimationFrame(
+                            source: UVec2(88, 112),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ))),
+    ],
+    default: Animated(AnimatedSprite(
+        size: UVec2(16, 16),
+        animations: [
+            Animation(
+                name: "idle",
+                frames: [
+                    AnimationFrame(
+                        source: UVec2(20, 129),
+                    ),
+                    AnimationFrame(
+                        source: UVec2(20, 199),
+                    ),
+                    AnimationFrame(
+                        source: UVec2(20, 269),
+                    ),
+                    AnimationFrame(
+                        source: UVec2(20, 339),
+                    ),
+                    AnimationFrame(
+                        source: UVec2(20, 339),
+                    ),
+                    AnimationFrame(
+                        source: UVec2(20, 269),
+                    ),
+                    AnimationFrame(
+                        source: UVec2(20, 129),
+                    ),
+                ],
+                fps: 4,
+            ),
+        ],
+    )),
+)

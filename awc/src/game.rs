@@ -69,6 +69,9 @@ impl Game{
     }
 
     pub fn load_map_data(&mut self, data : map::Data) -> Result<(), MapError>{
+
+        // TODO: Remove old map's tiles components
+
         self.map = map::Map::new();
         for (pos, tile) in data.tiles{
             self.create_tile(tile, pos)?;

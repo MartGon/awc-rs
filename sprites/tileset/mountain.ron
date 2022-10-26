@@ -1,0 +1,7 @@
+BorderedTile(
+    sprites: [],
+    default: Idle(IdleSprite(
+        pos: UVec2(71, 14),
+        size: UVec2(16, 16),
+    )),
+)

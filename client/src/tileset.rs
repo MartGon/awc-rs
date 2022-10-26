@@ -1,13 +1,34 @@
-use std::{collections::{HashMap}, hash::Hash};
+use std::{collections::{HashMap}, hash::Hash, fs, path::Path};
 use awc::tile;
 use macroquad::prelude::IVec2;
 use serde::{Deserialize, Serialize};
 
-use crate::spritesheet;
+use crate::{spritesheet, assets};
 
 pub type Tileset = HashMap<awc::tile::TypeID, BorderedTile>;
+pub type ErrorMap = HashMap<awc::tile::TypeID, assets::Error>;
 
-// E.g. For water border tiles, either grass or mountain are valid.
+pub fn load_from_master_file<P: AsRef<Path>>(master_file : P) -> Result<(Tileset, ErrorMap), assets::Error>{
+    let tileset_str = fs::read_to_string(master_file)?;
+    let tileset = ron::from_str::<HashMap<awc::tile::TypeID, String>>(&tileset_str)?;
+
+    let mut error_map = ErrorMap::new();
+    let tileset : Tileset = tileset.into_iter().map(|(id, path)|{
+            
+        match fs::read_to_string(path){
+            Ok(file_data) => match ron::from_str(&file_data){
+                Ok(tile) => return (id, tile),
+                Err(e) => {error_map.insert(id, e.into());},
+            },
+            Err(e) => {error_map.insert(id, e.into());}
+        }
+
+        (id, BorderedTile::default())
+    }).collect();
+
+    Ok((tileset, error_map))
+}
+
 #[derive(Clone, Hash, Debug, Deserialize, Serialize)]
 pub enum BorderMaskEntry{
     Any,
@@ -16,8 +37,8 @@ pub enum BorderMaskEntry{
 
 impl BorderMaskEntry {
     
-    pub fn some(ids : &[i32]) -> BorderMaskEntry{
-        BorderMaskEntry::Some(ids.into_iter().map(|id| tile::TypeID::new(*id)).collect())
+    pub fn some(ids : &[u32]) -> BorderMaskEntry{
+        BorderMaskEntry::Some(ids.into_iter().map(|&a| tile::TypeID::from(a)).collect())
     }
 
     pub fn matches(&self, other : &tile::TypeID) -> bool{
@@ -85,7 +106,7 @@ impl Borders{
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct BorderedTile{
     sprites : Vec<(BordersMask, spritesheet::Sprite)>,
     default : spritesheet::Sprite,
@@ -117,5 +138,11 @@ impl BorderedTile{
             }
         }
         &self.default
+    }
+}
+
+impl Default for BorderedTile{
+    fn default() -> Self {
+        Self { sprites: Default::default(), default: Default::default() }
     }
 }

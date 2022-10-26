@@ -83,7 +83,6 @@ pub enum DeserializeError{
     NotFoundInAlphabet(char)
 }
 
-
 impl error::Error for DeserializeError {}
 
 impl fmt::Display for DeserializeError {

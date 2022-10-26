@@ -15,7 +15,7 @@ pub struct Table<ID: Hash + Eq, T>
     last_id : ID,
 }
 
-impl<ID : TableID + Default + Eq + Hash + Copy, T> Table<ID, T> {
+impl<ID : TableID + Default + Eq + Hash + Copy + AsRef<u32>, T> Table<ID, T> {
     pub fn new() -> Table<ID, T>{
         Table { map: HashMap::new(), last_id : ID::default() }
     }

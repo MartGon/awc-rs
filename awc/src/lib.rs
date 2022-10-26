@@ -14,10 +14,10 @@ pub mod tile;
 use serde::{Deserialize, Serialize};
 
 use crate::table::TableID;
-use std::hash::Hash;
+use std::{hash::Hash, borrow::Borrow};
 
 #[derive(Copy, Hash, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
-pub struct ID(pub i32);
+pub struct ID(pub u32);
 
 impl TableID for ID{
     fn next(&self) -> Self {
@@ -31,8 +31,26 @@ impl Default for ID{
     }
 }
 
+impl From<u32> for ID{
+    fn from(a: u32) -> Self {
+        ID::new(a)
+    }
+}
+
+impl AsRef<u32> for ID{
+    fn as_ref(&self) -> &u32 {
+        &self.0
+    }
+}
+
+impl Borrow<u32> for ID{
+    fn borrow(&self) -> &u32 {
+        &self.0
+    }
+}
+
 impl ID{
-    pub fn new(id : i32) -> ID{
+    pub fn new(id : u32) -> ID{
         Self(id)
     }
 }

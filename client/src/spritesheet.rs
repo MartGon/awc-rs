@@ -10,17 +10,17 @@ pub trait Drawable{
     fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2);
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 pub enum Sprite{
     Idle(IdleSprite),
     Animated(AnimatedSprite)
 }
 
-pub fn sprite(pos : IVec2, size : IVec2) -> Sprite{
+pub fn sprite(pos : UVec2, size : UVec2) -> Sprite{
     Sprite::Idle(IdleSprite::new(pos, size))
 }
 
-pub fn sprite_raw(x : i32, y : i32, w : i32, h : i32) -> Sprite{
+pub fn sprite_raw(x : u32, y : u32, w : u32, h : u32) -> Sprite{
     Sprite::Idle(IdleSprite::new_raw(x, y, w, h))
 }
 
@@ -28,19 +28,25 @@ pub fn animated_sprite(size : UVec2, animations : &[Animation],) -> Sprite{
     Sprite::Animated(AnimatedSprite::new(size, animations))
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+impl Default for Sprite{
+    fn default() -> Self {
+        Self::Idle(IdleSprite::new(uvec2(0, 0), uvec2(1, 1)))
+    }
+}
+
+#[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct IdleSprite{
-    pos : IVec2,
-    size : IVec2,
+    pos : UVec2,
+    size : UVec2,
 }
 
 impl IdleSprite{
-    pub fn new(pos : IVec2, size : IVec2) -> Self{
+    pub fn new(pos : UVec2, size : UVec2) -> Self{
         Self{pos, size}
     }
 
-    pub fn new_raw(x : i32, y : i32, w : i32, h : i32) ->Self{
-        Self::new(IVec2::new(x, y),  IVec2::new(w, h))
+    pub fn new_raw(x : u32, y : u32, w : u32, h : u32) ->Self{
+        Self::new(UVec2::new(x, y),  UVec2::new(w, h))
     }
 }
 
@@ -65,7 +71,7 @@ impl Drawable for IdleSprite{
     }
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct AnimatedSprite{
     pub size : UVec2,
     pub animations : Vec<Animation>,
@@ -112,7 +118,7 @@ impl Drawable for AnimatedSprite{
     }
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct Animation{
     pub name : String,
     pub frames : Vec<AnimationFrame>,
@@ -127,26 +133,26 @@ impl Animation{
     }
     
     #[allow(dead_code)]
-    pub fn new_short(name : String, fps : u32, frames_pos : &[IVec2]) -> Animation{
+    pub fn new_short(name : String, fps : u32, frames_pos : &[UVec2]) -> Animation{
         Animation { name, fps : fps, frames : frames_pos.into_iter().map(|x| AnimationFrame::new(x.clone())).collect()}
     }
 
-    pub fn new_shorter_x(name : String, fps : u32, frame_y : i32, frames_x : &[i32]) -> Animation{
-        Animation { name, fps : fps, frames : frames_x.into_iter().map(|x| AnimationFrame::new(ivec2(*x, frame_y))).collect()}
+    pub fn new_shorter_x(name : String, fps : u32, frame_y : u32, frames_x : &[u32]) -> Animation{
+        Animation { name, fps : fps, frames : frames_x.into_iter().map(|x| AnimationFrame::new(uvec2(*x, frame_y))).collect()}
     }
 
-    pub fn new_shorter_y(name : String, fps : u32, frame_x : i32, frames_y : &[i32]) -> Animation{
-        Animation { name, fps : fps, frames : frames_y.into_iter().map(|y| AnimationFrame::new(ivec2(frame_x, *y))).collect()}
+    pub fn new_shorter_y(name : String, fps : u32, frame_x : u32, frames_y : &[u32]) -> Animation{
+        Animation { name, fps : fps, frames : frames_y.into_iter().map(|y| AnimationFrame::new(uvec2(frame_x, *y))).collect()}
     }
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct AnimationFrame{
-    pub source : IVec2,
+    pub source : UVec2,
 }
 
 impl AnimationFrame {
-    pub fn new(source : IVec2) -> AnimationFrame{
+    pub fn new(source : UVec2) -> AnimationFrame{
         AnimationFrame { source }
     }
 }
