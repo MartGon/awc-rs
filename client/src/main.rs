@@ -24,6 +24,7 @@ async fn main() {
     let pid = game.create_player(TeamID::new(0));
 
     // Init map
+    /*
     let water_size = UVec2::new(8, 8);
     game.set_map_size(water_size);
     
@@ -48,6 +49,10 @@ async fn main() {
     let map_data = game.get_map_data([(tile::TypeID::new(0), ' '), (tile::TypeID::new(1), '#'), (tile::TypeID::new(2), 'M')].into_iter().collect());
     let map_data_str = ron::to_string(&map_data).expect("Error on serialize map data");
     fs::write("map_data.ron", &map_data_str).expect("Error on write map data");
+    */
+    let map_data_str = fs::read_to_string("map_data.ron").expect("Could not read map data");
+    let map_data = ron::from_str::<map::Data>(&map_data_str).expect("Error on str -> ron");
+    game.load_map_data(map_data).expect("Error on loading map data");
 
     // Load SpriteSheet
     let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
@@ -113,8 +118,8 @@ async fn main() {
                     // Draw tile
                     let sprite = tile_sprite.sprite(&borders);
                     match sprite{
-                        SpriteType::Sprite(s) => s.draw_scaled(&spritesheet, draw_pos, scale),
-                        SpriteType::AnimatedSprite(s) => s.draw_scaled(&spritesheet, draw_pos, scale)
+                        Sprite::Idle(s) => s.draw_scaled(&spritesheet, draw_pos, scale),
+                        Sprite::Animated(s) => s.draw_scaled(&spritesheet, draw_pos, scale)
                     }
                 }
             }

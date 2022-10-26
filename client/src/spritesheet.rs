@@ -11,30 +11,30 @@ pub trait Drawable{
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-pub enum SpriteType{
-    Sprite(Sprite),
-    AnimatedSprite(AnimatedSprite)
+pub enum Sprite{
+    Idle(IdleSprite),
+    Animated(AnimatedSprite)
 }
 
-pub fn sprite(pos : IVec2, size : IVec2) -> SpriteType{
-    SpriteType::Sprite(Sprite::new(pos, size))
+pub fn sprite(pos : IVec2, size : IVec2) -> Sprite{
+    Sprite::Idle(IdleSprite::new(pos, size))
 }
 
-pub fn sprite_raw(x : i32, y : i32, w : i32, h : i32) -> SpriteType{
-    SpriteType::Sprite(Sprite::new_raw(x, y, w, h))
+pub fn sprite_raw(x : i32, y : i32, w : i32, h : i32) -> Sprite{
+    Sprite::Idle(IdleSprite::new_raw(x, y, w, h))
 }
 
-pub fn animated_sprite(size : UVec2, animations : &[Animation],) -> SpriteType{
-    SpriteType::AnimatedSprite(AnimatedSprite::new(size, animations))
+pub fn animated_sprite(size : UVec2, animations : &[Animation],) -> Sprite{
+    Sprite::Animated(AnimatedSprite::new(size, animations))
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct Sprite{
+pub struct IdleSprite{
     pos : IVec2,
     size : IVec2,
 }
 
-impl Sprite{
+impl IdleSprite{
     pub fn new(pos : IVec2, size : IVec2) -> Self{
         Self{pos, size}
     }
@@ -44,7 +44,7 @@ impl Sprite{
     }
 }
 
-impl Drawable for Sprite{
+impl Drawable for IdleSprite{
     fn draw(&self, spritesheet : &Texture2D, draw_dest : Vec2) {
         self.draw_scaled(spritesheet, draw_dest, Vec2::new(1.0, 1.0));
     }

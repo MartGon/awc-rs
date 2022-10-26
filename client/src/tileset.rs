@@ -87,21 +87,21 @@ impl Borders{
 
 #[derive(Serialize, Deserialize)]
 pub struct BorderedTile{
-    sprites : Vec<(BordersMask, spritesheet::SpriteType)>,
-    default : spritesheet::SpriteType,
+    sprites : Vec<(BordersMask, spritesheet::Sprite)>,
+    default : spritesheet::Sprite,
 }
 
 impl BorderedTile{
 
-    pub fn new_short(default : spritesheet::SpriteType) -> BorderedTile{
+    pub fn new_short(default : spritesheet::Sprite) -> BorderedTile{
         BorderedTile::new(default, &[])
     }
 
-    pub fn new(default : spritesheet::SpriteType, sprites: &[(BordersMask, spritesheet::SpriteType)]) -> BorderedTile{
+    pub fn new(default : spritesheet::Sprite, sprites: &[(BordersMask, spritesheet::Sprite)]) -> BorderedTile{
         BorderedTile { default,  sprites: sprites.into_iter().cloned().collect() }
     }
 
-    pub fn sprite_mut(&mut self, border : &Borders) -> &mut spritesheet::SpriteType{
+    pub fn sprite_mut(&mut self, border : &Borders) -> &mut spritesheet::Sprite{
         for (b, sprite) in self.sprites.iter_mut(){   
             if b.matches(border){
                 return sprite;
@@ -110,7 +110,7 @@ impl BorderedTile{
         &mut self.default
     }
 
-    pub fn sprite(&self, border : &Borders) -> &spritesheet::SpriteType{
+    pub fn sprite(&self, border : &Borders) -> &spritesheet::Sprite{
         for (b, sprite) in self.sprites.iter(){   
             if b.matches(border){
                 return sprite;
