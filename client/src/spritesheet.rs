@@ -8,6 +8,8 @@ pub trait Drawable{
 
     fn draw_mut(&mut self, spritesheet : &Texture2D, draw_dest : Vec2);
     fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2);
+
+    fn size(&self) -> UVec2;
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -56,6 +58,14 @@ impl Drawable for Sprite{
             Sprite::Animated(s) => s.draw_mut_scaled(&spritesheet, draw_dest, scale)
         }
     }
+
+    fn size(&self) -> UVec2{
+        match self{
+            Sprite::Idle(s) => s.size(),
+            Sprite::Animated(s) => s.size()
+        }
+    }
+
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -93,6 +103,10 @@ impl Drawable for IdleSprite{
     fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
         todo!()
     }
+
+    fn size(&self) -> UVec2{
+        self.size
+    }
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -104,6 +118,10 @@ pub struct AnimatedSprite{
 impl AnimatedSprite{
     pub fn new(size : UVec2, animations : &[Animation],) -> AnimatedSprite{
         AnimatedSprite {size, animations : animations.to_vec()}
+    }
+
+    pub fn size(&self) -> UVec2{
+        self.size
     }
 
     pub fn frame(&self) -> &AnimationFrame{
@@ -139,6 +157,10 @@ impl Drawable for AnimatedSprite{
 
     fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
         todo!()
+    }
+
+    fn size(&self) -> UVec2 {
+        self.size
     }
 }
 

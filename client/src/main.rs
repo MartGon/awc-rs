@@ -40,23 +40,24 @@ async fn main() {
     let tileset = res.0;
 
     // Map view
-    let mut map_view = mapview::MapView::new( tileset, spritesheet);
-    map_view.set_scale(vec2(2.0, 2.0));
+    let tile_size = UVec2::new(64, 64);
+    let mut map_view = mapview::MapView::new(spritesheet, tileset, tile_size);
 
     // TODO: Log errors
     for (_id, e) in res.1{
         println!("Error while loading {}", e);
     }
 
-    let tile_size = UVec2::new(16, 16);
+    let mut cam_pos = uvec2(0, 0);
     let mut tile_type = tile::TypeID::new(0);
     loop {
 
-        let scale = vec2(2.0, 2.0);
-        let draw_size = tile_size.as_vec2() * scale;
+        let screen_size = vec2(screen_width(), screen_height());
+        let pos = (screen_size / 2.0 - map_view.get_size(&game.map).as_vec2() / 2.).as_uvec2();
+
         // Inpput handling \\
         let (x, y) = mouse_position();
-        let tile_pos = (vec2(x, y) / draw_size).as_uvec2();
+        let tile_pos = ((vec2(x, y) - pos.as_vec2()) / tile_size.as_vec2()).as_uvec2();
 
         if is_mouse_button_released(MouseButton::Left){
             if let Some(tile) = game.get_tile_in_pos(&tile_pos){
@@ -72,13 +73,23 @@ async fn main() {
             }
         }
 
+        if is_key_released(KeyCode::Left){
+            cam_pos.x = cam_pos.x - 1;
+            map_view.set_cam_pos(cam_pos);
+            println!("Left pressed");
+        }
+
+        if is_key_released(KeyCode::Right){
+            cam_pos.x = cam_pos.x + 1;
+            map_view.set_cam_pos(cam_pos);
+            println!("Right pressed");
+        }
+
         // Drawing \\
         clear_background(RED);
         
         // Draw Map
-        let screen_size = vec2(screen_width(), screen_height());
-        let pos = screen_size / 2.0 - map_view.get_size(&game.map, tile_size).as_vec2() / 2.0;
-        map_view.draw_map(&game.map, game.components(), tile_size, pos.as_uvec2());
+        map_view.draw_map(&game.map, game.components(), pos, screen_size.as_uvec2());
         
         /*
         // Draw UI
