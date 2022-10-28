@@ -23,8 +23,8 @@ pub enum MapError{
 }
 
 impl Map{
-    pub fn new() -> Map{
-        Map { tiles: Vec::new(), size: uvec2(10, 10) }
+    pub fn new(size : UVec2) -> Map{
+        Map { tiles: Vec::new(), size }
     }
 
     pub fn add_tile(&mut self, id : EntityID){
@@ -37,6 +37,17 @@ impl Map{
 
     pub fn is_pos_valid(&self, pos : Pos) -> bool{
         return pos.x < self.size.x && pos.y < self.size.y;
+    }
+
+    pub fn get_tile_in_pos(&self, components : &component::Components, target_pos : &Pos) -> Option<EntityID>{
+        for tile in self.tiles(){
+            let pos = components.get_position(tile).unwrap();
+            if pos.pos == *target_pos{
+                return Some(tile.clone())
+            }
+        }
+
+        None
     }
 }
 

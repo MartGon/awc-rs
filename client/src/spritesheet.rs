@@ -34,6 +34,30 @@ impl Default for Sprite{
     }
 }
 
+impl Drawable for Sprite{
+    fn draw(&self, spritesheet : &Texture2D, draw_dest : Vec2) {
+        self.draw_scaled(spritesheet, draw_dest, vec2(1.0, 1.0))
+    }
+
+    fn draw_scaled(&self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
+        match self{
+            Sprite::Idle(s) => s.draw_scaled(&spritesheet, draw_dest, scale),
+            Sprite::Animated(s) => s.draw_scaled(&spritesheet, draw_dest, scale)
+        }
+    }
+
+    fn draw_mut(&mut self, spritesheet : &Texture2D, draw_dest : Vec2) {
+        self.draw_mut_scaled(spritesheet, draw_dest, vec2(1.0, 1.0))
+    }
+
+    fn draw_mut_scaled(&mut self, spritesheet : &Texture2D, draw_dest : Vec2, scale : Vec2) {
+        match self{
+            Sprite::Idle(s) => s.draw_mut_scaled(&spritesheet, draw_dest, scale),
+            Sprite::Animated(s) => s.draw_mut_scaled(&spritesheet, draw_dest, scale)
+        }
+    }
+}
+
 #[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct IdleSprite{
     pos : UVec2,

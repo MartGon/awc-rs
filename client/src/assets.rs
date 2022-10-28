@@ -1,7 +1,5 @@
 use std::fmt;
 
-
-
 #[derive(Debug)]
 pub enum Error{
     FileNotFound(std::io::Error),

@@ -1,17 +1,17 @@
 use std::fs;
 
-use awc::component::EntityID;
 use awc::component::EntityType;
 use awc::tile;
-use awc::{component, component::Component, map};
+use awc::map;
 use awc::game::*;
 use awc::player::*;
 
 mod spritesheet;
 mod tileset;
 mod assets;
+mod mapview;
 
-use ron::ser::PrettyConfig;
+use macroquad::window;
 use spritesheet::*;
 
 use macroquad::prelude::*;
@@ -23,7 +23,7 @@ async fn main() {
 
     // Create game
     let mut game = Game::new();
-    let pid = game.create_player(TeamID::new(0));
+    let _pid = game.create_player(TeamID::new(0));
 
     // Load map data
     let map_data_str = fs::read_to_string("data/maps/map_data.ron").expect("Could not read map data");
@@ -39,17 +39,21 @@ async fn main() {
     let res = tileset.unwrap();
     let tileset = res.0;
 
+    // Map view
+    let mut map_view = mapview::MapView::new( tileset, spritesheet);
+    map_view.set_scale(vec2(2.0, 2.0));
+
     // TODO: Log errors
     for (_id, e) in res.1{
         println!("Error while loading {}", e);
     }
 
-    let tile_size = Vec2::new(16.0, 16.0);
+    let tile_size = UVec2::new(16, 16);
     let mut tile_type = tile::TypeID::new(0);
     loop {
 
         let scale = vec2(2.0, 2.0);
-        let draw_size = tile_size * scale;
+        let draw_size = tile_size.as_vec2() * scale;
         // Inpput handling \\
         let (x, y) = mouse_position();
         let tile_pos = (vec2(x, y) / draw_size).as_uvec2();
@@ -70,42 +74,11 @@ async fn main() {
 
         // Drawing \\
         clear_background(RED);
-
-        for tile in game.map.tiles(){            
-            let tile_pos = &game.components().get_position(tile).unwrap().pos.as_ivec2();
-            //let tile_pos = awc::map::Pos::new(1, 2, 0);
-            let draw_pos = Vec2::new(tile_pos.x as f32 * draw_size.x, tile_pos.y as f32 * draw_size.y);
-
-            let ttype = game.components().get_type(tile).unwrap();
-            if let EntityType::Tile(ttype) = ttype.entity_type {
-                if let Some(tile_sprite) = tileset.get(&ttype){
-
-                    // Calculate borders
-                    let mut borders = Borders::default();
-                    for x in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
-                        for y in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
-                            let offset = ivec2(x, y);
-                            let pos = *tile_pos + offset;
-                            if pos.x >= 0 && pos.y > 0 {
-                                if let Some(up) = game.get_tile_in_pos(&pos.as_uvec2()){
-                                    let ttype = game.components().get_type(&up).unwrap();
-                                    if let EntityType::Tile(ttype) = ttype.entity_type{
-                                        borders.insert(offset, ttype);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Draw tile
-                    let sprite = tile_sprite.sprite(&borders);
-                    match sprite{
-                        Sprite::Idle(s) => s.draw_scaled(&spritesheet, draw_pos, scale),
-                        Sprite::Animated(s) => s.draw_scaled(&spritesheet, draw_pos, scale)
-                    }
-                }
-            }
-        }
+        
+        // Draw Map
+        let screen_size = vec2(screen_width(), screen_height());
+        let pos = screen_size / 2.0 - map_view.get_size(&game.map, tile_size).as_vec2() / 2.0;
+        map_view.draw_map(&game.map, game.components(), tile_size, pos.as_uvec2());
         
         /*
         // Draw UI

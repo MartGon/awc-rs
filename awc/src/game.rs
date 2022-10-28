@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use glam::uvec2;
+
 use crate::{map::{self, Data, MapError}, player::{self, TeamID, Player}, component::{self, EntityID, EntityType}, table::Table, tile};
 use crate::component::*;
 
@@ -13,7 +15,7 @@ pub struct Game
 
 impl Game{
     pub fn new() -> Game{
-        Game { map: map::Map::new(), players: Table::new(), components : component::Components::new() }
+        Game { map: map::Map::new(uvec2(10, 10)), players: Table::new(), components : component::Components::new() }
     }
 
     pub fn create_player(&mut self, team : TeamID) -> player::ID{
@@ -72,7 +74,7 @@ impl Game{
 
         // TODO: Remove old map's tiles components
 
-        self.map = map::Map::new();
+        self.map = map::Map::new(data.size);
         for (pos, tile) in data.tiles{
             self.create_tile(tile, pos)?;
         }
