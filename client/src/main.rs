@@ -30,7 +30,7 @@ async fn main() {
     let _pid = game.create_player(TeamID::new(0));
 
     // Load map data
-    let map_data_str = fs::read_to_string("data/maps/map_data.ron").expect("Could not read map data");
+    let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");
     let map_data = ron::from_str::<map::Data>(&map_data_str).expect("Error on str -> ron");
     game.load_map_data(map_data).expect("Error on loading map data");
 
@@ -59,6 +59,7 @@ async fn main() {
         let pos = (screen_size / 2.0 - map_view.get_size(&game.map).as_vec2() / 2.).as_uvec2();
 
         // Inpput handling \\
+        // TODO: Get tile pos click from Map View. It's altered by camera, after all
         let (x, y) = mouse_position();
         let tile_pos = ((vec2(x, y) - pos.as_vec2()) / tile_size.as_vec2()).as_uvec2();
 
@@ -79,13 +80,25 @@ async fn main() {
         let mut cam_pos = map_view.get_cam_pos();
         if is_key_released(KeyCode::Left){
             cam_pos.x = if cam_pos.x > 0 {cam_pos.x - 1} else {cam_pos.x};
-            map_view.set_cam_pos(&game.map, cam_pos);
+            map_view.set_cam_pos(cam_pos);
             println!("Left pressed: {}", cam_pos);
         }
 
         if is_key_released(KeyCode::Right){
             cam_pos.x = cam_pos.x + 1;
-            map_view.set_cam_pos(&game.map, cam_pos);
+            map_view.set_cam_pos(cam_pos);
+            println!("Right pressed: {}", cam_pos);
+        }
+
+        if is_key_released(KeyCode::Up){
+            cam_pos.y = if cam_pos.y > 0 {cam_pos.y - 1} else {cam_pos.y};
+            map_view.set_cam_pos(cam_pos);
+            println!("Left pressed: {}", cam_pos);
+        }
+
+        if is_key_released(KeyCode::Down){
+            cam_pos.y = cam_pos.y + 1;
+            map_view.set_cam_pos(cam_pos);
             println!("Right pressed: {}", cam_pos);
         }
 
