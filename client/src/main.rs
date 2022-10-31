@@ -1,3 +1,4 @@
+use std::env;
 use std::fs;
 
 use awc::component::EntityType;
@@ -20,6 +21,9 @@ use tileset::Borders;
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
+
+    // Debug
+    env::set_var("RUST_BACKTRACE", "1");
 
     // Create game
     let mut game = Game::new();
@@ -48,7 +52,6 @@ async fn main() {
         println!("Error while loading {}", e);
     }
 
-    let mut cam_pos = uvec2(0, 0);
     let mut tile_type = tile::TypeID::new(0);
     loop {
 
@@ -73,16 +76,17 @@ async fn main() {
             }
         }
 
+        let mut cam_pos = map_view.get_cam_pos();
         if is_key_released(KeyCode::Left){
-            cam_pos.x = cam_pos.x - 1;
-            map_view.set_cam_pos(cam_pos);
-            println!("Left pressed");
+            cam_pos.x = if cam_pos.x > 0 {cam_pos.x - 1} else {cam_pos.x};
+            map_view.set_cam_pos(&game.map, cam_pos);
+            println!("Left pressed: {}", cam_pos);
         }
 
         if is_key_released(KeyCode::Right){
             cam_pos.x = cam_pos.x + 1;
-            map_view.set_cam_pos(cam_pos);
-            println!("Right pressed");
+            map_view.set_cam_pos(&game.map, cam_pos);
+            println!("Right pressed: {}", cam_pos);
         }
 
         // Drawing \\
