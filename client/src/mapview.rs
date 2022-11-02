@@ -29,20 +29,47 @@ impl MapView{
         self.cam_pos
     }
 
-    pub fn draw_map(&mut self, map : &map::Map, components : &component::Components, pos : UVec2, target_size : UVec2){
-        let tile_draw_size = self.tile_size.as_vec2();
-        let map_size = self.get_size(map);
+    fn calc_cam_pos(&self, map_size : UVec2, target_size : UVec2) -> UVec2{
+        let map_size_pixels = map_size* self.tile_size;
 
-        let fits = map_size.x <= target_size.x && map_size.y <= target_size.y;
-        self.cam_pos = if fits {
+        let fits = map_size_pixels.x <= target_size.x && map_size_pixels.y <= target_size.y;
+        if fits {
             uvec2(0, 0)
         } 
         else {
             // Calc camera bounds. This is done to avoid showing blank areas on the right.
             let target_tile_size = (target_size.as_vec2() / self.tile_size.as_vec2()).ceil().as_uvec2();
-            let target_tile_size = target_tile_size.clamp(uvec2(1, 1), map.size);
-            self.cam_pos.min(map.size - target_tile_size)
-        };
+            let target_tile_size = target_tile_size.clamp(uvec2(1, 1), map_size);
+            UVec2::min(self.cam_pos, map_size - target_tile_size)
+        }
+    }
+
+    pub fn get_tile_pos(&self, map_size : UVec2, draw_pos : UVec2, draw_target_size : UVec2, mouse_pos : UVec2) -> Option<UVec2>{
+
+        let ul_corner = draw_pos;
+        let dr_corner = draw_pos + draw_target_size;
+        let mouse_in_bounds = ul_corner.x <= mouse_pos.x && ul_corner.y <= mouse_pos.y && dr_corner.x >= mouse_pos.x && dr_corner.y >= mouse_pos.y;
+        
+        if  mouse_in_bounds{
+
+            let mouse_pos = mouse_pos - draw_pos;
+            let rel_pos = mouse_pos.as_vec2() / draw_target_size.as_vec2();
+
+            let target_tile_size = draw_target_size.as_vec2() / self.tile_size.as_vec2();
+            let tile_pos = (rel_pos * target_tile_size).as_uvec2();
+
+            let cam_pos = self.calc_cam_pos(map_size, draw_target_size);
+            let tile_pos = tile_pos + cam_pos;
+            return Some(tile_pos);
+        }
+
+        None
+    }
+
+    pub fn draw_map(&mut self, map : &map::Map, components : &component::Components, pos : UVec2, target_size : UVec2){
+        
+        // Update cam pos
+        self.cam_pos = self.calc_cam_pos(map.size, target_size);
 
         for tile in map.tiles(){            
             let tile_pos = components.get_position(tile).unwrap().pos;
@@ -51,8 +78,10 @@ impl MapView{
             // Would cause an overflow error otherwise.
             if tile_pos.x < self.cam_pos.x || tile_pos.y < self.cam_pos.y {continue;}
             
-            let draw_pos = tile_pos - self.cam_pos;
-            let draw_pos = pos.as_vec2() + draw_pos.as_vec2() * tile_draw_size;
+            let draw_pos = (tile_pos - self.cam_pos) * self.tile_size;
+            
+            // Skip tiles outside of target size
+            if draw_pos.x >= target_size.x || draw_pos.y >= target_size.y {continue;}
 
             let ttype = components.get_type(tile).unwrap();
             if let EntityType::Tile(ttype) = ttype.entity_type {
@@ -60,7 +89,6 @@ impl MapView{
 
                     // Calculate borders
                     let mut borders = Borders::default();
-                    
                     for x in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
                         for y in tileset::OFFSET_MIN..tileset::OFFSET_MAX + 1{
                             let offset = ivec2(x, y);
@@ -79,8 +107,9 @@ impl MapView{
                     
                     // Draw tile
                     let sprite = tile_sprite.sprite(&borders);
-                    let scale = tile_draw_size / sprite.size().as_vec2();
-                    sprite.draw_scaled(&self.spritesheet, draw_pos, scale);
+                    let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
+                    let draw_pos = pos + draw_pos;
+                    sprite.draw_scaled(&self.spritesheet, draw_pos.as_vec2(), scale);
                 }
             }
         }

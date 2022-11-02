@@ -12,11 +12,7 @@ mod tileset;
 mod assets;
 mod mapview;
 
-use macroquad::window;
-use spritesheet::*;
-
 use macroquad::prelude::*;
-use tileset::Borders;
 
 
 #[macroquad::main("BasicShapes")]
@@ -56,27 +52,33 @@ async fn main() {
     loop {
 
         let screen_size = vec2(screen_width(), screen_height());
-        let pos = (screen_size / 2.0 - map_view.get_size(&game.map).as_vec2() / 2.).as_uvec2();
+        let target_size = uvec2(256, 256);
+        let target_size = screen_size.as_uvec2();
+        let pos = (screen_size / 2.0 - target_size.as_vec2() / 2.).as_uvec2();
 
         // Inpput handling \\
         // TODO: Get tile pos click from Map View. It's altered by camera, after all
         let (x, y) = mouse_position();
-        let tile_pos = ((vec2(x, y) - pos.as_vec2()) / tile_size.as_vec2()).as_uvec2();
+        let mouse_pos = uvec2(x as u32, y as u32);
+        if let Some(tile_pos) = map_view.get_tile_pos(game.map.size, pos, target_size, mouse_pos)
+        {
 
-        if is_mouse_button_released(MouseButton::Left){
-            if let Some(tile) = game.get_tile_in_pos(&tile_pos){
-                game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile_type);
+            if is_mouse_button_released(MouseButton::Left){
+                if let Some(tile) = game.get_tile_in_pos(&tile_pos){
+                    game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile_type);
+                }
             }
-        }
 
-        if is_mouse_button_released(MouseButton::Right){
-            if let Some(tile) = game.get_tile_in_pos(&tile_pos){
-                if let EntityType::Tile(id) = game.components_mut().get_type_mut(&tile).unwrap().entity_type{
-                    tile_type = id;
+            if is_mouse_button_released(MouseButton::Right){
+                if let Some(tile) = game.get_tile_in_pos(&tile_pos){
+                    if let EntityType::Tile(id) = game.components_mut().get_type_mut(&tile).unwrap().entity_type{
+                        tile_type = id;
+                    }
                 }
             }
         }
 
+        // Camera controls
         let mut cam_pos = map_view.get_cam_pos();
         if is_key_released(KeyCode::Left){
             cam_pos.x = if cam_pos.x > 0 {cam_pos.x - 1} else {cam_pos.x};
@@ -106,7 +108,7 @@ async fn main() {
         clear_background(RED);
         
         // Draw Map
-        map_view.draw_map(&game.map, game.components(), pos, screen_size.as_uvec2());
+        map_view.draw_map(&game.map, game.components(), pos, target_size);
         
         /*
         // Draw UI
