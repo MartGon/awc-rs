@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 pub type TypeID = super::ID;
 
-struct Template
+pub struct Template
 {
     pub capturable : bool,
 }

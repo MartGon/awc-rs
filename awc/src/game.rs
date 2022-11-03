@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use glam::uvec2;
 
-use crate::{map::{self, Data, MapError}, player::{self, TeamID, Player}, component::{self, EntityID, EntityType}, table::Table, tile};
+use crate::{map::{self, MapError}, player::{self, TeamID, Player}, component::{self, EntityID, EntityType}, table::Table, tile};
 use crate::component::*;
 
 pub struct Game

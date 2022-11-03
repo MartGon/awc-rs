@@ -8,19 +8,19 @@ use crate::{spritesheet, assets};
 pub type Tileset = HashMap<awc::tile::TypeID, BorderedTile>;
 pub type ErrorMap = HashMap<awc::tile::TypeID, assets::Error>;
 
-pub fn load_from_master_file<P: AsRef<Path>>(master_file : P) -> Result<(Tileset, ErrorMap), assets::Error>{
-    let tileset_str = fs::read_to_string(master_file)?;
-    let tileset = ron::from_str::<HashMap<awc::tile::TypeID, String>>(&tileset_str)?;
+pub fn load_from_master_file<P: AsRef<Path> + Into<String>>(master_file : P) -> Result<(Tileset, ErrorMap), assets::Error>{
+    let tileset_str = fs::read_to_string(&master_file).map_err(|e| assets::Error::FileNotFound(e, master_file.into()));
+    let tileset = ron::from_str::<HashMap<awc::tile::TypeID, String>>(&tileset_str.unwrap())?;
 
     let mut error_map = ErrorMap::new();
     let tileset : Tileset = tileset.into_iter().map(|(id, path)|{
             
-        match fs::read_to_string(path){
+        match fs::read_to_string(&path){
             Ok(file_data) => match ron::from_str(&file_data){
                 Ok(tile) => return (id, tile),
                 Err(e) => {error_map.insert(id, e.into());},
             },
-            Err(e) => {error_map.insert(id, e.into());}
+            Err(e) => {error_map.insert(id, assets::Error::FileNotFound(e, path.into()));}
         }
 
         (id, BorderedTile::default())

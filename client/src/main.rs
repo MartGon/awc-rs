@@ -19,6 +19,8 @@ use macroquad::prelude::*;
 async fn main() {
 
     // Debug
+    env_logger::init();
+    env::set_var("RUST_LOG", "error");
     env::set_var("RUST_BACKTRACE", "1");
 
     // Create game
@@ -37,16 +39,15 @@ async fn main() {
     // Load tileset 
     let tileset = tileset::load_from_master_file("sprites/tileset.ron");
     let res = tileset.unwrap();
+    for (_id, e) in res.1{
+        log::error!("Error while loading {}", e);
+    }
+
     let tileset = res.0;
 
     // Map view
     let tile_size = UVec2::new(64, 64);
     let mut map_view = mapview::MapView::new(spritesheet, tileset, tile_size);
-
-    // TODO: Log errors
-    for (_id, e) in res.1{
-        println!("Error while loading {}", e);
-    }
 
     let mut tile_type = tile::TypeID::new(0);
     loop {
@@ -57,7 +58,6 @@ async fn main() {
         let pos = (screen_size / 2.0 - target_size.as_vec2() / 2.).as_uvec2();
 
         // Inpput handling \\
-        // TODO: Get tile pos click from Map View. It's altered by camera, after all
         let (x, y) = mouse_position();
         let mouse_pos = uvec2(x as u32, y as u32);
         if let Some(tile_pos) = map_view.get_tile_pos(game.map.size, pos, target_size, mouse_pos)

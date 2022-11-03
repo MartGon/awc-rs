@@ -7,7 +7,7 @@ use crate::{weapon, movement, component};
 
 pub type TypeID = super::ID;
 
-struct Template
+pub struct Template
 {
     pub weapons : Vec<weapon::Weapon>,
     pub movement : Option<movement::Movement>,
