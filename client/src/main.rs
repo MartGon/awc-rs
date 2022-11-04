@@ -9,6 +9,7 @@ use awc::player::*;
 
 mod spritesheet;
 mod tileset;
+mod unitset;
 mod assets;
 mod mapview;
 

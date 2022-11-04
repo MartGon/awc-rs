@@ -1,5 +1,4 @@
 
-mod unit;
 mod movement;
 mod table;
 
@@ -10,6 +9,7 @@ pub mod weapon;
 pub mod game;
 pub mod player;
 pub mod tile;
+pub mod unit;
 
 use serde::{Deserialize, Serialize};
 
