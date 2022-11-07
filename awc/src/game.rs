@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use glam::uvec2;
 
-use crate::{map::{self, MapError}, player::{self, TeamID, Player}, component::{self, EntityID, EntityType}, table::Table, tile};
+use crate::{map::{self, MapError}, player::{self, Player, Team}, component::{self, EntityID, EntityType}, table::Table, tile, unit};
 use crate::component::*;
 
 pub struct Game
@@ -18,7 +18,7 @@ impl Game{
         Game { map: map::Map::new(uvec2(10, 10)), players: Table::new(), components : component::Components::new() }
     }
 
-    pub fn create_player(&mut self, team : TeamID) -> player::ID{
+    pub fn create_player(&mut self, team : Team) -> player::ID{
         let player_id = self.players.next_id();
         let player = Player::new(player_id, team);
         self.players.new_entry(player)
@@ -32,7 +32,7 @@ impl Game{
     
         if self.map.is_pos_valid(pos){
             let id = self.components.alloc_id();
-            self.components.insert(id, Component::Type{0 : component::Type { entity_type: EntityType::Tile(type_id)}});
+            self.components.insert(id, Component::Type(component::Type { entity_type: EntityType::Tile(type_id)}));
             self.components.insert(id, Component::Position(Position {pos}));
             self.map.add_tile(id);
             return Ok(id)
@@ -50,6 +50,18 @@ impl Game{
         }
 
         None
+    }
+
+    pub fn create_unit(&mut self, type_id : unit::TypeID, pos : map::Pos) -> Result<EntityID, MapError>{
+        if self.map.is_pos_valid(pos){
+            let id = self.components.alloc_id();
+            self.components.insert(id, Component::Type(component::Type{entity_type : EntityType::Unit(type_id)}));
+            self.components.insert(id, Component::Position(Position{pos}));
+            self.map.add_unit(id);
+            return Ok(id);
+        }
+
+        Err(MapError::InvalidPosition)
     }
 
     pub fn set_map_size(&mut self, size : map::Size){

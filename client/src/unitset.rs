@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
-use awc::{*, player::TeamID};
+use awc::{*, player::Team};
 
 use crate::spritesheet::AnimatedSprite;
 
 pub type UnitSet = HashMap<unit::TypeID, Unit>; 
 
 
-#[derive(PartialEq, Eq, Hash)]
-pub enum SpriteVariant{
+#[derive(PartialEq, Eq, Hash, Clone)]
+pub enum Faction{
     OrangeStar = 0,
     BlueMoon,
     YellowComet,
@@ -17,12 +17,20 @@ pub enum SpriteVariant{
 }
 
 pub struct Unit{
-    sprites : HashMap<(awc::player::TeamID, SpriteVariant), AnimatedSprite>,
+    sprites : HashMap<(Team, Faction), AnimatedSprite>,
 }
 
 impl Unit{
 
-    pub fn sprite(&self, team_id : TeamID) -> Option<&AnimatedSprite>{
-        self.sprites.get(&(team_id, SpriteVariant::OrangeStar))
+    pub fn new(sprites: &[((Team, Faction), AnimatedSprite)]) -> Unit{
+        Unit { sprites: sprites.into_iter().cloned().collect() }
+    }
+
+    pub fn sprite(&self, team_id : Team) -> Option<&AnimatedSprite>{
+        self.sprite_faction(team_id, Faction::OrangeStar)
+    }
+
+    pub fn sprite_faction(&self, team_id : Team, faction : Faction) -> Option<&AnimatedSprite>{
+        self.sprites.get(&(team_id, faction))
     }
 }

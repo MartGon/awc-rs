@@ -14,6 +14,7 @@ pub type Pos = UVec2;
 pub struct Map
 {
     tiles : Vec<component::EntityID>,
+    units : Vec<component::EntityID>,
     pub size : Size,
 }
 
@@ -24,7 +25,7 @@ pub enum MapError{
 
 impl Map{
     pub fn new(size : UVec2) -> Map{
-        Map { tiles: Vec::new(), size }
+        Map { tiles: Vec::new(), units : Vec::new(), size }
     }
 
     pub fn add_tile(&mut self, id : EntityID){
@@ -33,6 +34,14 @@ impl Map{
 
     pub fn tiles(&self) -> Iter<EntityID>{
         self.tiles.iter()
+    }
+
+    pub fn add_unit(&mut self, id : EntityID){
+        self.units.push(id);
+    }
+
+    pub fn units(&self) -> Iter<EntityID>{
+        self.units.iter()
     }
 
     pub fn is_pos_valid(&self, pos : Pos) -> bool{

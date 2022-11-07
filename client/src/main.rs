@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 
+use awc::component::EntityID;
 use awc::component::EntityType;
 use awc::tile;
 use awc::map;
@@ -13,7 +14,12 @@ mod unitset;
 mod assets;
 mod mapview;
 
+use awc::unit;
 use macroquad::prelude::*;
+use spritesheet::AnimatedSprite;
+use spritesheet::Animation;
+use spritesheet::AnimationFrame;
+use unitset::Faction;
 
 
 #[macroquad::main("BasicShapes")]
@@ -26,7 +32,7 @@ async fn main() {
 
     // Create game
     let mut game = Game::new();
-    let _pid = game.create_player(TeamID::new(0));
+    let _pid = game.create_player(Team::Red);
 
     // Load map data
     let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");
@@ -34,8 +40,8 @@ async fn main() {
     game.load_map_data(map_data).expect("Error on loading map data");
 
     // Load SpriteSheet
-    let spritesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
-    let spritesheet = Texture2D::from_image(&spritesheet);
+    let tilesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
+    let tilesheet = Texture2D::from_image(&tilesheet);
     
     // Load tileset 
     let tileset = tileset::load_from_master_file("sprites/tileset.ron");
@@ -46,9 +52,27 @@ async fn main() {
 
     let tileset = res.0;
 
+    // Load unit sheet
+    let mut unitsheet = Image::from_file_with_format(include_bytes!("../../sprites/unitsheet.png"), Some(ImageFormat::Png));
+    for y in 0..unitsheet.height() as u32 { for x in 0..unitsheet.width() as u32 { if unitsheet.get_pixel(x, y) == Color::from_rgba(255, 127, 255, 255){ unitsheet.set_pixel(x, y, Color::from_rgba(0, 0, 0, 0))}}};
+    let unitsheet = Texture2D::from_image(&unitsheet);
+
+    // Load UnitSet
+    let unit = unitset::Unit::new(&[((Team::Red, Faction::OrangeStar), AnimatedSprite::new(uvec2(16, 16), &[
+        Animation::new("idle".to_string(), 4, &[
+            AnimationFrame::new(uvec2(3, 104)), AnimationFrame::new(uvec2(20, 104)), AnimationFrame::new(uvec2(37, 104)),
+            AnimationFrame::new(uvec2(37, 104)), AnimationFrame::new(uvec2(20, 104)), AnimationFrame::new(uvec2(3, 104)),
+        ])]))
+    ]);
+    let mut unitset = unitset::UnitSet::new();
+    unitset.insert(0.into(), unit);
+
+    // Add unit
+    game.create_unit(0.into(), uvec2(10, 5)).expect("Error on creating unit");
+
     // Map view
     let tile_size = UVec2::new(64, 64);
-    let mut map_view = mapview::MapView::new(spritesheet, tileset, tile_size);
+    let mut map_view = mapview::MapView::new(tilesheet, tileset, tile_size, unitsheet, unitset);
 
     let mut tile_type = tile::TypeID::new(0);
     loop {
@@ -63,7 +87,7 @@ async fn main() {
         let mouse_pos = uvec2(x as u32, y as u32);
         if let Some(tile_pos) = map_view.get_tile_pos(game.map.size, pos, target_size, mouse_pos)
         {
-
+            
             if is_mouse_button_released(MouseButton::Left){
                 if let Some(tile) = game.get_tile_in_pos(&tile_pos){
                     game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile_type);
