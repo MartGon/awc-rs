@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 
+use assets::MasterFile;
 use awc::component::EntityID;
 use awc::component::EntityType;
 use awc::tile;
@@ -44,7 +45,7 @@ async fn main() {
     let tilesheet = Texture2D::from_image(&tilesheet);
     
     // Load tileset 
-    let tileset = tileset::load_from_master_file("sprites/tileset.ron");
+    let tileset = tileset::Tileset::load_from_master_file("sprites/tileset.ron");
     let res = tileset.unwrap();
     for (_id, e) in res.1{
         log::error!("Error while loading {}", e);
@@ -58,17 +59,16 @@ async fn main() {
     let unitsheet = Texture2D::from_image(&unitsheet);
 
     // Load UnitSet
-    let unit = unitset::Unit::new(&[((Team::Red, Faction::OrangeStar), AnimatedSprite::new(uvec2(16, 16), &[
-        Animation::new("idle".to_string(), 4, &[
-            AnimationFrame::new(uvec2(3, 104)), AnimationFrame::new(uvec2(20, 104)), AnimationFrame::new(uvec2(37, 104)),
-            AnimationFrame::new(uvec2(37, 104)), AnimationFrame::new(uvec2(20, 104)), AnimationFrame::new(uvec2(3, 104)),
-        ])]))
-    ]);
-    let mut unitset = unitset::UnitSet::new();
-    unitset.insert(0.into(), unit);
+    let unitset = unitset::UnitSet::load_from_master_file("sprites/unitset.ron");
+    let res = unitset.unwrap();
+    for (_id, e) in res.1{
+        log::error!("Error while loading {}", e);
+    }
+    let unitset = res.0;
 
     // Add unit
     game.create_unit(0.into(), uvec2(10, 5)).expect("Error on creating unit");
+    game.create_unit(1.into(), uvec2(12, 6)).expect("Error on creating unit");
 
     // Map view
     let tile_size = UVec2::new(64, 64);

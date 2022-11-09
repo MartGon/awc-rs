@@ -1,0 +1,62 @@
+(
+    sprites: {
+        (Red, OrangeStar): (
+            size: (16, 16),
+            animations: [
+                (
+                    name: "idle",
+                    frames: [
+                        (
+                            source: (3, 199),
+                        ),
+                        (
+                            source: (20, 199),
+                        ),
+                        (
+                            source: (37, 199),
+                        ),
+                        (
+                            source: (37, 199),
+                        ),
+                        (
+                            source: (20, 199),
+                        ),
+                        (
+                            source: (3, 199),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ),
+        (Blue, OrangeStar): (
+            size: (16, 16),
+            animations: [
+                (
+                    name: "idle",
+                    frames: [
+                        (
+                            source: (392, 199),
+                        ),
+                        (
+                            source: (409, 199),
+                        ),
+                        (
+                            source: (426, 199),
+                        ),
+                        (
+                            source: (426, 199),
+                        ),
+                        (
+                            source: (409, 199),
+                        ),
+                        (
+                            source: (392, 199),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            ],
+        ),
+    },
+)

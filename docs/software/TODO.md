@@ -1,7 +1,7 @@
 # TODO
-- Draw Unit sprites
+- Draw Unit sprites - DONE
 - Make a tileset folder which holds .ron tile info - DONE
 - Draw map function - DONE
 - Serialize/Deserialize template units
 - Map camera system. - DONE
-- Use Log crate
+- Use Log crate - DONE

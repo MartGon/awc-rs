@@ -125,7 +125,7 @@ impl MapView{
                 if let EntityType::Unit(utype) = utype.entity_type{
                     if let Some(unit_sprite) = self.unitset.get(&utype){
 
-                        let sprite = unit_sprite.sprite(player::Team::Red).unwrap();
+                        let sprite = unit_sprite.sprite(player::Team::Blue).unwrap();
                         let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
                         let draw_pos = pos + draw_pos;
                         sprite.draw_scaled(&self.unitsheet, draw_pos.as_vec2(), scale);

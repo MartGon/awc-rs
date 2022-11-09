@@ -1,6 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 pub type ID = super::ID;
 
-#[derive(PartialEq, Eq, Hash, Clone)]
+#[derive(PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum Team{
     Red = 0,
     Blue,

@@ -1,13 +1,16 @@
 use std::collections::HashMap;
 
 use awc::{*, player::Team};
+use serde::{Serialize, Deserialize};
 
-use crate::spritesheet::AnimatedSprite;
+use crate::{spritesheet::AnimatedSprite, assets::MasterFile};
 
 pub type UnitSet = HashMap<unit::TypeID, Unit>; 
 
+impl MasterFile<Unit> for UnitSet{}
 
-#[derive(PartialEq, Eq, Hash, Clone)]
+
+#[derive(PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum Faction{
     OrangeStar = 0,
     BlueMoon,
@@ -16,6 +19,7 @@ pub enum Faction{
     BlackHole
 }
 
+#[derive(Serialize, Deserialize, Default)]
 pub struct Unit{
     sprites : HashMap<(Team, Faction), AnimatedSprite>,
 }
