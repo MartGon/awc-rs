@@ -1,8 +1,6 @@
-use std::{fmt::{self}, path::Path, collections::HashMap, fs, default};
+use std::{fmt::{self}, path::Path, collections::HashMap, fs};
 
-use serde::{Deserialize, Serialize, de::DeserializeOwned};
-
-use crate::tileset;
+use serde::{Serialize, de::DeserializeOwned};
 
 #[derive(Debug)]
 pub enum Error{

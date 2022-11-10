@@ -74,7 +74,7 @@ async fn main() {
     loop {
 
         let screen_size = vec2(screen_width(), screen_height());
-        let target_size = uvec2(256, 256);
+        let _target_size = uvec2(256, 256);
         let target_size = screen_size.as_uvec2();
         let pos = (screen_size / 2.0 - target_size.as_vec2() / 2.).as_uvec2();
 

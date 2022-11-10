@@ -1,4 +1,4 @@
-use awc::{*, component::{EntityType, EntityID}};
+use awc::{*, component::{EntityType}};
 use glam::{UVec2, ivec2, uvec2};
 use macroquad::texture::Texture2D;
 
@@ -19,7 +19,7 @@ impl MapView{
         MapView { tileset, spritesheet, tile_size, cam_pos : uvec2(0, 0), unitsheet, unitset}
     }
 
-    pub fn get_pixel_size(&self, map : &map::Map)-> UVec2{
+    pub fn _get_pixel_size(&self, map : &map::Map)-> UVec2{
         map.size * self.tile_size
     }
 
