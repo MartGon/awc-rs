@@ -18,11 +18,6 @@ pub struct Map
     pub size : Size,
 }
 
-#[derive(Debug)]
-pub enum MapError{
-    InvalidPosition
-}
-
 impl Map{
     pub fn new(size : UVec2) -> Map{
         Map { tiles: Vec::new(), units : Vec::new(), size }

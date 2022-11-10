@@ -2,7 +2,7 @@ use awc::{*, component::{EntityType, EntityID}};
 use glam::{UVec2, ivec2, uvec2};
 use macroquad::texture::Texture2D;
 
-use crate::{tileset::{self, Borders}, spritesheet::{Drawable}, unitset};
+use crate::{tileset::{self, Borders}, spritesheet::{Drawable, AnimatedSprite, self}, unitset};
 
 pub struct MapView{
     spritesheet : Texture2D,
@@ -68,16 +68,18 @@ impl MapView{
         None
     }
 
-    pub fn draw_map(&mut self, map : &map::Map, components : &component::Components, pos : UVec2, target_size : UVec2){
+    pub fn draw_map(&mut self, game : &game::Game, pos : UVec2, target_size : UVec2){
         
         // Update cam pos
-        self.cam_pos = self.calc_cam_pos(map.size, target_size);
-
-        self.draw_tiles(map, components, pos, target_size);
-        self.draw_units(map, components, pos, target_size);
+        self.cam_pos = self.calc_cam_pos(game.map.size, target_size);
+        self.draw_tiles(game, pos, target_size);
+        self.draw_units(game, pos, target_size);
     }
 
-    fn draw_tiles(&mut self, map : &map::Map, components : &component::Components, pos : UVec2, target_size : UVec2){
+    fn draw_tiles(&mut self, game : &game::Game, pos : UVec2, target_size : UVec2){
+        let map = &game.map;
+        let components = game.components();
+
         for tile in map.tiles(){       
             let tile_pos = components.get_position(&tile).unwrap().pos;     
             if let Some(draw_pos) = self.get_draw_pos(tile_pos, target_size){
@@ -115,7 +117,9 @@ impl MapView{
         }
     }
 
-    fn draw_units(&mut self, map : &map::Map, components : &component::Components, pos : UVec2, target_size : UVec2){
+    fn draw_units(&mut self, game : &game::Game, pos : UVec2, target_size : UVec2){
+        let map = &game.map;
+        let components = game.components();
 
         for unit in map.units(){
             
@@ -124,9 +128,16 @@ impl MapView{
                 let utype = components.get_type(unit).unwrap();
                 if let EntityType::Unit(utype) = utype.entity_type{
                     if let Some(unit_sprite) = self.unitset.get(&utype){
+                        
+                        let owner = components.get_owner(unit).expect("A unit didn't have an owner");
+                        let owner = game.get_player(&owner.owner).expect("Could not find player in game by component's id");
+                        
+                        let mut sprite = &AnimatedSprite::default();
+                        if let Some(proper_sprite) = unit_sprite.sprite_faction(owner.team, owner.faction){
+                            sprite = &proper_sprite;
+                        }
 
-                        let sprite = unit_sprite.sprite(player::Team::Blue).unwrap();
-                        let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
+                        let scale = self.tile_size.as_vec2() / sprite.size.as_vec2();
                         let draw_pos = pos + draw_pos;
                         sprite.draw_scaled(&self.unitsheet, draw_pos.as_vec2(), scale);
                     }

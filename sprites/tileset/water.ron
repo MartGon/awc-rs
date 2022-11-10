@@ -18,7 +18,7 @@ BorderedTile(
                 },
             ), Animated(AnimatedSprite(
                 size: UVec2(16, 16),
-                animations: [
+                animations: { "idle":  
                     Animation(
                         name: "idle",
                         frames: [
@@ -49,7 +49,7 @@ BorderedTile(
                         ],
                         fps: 4,
                     ),
-                ],
+                },
             ))
         ),
         (BordersMask(
@@ -69,7 +69,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -100,7 +100,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -119,7 +119,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -150,7 +150,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -169,7 +169,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -200,7 +200,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -215,7 +215,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -246,7 +246,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -261,7 +261,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -292,7 +292,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -307,7 +307,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -338,7 +338,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -353,7 +353,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -384,7 +384,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -395,7 +395,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -426,7 +426,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -437,7 +437,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -468,7 +468,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -479,7 +479,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -507,7 +507,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -518,7 +518,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -546,7 +546,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -557,7 +557,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -585,7 +585,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -596,7 +596,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -624,7 +624,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -635,7 +635,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -666,7 +666,7 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
         (BordersMask(
             mask: {
@@ -677,7 +677,7 @@ BorderedTile(
             },
         ), Animated(AnimatedSprite(
             size: UVec2(16, 16),
-            animations: [
+            animations: {"idle":  
                 Animation(
                     name: "idle",
                     frames: [
@@ -708,12 +708,12 @@ BorderedTile(
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ))),
     ],
     default: Animated(AnimatedSprite(
         size: UVec2(16, 16),
-        animations: [
+        animations: {"idle":  
             Animation(
                 name: "idle",
                 frames: [
@@ -741,6 +741,6 @@ BorderedTile(
                 ],
                 fps: 4,
             ),
-        ],
+        },
     )),
 )

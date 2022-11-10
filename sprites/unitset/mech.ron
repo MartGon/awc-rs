@@ -2,8 +2,8 @@
     sprites: {
         (Red, OrangeStar): (
             size: (16, 16),
-            animations: [
-                (
+            animations: {
+                "idle" : (
                     name: "idle",
                     frames: [
                         (
@@ -27,12 +27,12 @@
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ),
         (Blue, OrangeStar): (
             size: (16, 16),
-            animations: [
-                (
+            animations: {
+                "idle": (
                     name: "idle",
                     frames: [
                         (
@@ -56,7 +56,7 @@
                     ],
                     fps: 4,
                 ),
-            ],
+            },
         ),
     },
 )

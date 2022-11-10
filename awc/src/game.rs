@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use glam::uvec2;
 
-use crate::{map::{self, MapError}, player::{self, Player, Team}, component::{self, EntityID, EntityType}, table::Table, tile, unit};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit};
 use crate::component::*;
 
 pub struct Game
@@ -13,22 +13,32 @@ pub struct Game
     // pub entity factory
 }
 
+#[derive(Debug)]
+pub enum Error{
+    InvalidPosition,
+    PlayerNotFound
+}
+
 impl Game{
     pub fn new() -> Game{
         Game { map: map::Map::new(uvec2(10, 10)), players: Table::new(), components : component::Components::new() }
     }
 
-    pub fn create_player(&mut self, team : Team) -> player::ID{
+    pub fn create_player(&mut self, team : Team, faction : Faction) -> player::ID{
         let player_id = self.players.next_id();
-        let player = Player::new(player_id, team);
+        let player = Player::new(player_id, team, faction);
         self.players.new_entry(player)
     }
 
-    pub fn get_player(&mut self, player_id : &player::ID) -> Option<&mut Player>{
+    pub fn get_player_mut(&mut self, player_id : &player::ID) -> Option<&mut Player>{
+        self.players.get_entry_mut(player_id)
+    }
+
+    pub fn get_player(&self, player_id : &player::ID) -> Option<&Player>{
         self.players.get_entry(player_id)
     }
 
-    pub fn create_tile(&mut self, type_id : tile::TypeID, pos : map::Pos) -> Result<EntityID, MapError>{
+    pub fn create_tile(&mut self, type_id : tile::TypeID, pos : map::Pos) -> Result<EntityID, Error>{
     
         if self.map.is_pos_valid(pos){
             let id = self.components.alloc_id();
@@ -38,7 +48,7 @@ impl Game{
             return Ok(id)
         }
 
-        return Err(MapError::InvalidPosition);
+        return Err(Error::InvalidPosition);
     }
 
     pub fn get_tile_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
@@ -52,16 +62,24 @@ impl Game{
         None
     }
 
-    pub fn create_unit(&mut self, type_id : unit::TypeID, pos : map::Pos) -> Result<EntityID, MapError>{
+    pub fn create_unit(&mut self, type_id : unit::TypeID, pos : map::Pos, owner : player::ID) -> Result<EntityID, Error>{
+
         if self.map.is_pos_valid(pos){
             let id = self.components.alloc_id();
             self.components.insert(id, Component::Type(component::Type{entity_type : EntityType::Unit(type_id)}));
             self.components.insert(id, Component::Position(Position{pos}));
-            self.map.add_unit(id);
-            return Ok(id);
+
+            if self.get_player(&owner).is_some(){
+                self.components.insert(id, Component::Owner(Owner{owner}));
+                self.map.add_unit(id);
+                return Ok(id);
+            }
+            else{
+                return Err(Error::PlayerNotFound);
+            }
         }
 
-        Err(MapError::InvalidPosition)
+        Err(Error::InvalidPosition)
     }
 
     pub fn set_map_size(&mut self, size : map::Size){
@@ -82,7 +100,7 @@ impl Game{
         }
     }
 
-    pub fn load_map_data(&mut self, data : map::Data) -> Result<(), MapError>{
+    pub fn load_map_data(&mut self, data : map::Data) -> Result<(), Error>{
 
         // TODO: Remove old map's tiles components
 

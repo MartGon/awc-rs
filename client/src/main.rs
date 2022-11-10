@@ -2,7 +2,6 @@ use std::env;
 use std::fs;
 
 use assets::MasterFile;
-use awc::component::EntityID;
 use awc::component::EntityType;
 use awc::tile;
 use awc::map;
@@ -15,12 +14,7 @@ mod unitset;
 mod assets;
 mod mapview;
 
-use awc::unit;
 use macroquad::prelude::*;
-use spritesheet::AnimatedSprite;
-use spritesheet::Animation;
-use spritesheet::AnimationFrame;
-use unitset::Faction;
 
 
 #[macroquad::main("BasicShapes")]
@@ -33,7 +27,10 @@ async fn main() {
 
     // Create game
     let mut game = Game::new();
-    let _pid = game.create_player(Team::Red);
+    let p1 = game.create_player(Team::Red, Faction::OrangeStar);
+    let p2 = game.create_player(Team::Blue, Faction::BlueMoon);
+    println!("Player 1 id: {:?}", p1);
+    println!("Player 2 id: {:?}", p2);
 
     // Load map data
     let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");
@@ -50,7 +47,6 @@ async fn main() {
     for (_id, e) in res.1{
         log::error!("Error while loading {}", e);
     }
-
     let tileset = res.0;
 
     // Load unit sheet
@@ -67,8 +63,8 @@ async fn main() {
     let unitset = res.0;
 
     // Add unit
-    game.create_unit(0.into(), uvec2(10, 5)).expect("Error on creating unit");
-    game.create_unit(1.into(), uvec2(12, 6)).expect("Error on creating unit");
+    game.create_unit(0.into(), uvec2(10, 5), p1).expect("Error on creating unit");
+    game.create_unit(1.into(), uvec2(12, 6), p2).expect("Error on creating unit");
 
     // Map view
     let tile_size = UVec2::new(64, 64);
@@ -133,7 +129,7 @@ async fn main() {
         clear_background(RED);
         
         // Draw Map
-        map_view.draw_map(&game.map, game.components(), pos, target_size);
+        map_view.draw_map(&game, pos, target_size);
         
         /*
         // Draw UI
