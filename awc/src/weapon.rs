@@ -1,12 +1,16 @@
 use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
+
 use crate::unit;
 
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Range
 {
     min : i32,
     max : i32,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Weapon
 {
     range : Range,

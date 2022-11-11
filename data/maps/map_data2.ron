@@ -1,5 +1,9 @@
 (
-    alphabet: {(1): '#', (2): 'M', (0): ' '},
+    alphabet: {
+        (0): ' ',
+        (2): 'M',
+        (1): '#',
+    },
     size: (24, 12),
     tiles: [
         "                        ",
@@ -14,6 +18,58 @@
         "                        ",
         "                        ",
         "                        ",
-        "                        ",
     ],
+    units: {
+        (12, 6): (
+            utype: (
+                entity_type: Unit((1)),
+            ),
+            position: (
+                pos: (12, 6),
+            ),
+            health: (
+                health: 100.0,
+            ),
+            owner: (
+                owner: (1),
+            ),
+            direction: None,
+            armament: None,
+            movement: None,
+        ),
+        (10, 5): (
+            utype: (
+                entity_type: Unit((0)),
+            ),
+            position: (
+                pos: (10, 5),
+            ),
+            health: (
+                health: 100.0,
+            ),
+            owner: (
+                owner: (0),
+            ),
+            direction: None,
+            armament: None,
+            movement: None,
+        ),
+        (9, 6): (
+            utype: (
+                entity_type: Unit((1)),
+            ),
+            position: (
+                pos: (10, 5),
+            ),
+            health: (
+                health: 100.0,
+            ),
+            owner: (
+                owner: (0),
+            ),
+            direction: None,
+            armament: None,
+            movement: None,
+        ),
+    },
 )

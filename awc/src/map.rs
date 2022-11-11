@@ -5,6 +5,7 @@ use glam::{UVec2, uvec2};
 use serde::de::Error;
 use serde::{Serialize, Deserialize};
 
+use crate::unit;
 use crate::{component::{self, EntityID}, tile};
 
 
@@ -61,6 +62,7 @@ pub struct Data
     pub alphabet : HashMap<tile::TypeID, char>,
     pub size : UVec2,
     pub tiles : HashMap<UVec2, tile::TypeID>,
+    pub units : HashMap<UVec2, unit::Unit>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -68,6 +70,7 @@ struct FileData{
     pub alphabet : HashMap<tile::TypeID, char>,
     pub size : UVec2,
     pub tiles : Vec<String>,
+    pub units : HashMap<UVec2, unit::Unit>,
 }
 
 impl Serialize for Data{
@@ -88,7 +91,7 @@ impl Serialize for Data{
             data.push(line);
         }
 
-        let file_data = FileData{alphabet : self.alphabet.clone(), size : self.size, tiles : data};
+        let file_data = FileData{alphabet : self.alphabet.clone(), size : self.size, tiles : data, units : self.units.clone()};
         file_data.serialize(serializer)
     }
 }
@@ -115,7 +118,7 @@ impl<'de> Deserialize<'de> for Data{
         let res = FileData::deserialize(deserializer);
         
         if let Ok(file_data) = res{
-            let mut data = Data{alphabet : file_data.alphabet, size : file_data.size, tiles : HashMap::new()};
+            let mut data = Data{alphabet : file_data.alphabet, size : file_data.size, tiles : HashMap::new(), units : file_data.units};
 
             for y  in 0..file_data.size.y{
                 let line = &file_data.tiles[y as usize];

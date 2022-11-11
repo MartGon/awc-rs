@@ -58,5 +58,65 @@
                 ),
             },
         ),
+
+        (Red, BlueMoon): (
+            size: (16, 16),
+            animations: {
+                "idle" : (
+                    name: "idle",
+                    frames: [
+                        (
+                            source: (3, 218),
+                        ),
+                        (
+                            source: (20, 218),
+                        ),
+                        (
+                            source: (37, 218),
+                        ),
+                        (
+                            source: (37, 218),
+                        ),
+                        (
+                            source: (20, 218),
+                        ),
+                        (
+                            source: (3, 218),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            },
+        ),
+
+        (Blue, BlueMoon): (
+            size: (16, 16),
+            animations: {
+                "idle" : (
+                    name: "idle",
+                    frames: [
+                        (
+                            source: (392, 218),
+                        ),
+                        (
+                            source: (409, 218),
+                        ),
+                        (
+                            source: (426, 218),
+                        ),
+                        (
+                            source: (426, 218),
+                        ),
+                        (
+                            source: (409, 218),
+                        ),
+                        (
+                            source: (392, 218),
+                        ),
+                    ],
+                    fps: 4,
+                ),
+            },
+        ),
     },
 )

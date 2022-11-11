@@ -15,6 +15,7 @@ mod assets;
 mod mapview;
 
 use macroquad::prelude::*;
+use ron::ser::PrettyConfig;
 
 
 #[macroquad::main("BasicShapes")]
@@ -61,10 +62,6 @@ async fn main() {
         log::error!("Error while loading {}", e);
     }
     let unitset = res.0;
-
-    // Add unit
-    game.create_unit(0.into(), uvec2(10, 5), p1).expect("Error on creating unit");
-    game.create_unit(1.into(), uvec2(12, 6), p2).expect("Error on creating unit");
 
     // Map view
     let tile_size = UVec2::new(64, 64);

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use glam::uvec2;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit, movement};
 use crate::component::*;
 
 pub struct Game
@@ -68,6 +68,7 @@ impl Game{
             let id = self.components.alloc_id();
             self.components.insert(id, Component::Type(component::Type{entity_type : EntityType::Unit(type_id)}));
             self.components.insert(id, Component::Position(Position{pos}));
+            self.components.insert(id, Component::Health(Health::default()));
 
             if self.get_player(&owner).is_some(){
                 self.components.insert(id, Component::Owner(Owner{owner}));
@@ -89,14 +90,30 @@ impl Game{
     }
 
     pub fn get_map_data(&self, alphabet : HashMap<tile::TypeID,char> ) -> map::Data{
-        map::Data{alphabet, size : self.map.size, tiles : self.map.tiles().map(|id| (
-            self.components.positions.entry(id).unwrap().pos, 
-            if let EntityType::Tile(tile_id) = self.components.types.entry(id).unwrap().entity_type{
-                tile_id
-            }
-            else{
-                panic!("WTF")
-            })).collect()
+        map::Data{alphabet, size : self.map.size, 
+            
+            tiles : self.map.tiles().map(|id| (
+                self.components.positions.entry(id).unwrap().pos, 
+                if let EntityType::Tile(tile_id) = self.components.types.entry(id).unwrap().entity_type{
+                    tile_id
+                }
+                else{
+                    panic!("WTF")
+                }
+            )).collect(),
+            
+            units : self.map.units().map(|id|(
+                self.components.positions.entry(id).unwrap().pos,
+                unit::Unit{
+                    utype : self.components.types.entry(id).unwrap().clone(),
+                    position : self.components.positions.entry(id).unwrap().clone(),
+                    health : self.components.healths.entry(id).unwrap().clone(),
+                    owner : self.components.owners.entry(id).unwrap().clone(),
+                    direction : if let Some(dir) = self.components.directions.entry(id) { Some(dir.clone()) } else { None},
+                    armament : if let Some(armament) = self.components.armaments.entry(id) { Some(armament.clone() )} else { None },
+                    movement : if let Some(movement) = self.components.movements.entry(id){ Some(movement.clone()) } else { None },
+                }
+            )).collect(),
         }
     }
 
@@ -105,9 +122,16 @@ impl Game{
         // TODO: Remove old map's tiles components
 
         self.map = map::Map::new(data.size);
+        
         for (pos, tile) in data.tiles{
             self.create_tile(tile, pos)?;
         }
+
+        for (pos, unit) in data.units{
+            println!("For each unit");
+            self.create_unit(unit.utype.entity_type.unit_type(), pos, unit.owner.owner).expect("Error on creating unit from map data");
+        }
+
         Ok(())
     }
 
