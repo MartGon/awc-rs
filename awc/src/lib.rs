@@ -1,10 +1,11 @@
 
-mod movement;
 mod table;
+mod template;
 
 pub mod event;
 pub mod component;
 pub mod map;
+pub mod movement;
 pub mod weapon;
 pub mod game;
 pub mod player;
@@ -12,6 +13,7 @@ pub mod tile;
 pub mod unit;
 
 use serde::{Deserialize, Serialize};
+
 
 use crate::table::TableID;
 use std::{hash::Hash, borrow::Borrow};

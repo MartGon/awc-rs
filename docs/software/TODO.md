@@ -5,3 +5,5 @@
 - Serialize/Deserialize template units
 - Map camera system. - DONE
 - Use Log crate - DONE
+- Player as component?
+- Display Unit/Terrain info

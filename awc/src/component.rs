@@ -1,5 +1,5 @@
 
-use crate::{weapon, movement, unit, tile, player, map};
+use crate::{weapon, movement, unit, tile, player, map::{self, Pos}, ID};
 use component_derive::ComponentCollection;
 use serde::{Serialize, Deserialize};
 
@@ -21,38 +21,33 @@ pub enum Component
 #[derive(Serialize, Deserialize, Clone)]
 pub enum EntityType
 {
-    Unit(unit::TypeID),
-    Tile(tile::TypeID)
-}
-
-impl EntityType{
-
-    pub fn unit_type(&self) -> unit::TypeID{
-        if let EntityType::Unit(type_id) = self{
-            type_id.clone()
-        }
-        else{
-            panic!("Entity was not a unit")
-        }
-    }
-
-    pub fn tile_type(&self) -> unit::TypeID{
-        if let EntityType::Tile(type_id) = self{
-            type_id.clone()
-        }
-        else{
-            panic!("Entity was not a tile")
-        }
-    }
+    Unit = 0,
+    Tile
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Type
 {
+    pub type_id : ID,
     pub entity_type : EntityType
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+impl Type{
+
+    pub fn new(type_id : ID, entity_type : EntityType) -> Type{
+        Type{type_id, entity_type}
+    }
+
+    pub fn new_unit(type_id : ID)-> Type{
+        Type{type_id, entity_type : EntityType::Unit}
+    }
+
+    pub fn new_tile(type_id : ID)-> Type{
+        Type{type_id, entity_type : EntityType::Tile}
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct Position
 {
     pub pos : map::Pos
@@ -73,6 +68,12 @@ pub struct Direction
     pub direction : Dir
 }
 
+impl Default for Direction{
+    fn default() -> Direction{
+        Direction{ direction : Dir::North }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Health
 {
@@ -91,6 +92,12 @@ pub struct Armament
     pub weapons : Vec<weapon::Weapon>,
 }
 
+impl Armament{
+    pub fn new(weapons : Vec<weapon::Weapon>) -> Armament{
+        Armament { weapons }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Movement
 {
@@ -99,13 +106,19 @@ pub struct Movement
     pub max_gas : i32,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+impl Movement{
+    pub fn new(movement : movement::Movement) -> Movement{
+        Movement { movement, gas: 100, max_gas: 100 }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct Owner
 {
     pub owner : player::ID,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct CaptureState
 {
     pub progress : i32,

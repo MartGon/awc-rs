@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use glam::uvec2;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit, movement};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, template::Factory, ID};
 use crate::component::*;
 
 pub struct Game
@@ -10,7 +10,8 @@ pub struct Game
     pub map : map::Map,
     components : component::Components,
     players : Table<player::ID, player::Player>,
-    // pub entity factory
+    unit_factory : Factory<unit::Template>,
+    tile_factory : Factory<tile::Template>
 }
 
 #[derive(Debug)]
@@ -21,7 +22,13 @@ pub enum Error{
 
 impl Game{
     pub fn new() -> Game{
-        Game { map: map::Map::new(uvec2(10, 10)), players: Table::new(), components : component::Components::new() }
+        Game { 
+            map: map::Map::new(uvec2(10, 10)), 
+            players: Table::new(), 
+            components : component::Components::new(), 
+            unit_factory : Factory::new(),
+            tile_factory : Factory::new()
+        }
     }
 
     pub fn create_player(&mut self, team : Team, faction : Faction) -> player::ID{
@@ -42,7 +49,7 @@ impl Game{
     
         if self.map.is_pos_valid(pos){
             let id = self.components.alloc_id();
-            self.components.insert(id, Component::Type(component::Type { entity_type: EntityType::Tile(type_id)}));
+            self.components.insert(id, Component::Type(component::Type { type_id ,entity_type: EntityType::Tile}));
             self.components.insert(id, Component::Position(Position {pos}));
             self.map.add_tile(id);
             return Ok(id)
@@ -66,7 +73,7 @@ impl Game{
 
         if self.map.is_pos_valid(pos){
             let id = self.components.alloc_id();
-            self.components.insert(id, Component::Type(component::Type{entity_type : EntityType::Unit(type_id)}));
+            self.components.insert(id, Component::Type(component::Type{type_id, entity_type : EntityType::Unit}));
             self.components.insert(id, Component::Position(Position{pos}));
             self.components.insert(id, Component::Health(Health::default()));
 
@@ -94,8 +101,8 @@ impl Game{
             
             tiles : self.map.tiles().map(|id| (
                 self.components.positions.entry(id).unwrap().pos, 
-                if let EntityType::Tile(tile_id) = self.components.types.entry(id).unwrap().entity_type{
-                    tile_id
+                if let EntityType::Tile = self.components.types.entry(id).unwrap().entity_type{
+                    self.components.types.entry(id).unwrap().type_id
                 }
                 else{
                     panic!("WTF")
@@ -128,8 +135,7 @@ impl Game{
         }
 
         for (pos, unit) in data.units{
-            println!("For each unit");
-            self.create_unit(unit.utype.entity_type.unit_type(), pos, unit.owner.owner).expect("Error on creating unit from map data");
+            self.create_unit(unit.utype.type_id, pos, unit.owner.owner)?;
         }
 
         Ok(())
@@ -145,6 +151,10 @@ impl Game{
 
     pub fn components_mut(&mut self) -> &mut component::Components{
         &mut self.components
+    }
+
+    pub fn add_unit_template(&mut self, id : &ID, unit_template : unit::Template){
+        self.unit_factory.add_template(id, unit_template)
     }
 }
 

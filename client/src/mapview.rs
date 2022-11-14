@@ -85,8 +85,8 @@ impl MapView{
             if let Some(draw_pos) = self.get_draw_pos(tile_pos, target_size){
 
                 let ttype = components.get_type(tile).unwrap();
-                if let EntityType::Tile(ttype) = ttype.entity_type {
-                    if let Some(tile_sprite) = self.tileset.get(&ttype){
+                if let EntityType::Tile = ttype.entity_type {
+                    if let Some(tile_sprite) = self.tileset.get(&ttype.type_id){
 
                         // Calculate borders
                         let mut borders = Borders::default();
@@ -98,8 +98,8 @@ impl MapView{
                                 if pos.x >= 0 && pos.y >= 0 {
                                     if let Some(up) = map.get_tile_in_pos(&components, &pos.as_uvec2()){
                                         let ttype = components.get_type(&up).unwrap();
-                                        if let EntityType::Tile(ttype) = ttype.entity_type{
-                                            borders.insert(offset, ttype);
+                                        if let EntityType::Tile = ttype.entity_type{
+                                            borders.insert(offset, ttype.type_id);
                                         }
                                     }
                                 }
@@ -126,8 +126,8 @@ impl MapView{
             let unit_pos = components.get_position(&unit).unwrap().pos;
             if let Some(draw_pos) = self.get_draw_pos(unit_pos, target_size){
                 let utype = components.get_type(unit).unwrap();
-                if let EntityType::Unit(utype) = utype.entity_type{
-                    if let Some(unit_sprite) = self.unitset.get(&utype){
+                if let EntityType::Unit = utype.entity_type{
+                    if let Some(unit_sprite) = self.unitset.get(&utype.type_id){
                         
                         let owner = components.get_owner(unit).expect("A unit didn't have an owner");
                         let owner = game.get_player(&owner.owner).expect("Could not find player in game by component's id");

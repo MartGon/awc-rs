@@ -22,7 +22,8 @@
     units: {
         (12, 6): (
             utype: (
-                entity_type: Unit((1)),
+                entity_type: Unit,
+                type_id : (1)
             ),
             position: (
                 pos: (12, 6),
@@ -39,7 +40,8 @@
         ),
         (10, 5): (
             utype: (
-                entity_type: Unit((0)),
+                entity_type: Unit,
+                type_id : (0)
             ),
             position: (
                 pos: (10, 5),
@@ -56,7 +58,8 @@
         ),
         (9, 6): (
             utype: (
-                entity_type: Unit((1)),
+                entity_type: Unit,
+                type_id : (1)
             ),
             position: (
                 pos: (10, 5),

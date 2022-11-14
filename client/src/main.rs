@@ -7,6 +7,9 @@ use awc::tile;
 use awc::map;
 use awc::game::*;
 use awc::player::*;
+use awc::unit;
+use awc::weapon;
+use awc::movement;
 
 mod spritesheet;
 mod tileset;
@@ -15,7 +18,6 @@ mod assets;
 mod mapview;
 
 use macroquad::prelude::*;
-use ron::ser::PrettyConfig;
 
 
 #[macroquad::main("BasicShapes")]
@@ -32,6 +34,12 @@ async fn main() {
     let p2 = game.create_player(Team::Blue, Faction::BlueMoon);
     println!("Player 1 id: {:?}", p1);
     println!("Player 2 id: {:?}", p2);
+
+    // Load game data
+    let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
+    let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
+    let infantry_template = unit::Template::new(&[infantry_weapon], Some(infantry_movement));
+    game.add_unit_template(&0.into(), infantry_template);
 
     // Load map data
     let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");
@@ -83,14 +91,16 @@ async fn main() {
             
             if is_mouse_button_released(MouseButton::Left){
                 if let Some(tile) = game.get_tile_in_pos(&tile_pos){
-                    game.components_mut().get_type_mut(&tile).unwrap().entity_type = EntityType::Tile(tile_type);
+                    let entity_type = game.components_mut().get_type_mut(&tile).unwrap();
+                    entity_type.type_id = tile_type;
                 }
             }
 
             if is_mouse_button_released(MouseButton::Right){
                 if let Some(tile) = game.get_tile_in_pos(&tile_pos){
-                    if let EntityType::Tile(id) = game.components_mut().get_type_mut(&tile).unwrap().entity_type{
-                        tile_type = id;
+                    let entity_type = game.components_mut().get_type_mut(&tile).unwrap();
+                    if let EntityType::Tile = entity_type.entity_type{
+                        tile_type = entity_type.type_id;
                     }
                 }
             }
