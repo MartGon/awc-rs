@@ -1,4 +1,4 @@
-use std::{fmt::{self}, path::Path, collections::HashMap, fs};
+use std::{fmt, path::Path, collections::HashMap, fs, hash::Hash};
 
 use serde::{Serialize, de::DeserializeOwned};
 
@@ -17,16 +17,16 @@ impl fmt::Display for Error{
     }
 }
 
-pub type ErrorMap = HashMap<awc::tile::TypeID, self::Error>;
+pub type ErrorMap<ID> = HashMap<ID, self::Error>;
 
 pub trait MasterFile<T: Default + Serialize + DeserializeOwned>{
 
-    fn load_from_master_file<P: AsRef<Path> + Into<String> + Clone>(master_file : P) -> Result<(HashMap<awc::tile::TypeID, T>, ErrorMap), self::Error>{
+    fn load_from_master_file<ID: Hash + Copy + Default + Eq + DeserializeOwned, P: AsRef<Path> + Into<String> + Clone>(master_file : P) -> Result<(HashMap<ID, T>, ErrorMap<ID>), self::Error>{
         let tileset_str = fs::read_to_string(&master_file).map_err(|e| self::Error::FileNotFound(e, master_file.clone().into()));
-        let tileset = ron::from_str::<HashMap<awc::tile::TypeID, String>>(&tileset_str.unwrap()).map_err(|e| self::Error::ParsingError(e, master_file.into())).unwrap();
+        let tileset = ron::from_str::<HashMap<ID, String>>(&tileset_str.unwrap()).map_err(|e| self::Error::ParsingError(e, master_file.into())).unwrap();
 
         let mut error_map = ErrorMap::new();
-        let tileset : HashMap<awc::ID, T> = tileset.into_iter().map(|(id, path)|{
+        let tileset : HashMap<ID, T> = tileset.into_iter().map(|(id, path)|{
 
             match fs::read_to_string(&path){
                 Ok(file_data) => match ron::from_str::<T>(&file_data){

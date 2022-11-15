@@ -2,7 +2,7 @@ use awc::{*, component::{EntityType}};
 use glam::{UVec2, ivec2, uvec2};
 use macroquad::texture::Texture2D;
 
-use crate::{tileset::{self, Borders}, spritesheet::{Drawable, AnimatedSprite, self}, unitset};
+use crate::{tileset::{self, Borders}, spritesheet::{Drawable, AnimatedSprite}, unitset};
 
 pub struct MapView{
     spritesheet : Texture2D,

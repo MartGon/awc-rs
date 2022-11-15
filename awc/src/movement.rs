@@ -6,8 +6,6 @@ use crate::tile;
 
 type MoveCost = u32;
 
-const DEFAULT_COST : u32 = 1;
-
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Movement
 {
