@@ -45,6 +45,24 @@ impl Type{
     pub fn new_tile(type_id : ID)-> Type{
         Type{type_id, entity_type : EntityType::Tile}
     }
+
+    pub fn is_unit(&self) -> bool{
+        if let EntityType::Unit = self.entity_type{
+            true
+        }
+        else{
+            false
+        }
+    }
+
+    pub fn is_tile(&self) -> bool{
+        if let EntityType::Tile = self.entity_type{
+            true
+        }
+        else{
+            false
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]

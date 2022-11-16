@@ -86,7 +86,7 @@ async fn main() {
         // Inpput handling \\
         let (x, y) = mouse_position();
         let mouse_pos = uvec2(x as u32, y as u32);
-        if let Some(tile_pos) = map_view.get_tile_pos(game.map.size, pos, target_size, mouse_pos)
+        if let Some(tile_pos) = map_view.get_map_pos(game.map.size, pos, target_size, mouse_pos)
         {
             
             if is_mouse_button_released(MouseButton::Left){

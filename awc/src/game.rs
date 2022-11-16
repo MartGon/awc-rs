@@ -90,6 +90,17 @@ impl Game{
         Err(Error::InvalidPosition)
     }
 
+    pub fn get_unit_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
+        for unit in self.map.units(){
+            let pos = self.components.get_position(unit).unwrap();
+            if pos.pos == *target_pos{
+                return Some(unit.clone())
+            }
+        }
+
+        None
+    }
+
     pub fn set_map_size(&mut self, size : map::Size){
         self.map.size = size;
 
@@ -156,6 +167,11 @@ impl Game{
     pub fn add_unit_template(&mut self, id : &ID, unit_template : unit::Template){
         self.unit_factory.add_template(id, unit_template)
     }
+
+    pub fn add_tile_template(&mut self, id : &ID, tile_template : tile::Template){
+        self.tile_factory.add_template(id, tile_template)
+    }
+
 }
 
 pub struct Turn

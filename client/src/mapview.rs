@@ -46,7 +46,7 @@ impl MapView{
         }
     }
 
-    pub fn get_tile_pos(&self, map_size : UVec2, draw_pos : UVec2, draw_target_size : UVec2, mouse_pos : UVec2) -> Option<UVec2>{
+    pub fn get_map_pos(&self, map_size : UVec2, draw_pos : UVec2, draw_target_size : UVec2, mouse_pos : UVec2) -> Option<UVec2>{
 
         let ul_corner = draw_pos;
         let dr_corner = draw_pos + draw_target_size;
@@ -85,7 +85,7 @@ impl MapView{
             if let Some(draw_pos) = self.get_draw_pos(tile_pos, target_size){
 
                 let ttype = components.get_type(tile).unwrap();
-                if let EntityType::Tile = ttype.entity_type {
+                if ttype.is_tile() {
                     if let Some(tile_sprite) = self.tileset.get(&ttype.type_id){
 
                         // Calculate borders
@@ -126,7 +126,7 @@ impl MapView{
             let unit_pos = components.get_position(&unit).unwrap().pos;
             if let Some(draw_pos) = self.get_draw_pos(unit_pos, target_size){
                 let utype = components.get_type(unit).unwrap();
-                if let EntityType::Unit = utype.entity_type{
+                if utype.is_unit(){
                     if let Some(unit_sprite) = self.unitset.get(&utype.type_id){
                         
                         let owner = components.get_owner(unit).expect("A unit didn't have an owner");
