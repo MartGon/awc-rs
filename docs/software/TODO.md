@@ -10,3 +10,4 @@
 - Use pathfinding crate, implement basic movement
 - MasterFile as trait in an asset crate? / Let the user load everything on their own.
 - Check out iced. Looks pretty good
+- Remove factories, use simple HashMaps

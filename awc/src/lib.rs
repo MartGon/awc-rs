@@ -1,6 +1,5 @@
 
 mod table;
-mod template;
 
 pub mod event;
 pub mod component;

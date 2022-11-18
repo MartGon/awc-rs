@@ -1,4 +1,4 @@
-use crate::{component, template::{self, Instance}};
+use crate::{component};
 
 pub type TypeID = super::ID;
 
@@ -7,7 +7,7 @@ pub struct Template
     pub capturable : bool,
 }
 
-impl template::Template<Tile> for Template{
+impl Template{
     fn create_instance(&self, id : &crate::ID) -> Tile {
         Tile { 
             utype: component::Type::new_tile(*id), 
@@ -22,8 +22,4 @@ pub struct Tile
     pub utype : component::Type,
     pub position : component::Position,
     pub capture_state : Option<component::CaptureState>,
-}
-
-impl Instance for Tile{
-    
 }

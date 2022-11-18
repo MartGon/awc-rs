@@ -39,7 +39,7 @@ async fn main() {
     let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
     let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
     let infantry_template = unit::Template::new(&[infantry_weapon], Some(infantry_movement));
-    game.add_unit_template(&0.into(), infantry_template);
+    game.add_unit_template(0.into(), infantry_template);
 
     // Load map data
     let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");

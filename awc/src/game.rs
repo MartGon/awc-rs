@@ -2,8 +2,10 @@ use std::collections::HashMap;
 
 use glam::uvec2;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, template::Factory, ID};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID};
 use crate::component::*;
+
+type Factory<T> = HashMap<ID, T>;
 
 pub struct Game
 {
@@ -17,7 +19,8 @@ pub struct Game
 #[derive(Debug)]
 pub enum Error{
     InvalidPosition,
-    PlayerNotFound
+    PlayerNotFound,
+    TemplateNotFound
 }
 
 impl Game{
@@ -72,13 +75,12 @@ impl Game{
     pub fn create_unit(&mut self, type_id : unit::TypeID, pos : map::Pos, owner : player::ID) -> Result<EntityID, Error>{
 
         if self.map.is_pos_valid(pos){
-            let id = self.components.alloc_id();
-            self.components.insert(id, Component::Type(component::Type{type_id, entity_type : EntityType::Unit}));
-            self.components.insert(id, Component::Position(Position{pos}));
-            self.components.insert(id, Component::Health(Health::default()));
 
             if self.get_player(&owner).is_some(){
+                
+                let id = self.create_unit_from_template(type_id)?;
                 self.components.insert(id, Component::Owner(Owner{owner}));
+                self.components.insert(id, Component::Position(Position{pos}));
                 self.map.add_unit(id);
                 return Ok(id);
             }
@@ -88,6 +90,26 @@ impl Game{
         }
 
         Err(Error::InvalidPosition)
+    }
+
+    fn create_unit_from_template(&mut self, type_id : unit::TypeID) -> Result<ID, Error>{
+
+        if let Some(template) = self.unit_factory.get(&type_id).cloned(){
+            let id = self.components.alloc_id();
+            if !template.weapons.is_empty() {
+                self.components.insert(id, Component::Armament(component::Armament::new(template.weapons)));
+            }
+            if let Some(movement) = template.movement{
+                self.components.insert(id, Component::Movement(component::Movement::new(movement)));
+            }
+            
+            self.components.insert(id, Component::Type(component::Type::new(type_id, EntityType::Unit)));
+            self.components.insert(id, Component::Health(Health::default()));
+
+            return Ok(id);
+        }
+
+        Err(Error::TemplateNotFound)
     }
 
     pub fn get_unit_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
@@ -104,7 +126,7 @@ impl Game{
     pub fn set_map_size(&mut self, size : map::Size){
         self.map.size = size;
 
-        // TODO: Remove tiles out of range?
+        // TODO: Remove tiles/units out of range?
     }
 
     pub fn get_map_data(&self, alphabet : HashMap<tile::TypeID,char> ) -> map::Data{
@@ -164,12 +186,12 @@ impl Game{
         &mut self.components
     }
 
-    pub fn add_unit_template(&mut self, id : &ID, unit_template : unit::Template){
-        self.unit_factory.add_template(id, unit_template)
+    pub fn add_unit_template(&mut self, id : ID, unit_template : unit::Template){
+        self.unit_factory.insert(id, unit_template);
     }
 
-    pub fn add_tile_template(&mut self, id : &ID, tile_template : tile::Template){
-        self.tile_factory.add_template(id, tile_template)
+    pub fn add_tile_template(&mut self, id : ID, tile_template : tile::Template){
+        self.tile_factory.insert(id, tile_template);
     }
 
 }
