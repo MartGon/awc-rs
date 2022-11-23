@@ -11,3 +11,4 @@ glam = { features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 component_derive = { path = "src/component_storage/component_derive"}
 component_storage = { path = "src/component_storage"}
+derive-new = "0.5.9"

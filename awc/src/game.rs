@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, any::Any};
 
 use glam::uvec2;
 
@@ -72,13 +72,19 @@ impl Game{
         None
     }
 
-    pub fn create_unit(&mut self, type_id : unit::TypeID, pos : map::Pos, owner : player::ID) -> Result<EntityID, Error>{
+    pub fn create_unit(&mut self, type_id : Option<unit::TypeID>, pos : map::Pos, owner : player::ID) -> Result<EntityID, Error>{
 
         if self.map.is_pos_valid(pos){
 
             if self.get_player(&owner).is_some(){
                 
-                let id = self.create_unit_from_template(type_id)?;
+                let id;
+                if let Some(type_id) = type_id{
+                    id = self.create_unit_from_template(type_id)?;
+                }
+                else{
+                    id = self.components.alloc_id();
+                }
                 self.components.insert(id, Component::Owner(Owner{owner}));
                 self.components.insert(id, Component::Position(Position{pos}));
                 self.map.add_unit(id);
@@ -168,7 +174,8 @@ impl Game{
         }
 
         for (pos, unit) in data.units{
-            self.create_unit(unit.utype.type_id, pos, unit.owner.owner)?;
+            let id = self.create_unit(None, pos, unit.owner.owner)?;
+            self.components.types.insert(id, unit.utype);
         }
 
         Ok(())

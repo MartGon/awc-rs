@@ -3,6 +3,9 @@ use crate::{weapon, movement, player, map, ID};
 use component_derive::ComponentCollection;
 use serde::{Serialize, Deserialize};
 
+
+
+
 pub type EntityID = super::ID;
 
 #[derive(ComponentCollection)]
@@ -25,7 +28,7 @@ pub enum EntityType
     Tile
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, new)]
 pub struct Type
 {
     pub type_id : ID,
@@ -33,10 +36,6 @@ pub struct Type
 }
 
 impl Type{
-
-    pub fn new(type_id : ID, entity_type : EntityType) -> Type{
-        Type{type_id, entity_type}
-    }
 
     pub fn new_unit(type_id : ID)-> Type{
         Type{type_id, entity_type : EntityType::Unit}

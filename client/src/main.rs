@@ -10,6 +10,7 @@ use awc::player::*;
 use awc::unit;
 use awc::weapon;
 use awc::movement;
+use awc::new_type;
 
 mod spritesheet;
 mod tileset;
@@ -22,6 +23,8 @@ use macroquad::prelude::*;
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
+
+    new_type!(awc::ID::new(0), EntityType::Unit);
 
     // Debug
     env_logger::init();

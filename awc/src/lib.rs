@@ -11,6 +11,9 @@ pub mod player;
 pub mod tile;
 pub mod unit;
 
+#[macro_use]
+extern crate derive_new;
+
 use serde::{Deserialize, Serialize};
 
 
