@@ -1,8 +1,8 @@
-use std::{collections::HashMap, any::Any};
+use std::{collections::HashMap};
 
 use glam::uvec2;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement};
 use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
@@ -85,6 +85,7 @@ impl Game{
                 else{
                     id = self.components.alloc_id();
                 }
+                self.components.insert(id, Component::Health(Health::default()));
                 self.components.insert(id, Component::Owner(Owner{owner}));
                 self.components.insert(id, Component::Position(Position{pos}));
                 self.map.add_unit(id);
@@ -96,6 +97,21 @@ impl Game{
         }
 
         Err(Error::InvalidPosition)
+    }
+
+    pub fn calc_path(&self, entity_id : ID, dest : map::Pos) -> Result<movement::Path, movement::Error>{
+        
+        let pos = self.components.get_position(&entity_id).expect("Entity didn't have a position");
+        if let Some(movement) = self.components.get_movement(&entity_id){
+            let movement = &movement.movement;
+            if let Some(path) = movement.get_path(&self, pos.pos, dest){
+                return Ok(path);
+            }
+
+            return Err(movement::Error::CouldNotReachTarget);
+        }
+
+        Err(movement::Error::EntityCannotMove)
     }
 
     fn create_unit_from_template(&mut self, type_id : unit::TypeID) -> Result<ID, Error>{
@@ -169,13 +185,23 @@ impl Game{
 
         self.map = map::Map::new(data.size);
         
+        // Restore tiles
         for (pos, tile) in data.tiles{
             self.create_tile(tile, pos)?;
         }
 
+        // Restore units
         for (pos, unit) in data.units{
             let id = self.create_unit(None, pos, unit.owner.owner)?;
+
             self.components.types.insert(id, unit.utype);
+            if let Some(movement) = unit.movement{
+                self.components.insert(id, component::Component::Movement(movement));
+            }
+            if let Some(armamnet) = unit.armament{
+                self.components.insert(id, component::Component::Armament(armamnet));
+            }
+            
         }
 
         Ok(())

@@ -114,9 +114,7 @@ fn impl_component_macro(ast: &syn::DeriveInput) -> TokenStream {
                 #[macro_export]
                 macro_rules! #new_fun {
                     ($($args:expr),*) => {                        
-                        use awc::component::Component;
-
-                        awc::component::#struct_type::new($($args),*)
+                        awc::component::Component::#struct_type(awc::component::#struct_type::new($($args),*))
                     }
                 }
             };

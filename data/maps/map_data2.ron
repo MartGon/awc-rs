@@ -10,20 +10,76 @@
         "                        ",
         "                        ",
         "         #    #         ",
-        "          MMMM          ",
-        "         ####M#         ",
-        "         #M#MM#         ",
-        "          M###          ",
-        "         #    M         ",
+        "          ####          ",
+        "         ######         ",
+        "         ######         ",
+        "          #MM#          ",
+        "         #    #         ",
         "                        ",
         "                        ",
         "                        ",
     ],
     units: {
+        (9, 6): (
+            utype: (
+                type_id: (1),
+                entity_type: Unit,
+            ),
+            position: (
+                pos: (9, 6),
+            ),
+            health: (
+                health: 100.0,
+            ),
+            owner: (
+                owner: (0),
+            ),
+            direction: None,
+            armament: None,
+            movement: Some((
+                movement: (
+                    range: 2,
+                    traverse_cost: {
+                        (2): 1,
+                        (1): 1,
+                    },
+                ),
+                gas: 100,
+                max_gas: 100,
+            )),
+        ),
+        (10, 5): (
+            utype: (
+                type_id: (0),
+                entity_type: Unit,
+            ),
+            position: (
+                pos: (10, 5),
+            ),
+            health: (
+                health: 100.0,
+            ),
+            owner: (
+                owner: (0),
+            ),
+            direction: None,
+            armament: None,
+            movement: Some((
+                movement: (
+                    range: 2,
+                    traverse_cost: {
+                        (2): 2,
+                        (1): 1,
+                    },
+                ),
+                gas: 100,
+                max_gas: 100,
+            )),
+        ),
         (12, 6): (
             utype: (
+                type_id: (1),
                 entity_type: Unit,
-                type_id : (1)
             ),
             position: (
                 pos: (12, 6),
@@ -36,43 +92,17 @@
             ),
             direction: None,
             armament: None,
-            movement: None,
-        ),
-        (10, 5): (
-            utype: (
-                entity_type: Unit,
-                type_id : (0)
-            ),
-            position: (
-                pos: (10, 5),
-            ),
-            health: (
-                health: 100.0,
-            ),
-            owner: (
-                owner: (0),
-            ),
-            direction: None,
-            armament: None,
-            movement: None,
-        ),
-        (9, 6): (
-            utype: (
-                entity_type: Unit,
-                type_id : (1)
-            ),
-            position: (
-                pos: (10, 5),
-            ),
-            health: (
-                health: 100.0,
-            ),
-            owner: (
-                owner: (0),
-            ),
-            direction: None,
-            armament: None,
-            movement: None,
+            movement: Some((
+                movement: (
+                    range: 2,
+                    traverse_cost: {
+                        (2): 1,
+                        (1): 1,
+                    },
+                ),
+                gas: 100,
+                max_gas: 100,
+            )),
         ),
     },
 )

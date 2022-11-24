@@ -3,6 +3,7 @@ use std::fs;
 
 use assets::MasterFile;
 use awc::component::EntityType;
+use awc::new_movement;
 use awc::tile;
 use awc::map;
 use awc::game::*;
@@ -10,7 +11,6 @@ use awc::player::*;
 use awc::unit;
 use awc::weapon;
 use awc::movement;
-use awc::new_type;
 
 mod spritesheet;
 mod tileset;
@@ -23,8 +23,6 @@ use macroquad::prelude::*;
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
-
-    new_type!(awc::ID::new(0), EntityType::Unit);
 
     // Debug
     env_logger::init();
@@ -61,6 +59,13 @@ async fn main() {
     }
     let tileset = res.0;
 
+    // Write map
+    /* 
+    let map_data = game.get_map_data([(ID::new(0), ' '), (ID::new(1), '#'), (ID::new(2), 'M')].into_iter().collect());
+    let map_data_ron = ron::ser::to_string_pretty(&map_data, ron::ser::PrettyConfig::default()).expect("Error on ser");
+    fs::write("data/maps/map_data2.ron", map_data_ron).expect("Error on write");
+    */
+
     // Load unit sheet
     let mut unitsheet = Image::from_file_with_format(include_bytes!("../../sprites/unitsheet.png"), Some(ImageFormat::Png));
     for y in 0..unitsheet.height() as u32 { for x in 0..unitsheet.width() as u32 { if unitsheet.get_pixel(x, y) == Color::from_rgba(255, 127, 255, 255){ unitsheet.set_pixel(x, y, Color::from_rgba(0, 0, 0, 0))}}};
@@ -79,6 +84,7 @@ async fn main() {
     let mut map_view = mapview::MapView::new(tilesheet, tileset, tile_size, unitsheet, unitset);
 
     let mut tile_type = tile::TypeID::new(0);
+    let mut move_unit : Option<awc::ID> = None;
     loop {
 
         let screen_size = vec2(screen_width(), screen_height());
@@ -89,18 +95,35 @@ async fn main() {
         // Inpput handling \\
         let (x, y) = mouse_position();
         let mouse_pos = uvec2(x as u32, y as u32);
-        if let Some(tile_pos) = map_view.get_map_pos(game.map.size, pos, target_size, mouse_pos)
+        if let Some(map_pos) = map_view.get_map_pos(game.map.size, pos, target_size, mouse_pos)
         {
             
+            
             if is_mouse_button_released(MouseButton::Left){
-                if let Some(tile) = game.get_tile_in_pos(&tile_pos){
+                
+                if let Some(tile) = game.get_tile_in_pos(&map_pos){
+
+                    if let Some(u) = move_unit{
+                        let path = game.calc_path(u, map_pos);
+                        println!("Path to {} is: {:?}", map_pos, path);
+                        move_unit = None;
+                    }
+
+                    /* 
                     let entity_type = game.components_mut().get_type_mut(&tile).unwrap();
                     entity_type.type_id = tile_type;
+                    */
+                }
+                
+
+                if let Some(unit) = game.get_unit_in_pos(&map_pos){
+                    move_unit = Some(unit);
+                    println!("Selected unit {:?}", unit);
                 }
             }
 
             if is_mouse_button_released(MouseButton::Right){
-                if let Some(tile) = game.get_tile_in_pos(&tile_pos){
+                if let Some(tile) = game.get_tile_in_pos(&map_pos){
                     let entity_type = game.components_mut().get_type_mut(&tile).unwrap();
                     if let EntityType::Tile = entity_type.entity_type{
                         tile_type = entity_type.type_id;

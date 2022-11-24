@@ -119,8 +119,8 @@ impl Armament{
 pub struct Movement
 {
     pub movement : movement::Movement,
-    pub gas : i32,
-    pub max_gas : i32,
+    pub gas : u32,
+    pub max_gas : u32,
 }
 
 impl Movement{

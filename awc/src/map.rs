@@ -1,7 +1,7 @@
 use std::{fmt, error};
 use std::{slice::Iter, collections::HashMap};
 
-use glam::{UVec2, uvec2};
+use glam::{UVec2, uvec2, IVec2};
 use serde::de::Error;
 use serde::{Serialize, Deserialize};
 
@@ -11,6 +11,18 @@ use crate::{component::{self, EntityID}, tile};
 
 pub type Size = UVec2;
 pub type Pos = UVec2;
+pub type Offset = IVec2;
+
+pub fn add_offset(pos : Pos, offset : Offset) -> Option<Pos>{
+
+    if offset.x < 0 && offset.x.abs() as u32 > pos.x{
+        if offset.y < 0 && offset.y.abs() as u32 > pos.y{
+            return None;
+        }
+    }
+
+    return Some((pos.as_ivec2() + offset).as_uvec2());
+}
 
 pub struct Map
 {

@@ -1,10 +1,18 @@
-use std::collections::HashMap;
+use std::{collections::HashMap};
+use crate::{map, game};
 
 use serde::{Serialize, Deserialize};
 
 use crate::tile;
 
-type MoveCost = u32;
+#[derive(Debug)]
+pub enum Error{
+    CouldNotReachTarget,
+    EntityCannotMove
+}
+
+pub type MoveCost = u32;
+pub type Path = (Vec<map::Pos>, MoveCost);
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Movement
@@ -27,4 +35,42 @@ impl Movement{
             None
         }
     }
+
+    pub fn get_path(&self, game : &game::Game, origin : map::Pos, dest : map::Pos) -> Option<Path>{
+
+        let successors = |origin : &map::Pos| -> Vec<(map::Pos, MoveCost)>{
+
+            let neighs = Movement::get_neighbors_pos(*origin);
+            neighs.into_iter().filter_map(|p|{
+                if game.map.is_pos_valid(p) {
+                    if let Some(tile_id) = game.get_tile_in_pos(&p){
+                        let tile_type = game.components().get_type(&tile_id).expect("Movement: Tile didn't have a type");
+                        if let Some(move_cost) = self.get_move_cost(tile_type.type_id){
+                            return Some((p, move_cost));
+                        }
+                    }
+                }
+
+                None
+            }).collect()
+        };
+
+        let success = |pos : &map::Pos| -> bool { *pos == dest };
+
+        let paths = pathfinding::directed::dijkstra::dijkstra(&origin, successors, success);
+        paths.filter(|p| p.1 <= self.range)
+    }
+
+    pub fn get_neighbors_pos(origin : map::Pos) -> Vec<map::Pos>{
+        let offsets = [map::Offset::new(-1, 0), map::Offset::new(1, 0), map::Offset::new(0, -1), map::Offset::new(0, 1)];
+        let mut neighs = Vec::with_capacity(4);
+        for o in offsets{
+            if let Some(neigh) = map::add_offset(origin, o){
+                neighs.push(neigh);
+            }
+        }
+
+        neighs
+    }
 }
+
