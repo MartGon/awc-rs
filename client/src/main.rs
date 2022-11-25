@@ -3,7 +3,6 @@ use std::fs;
 
 use assets::MasterFile;
 use awc::component::EntityType;
-use awc::new_movement;
 use awc::tile;
 use awc::map;
 use awc::game::*;
@@ -106,6 +105,7 @@ async fn main() {
                     if let Some(u) = move_unit{
                         let path = game.calc_path(u, map_pos);
                         println!("Path to {} is: {:?}", map_pos, path);
+                        map_view.clear_highlighted_tiles();
                         move_unit = None;
                     }
 
@@ -119,6 +119,11 @@ async fn main() {
                 if let Some(unit) = game.get_unit_in_pos(&map_pos){
                     move_unit = Some(unit);
                     println!("Selected unit {:?}", unit);
+
+                    if let Ok(area) = game.calc_move_area(unit){
+                        map_view.highlight_tiles(vec!(area.get_origin()), Color::from_rgba(10, 10, 180, 50));
+                        map_view.highlight_tiles(area.get_tiles(), Color::from_rgba(10, 10, 180, 50));
+                    }
                 }
             }
 

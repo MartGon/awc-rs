@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 mlua = { version = "0.8", features = ["lua54", "vendored"] }
-glam = { features = ["serde"] }
+glam = { version = "0.21.3", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 component_derive = { path = "src/component_storage/component_derive"}
 component_storage = { path = "src/component_storage"}

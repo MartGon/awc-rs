@@ -1,22 +1,37 @@
+use std::collections::HashMap;
+
 use awc::{*, component::{EntityType}};
-use glam::{UVec2, ivec2, uvec2};
-use macroquad::texture::Texture2D;
+use crate::glam::{UVec2, ivec2, uvec2};
+use crate::glam;
+use macroquad::{texture::Texture2D, shapes::draw_rectangle, prelude::Color};
 
 use crate::{tileset::{self, Borders}, spritesheet::{Drawable, AnimatedSprite}, unitset};
 
 pub struct MapView{
     spritesheet : Texture2D,
     tileset : tileset::Tileset,
-    tile_size : UVec2,
+    tile_size : glam::UVec2,
+
     unitsheet : Texture2D,
     unitset : unitset::UnitSet,
-    cam_pos : UVec2
+
+    cam_pos : UVec2,
+
+    highlighted_tiles : HashMap<map::Pos, Color>,
 }
 
 impl MapView{
 
     pub fn new(spritesheet : Texture2D, tileset : tileset::Tileset, tile_size : UVec2, unitsheet : Texture2D, unitset : unitset::UnitSet ) -> MapView{
-        MapView { tileset, spritesheet, tile_size, cam_pos : uvec2(0, 0), unitsheet, unitset}
+        MapView { 
+            tileset, 
+            spritesheet, 
+            tile_size, 
+            cam_pos : uvec2(0, 0), 
+            unitsheet, 
+            unitset,
+            highlighted_tiles : HashMap::new()
+        }
     }
 
     pub fn _get_pixel_size(&self, map : &map::Map)-> UVec2{
@@ -111,6 +126,11 @@ impl MapView{
                         let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
                         let draw_pos = pos + draw_pos;
                         sprite.draw_scaled(&self.spritesheet, draw_pos.as_vec2(), scale);
+                        
+                        // Highlight tile
+                        if let Some(color) = self.highlighted_tiles.get(&tile_pos){
+                            draw_rectangle(draw_pos.x as f32, draw_pos.y as f32, self.tile_size.x as f32, self.tile_size.y as f32, *color);
+                        }
                     }
                 }
             }
@@ -158,6 +178,16 @@ impl MapView{
         if draw_pos.x >= target_size.x || draw_pos.y >= target_size.y {return None;}
 
         Some(draw_pos)
+    }
+
+    pub fn highlight_tiles(&mut self, tiles : Vec<map::Pos>, color : Color){
+        for tile in tiles{
+            self.highlighted_tiles.insert(tile, color);
+        }
+    }
+
+    pub fn clear_highlighted_tiles(&mut self){
+        self.highlighted_tiles.clear();
     }
     
 }

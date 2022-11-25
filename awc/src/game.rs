@@ -114,6 +114,17 @@ impl Game{
         Err(movement::Error::EntityCannotMove)
     }
 
+    pub fn calc_move_area(&self, entity_id : ID) -> Result<movement::MovementArea, movement::Error>{
+
+        let pos = self.components.get_position(&entity_id).expect("Entity didn't have a position");
+        if let Some(movement) = self.components.get_movement(&entity_id){
+            let movement = &movement.movement;
+            return Ok(movement.get_area(&self, &pos.pos));
+        }
+
+        Err(movement::Error::EntityCannotMove)
+    }
+
     fn create_unit_from_template(&mut self, type_id : unit::TypeID) -> Result<ID, Error>{
 
         if let Some(template) = self.unit_factory.get(&type_id).cloned(){
