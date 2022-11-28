@@ -7,9 +7,20 @@
 - Remove factories, use simple HashMaps - DONE
 - Use pathfinding crate, implement basic movement - DONE
     - Build Movement Path - DONE
-    - Build Movement Area - 
-        - Show visual effect
+    - Build Movement Area - DONE
+        - Show visual effect - DONE
+
+- Movement animation
+    - Apply movement animatino to unit sprite
+    - Move sprite around path
+        - Flip sprite based on movement direction around path
+
 - Serialize/Deserialize template units
+- Implement commands
+    - Move
+    - Attack
+
+
 - MasterFile as trait in an asset crate? / Let the user load everything on their own.
 - Check out iced. Looks pretty good
 

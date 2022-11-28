@@ -150,10 +150,6 @@ impl AnimatedSprite{
 
         None
     }
-
-    pub fn update(&mut self){
-
-    }
 }
 
 impl Drawable for AnimatedSprite{

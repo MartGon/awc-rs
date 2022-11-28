@@ -1,5 +1,5 @@
 use std::{collections::HashMap};
-use crate::{map, game};
+use crate::{map, game, ID};
 
 use serde::{Serialize, Deserialize};
 
@@ -8,12 +8,12 @@ use crate::tile;
 #[derive(Debug)]
 pub enum Error{
     CouldNotReachTarget,
-    EntityCannotMove
+    DestinationSameAsOrigin,
+    EntityCannotMove,
 }
 
 pub type MoveCost = u32;
 pub type Path = (Vec<map::Pos>, MoveCost);
-type Area = HashMap<map::Pos, (map::Pos, MoveCost)>;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Movement
@@ -127,4 +127,31 @@ impl MovementArea{
         
         None
     }
+}
+
+
+pub fn calc_path(game : &game::Game, entity_id : ID, dest : map::Pos) -> Result<Path, Error>{
+        
+    let pos = game.components().get_position(&entity_id).expect("Entity didn't have a position");
+    if let Some(movement) = game.components().get_movement(&entity_id){
+        let movement = &movement.movement;
+        if let Some(path) = movement.get_path(&game, pos.pos, dest){
+            return Ok(path);
+        }
+
+        return Err(Error::CouldNotReachTarget);
+    }
+
+    Err(Error::EntityCannotMove)
+}
+
+pub fn calc_move_area(game : &game::Game, entity_id : ID) -> Result<MovementArea, Error>{
+
+    let pos = game.components().get_position(&entity_id).expect("Entity didn't have a position");
+    if let Some(movement) = game.components().get_movement(&entity_id){
+        let movement = &movement.movement;
+        return Ok(movement.get_area(&game, &pos.pos));
+    }
+
+    Err(Error::EntityCannotMove)
 }

@@ -27,6 +27,30 @@
                     ],
                     fps: 4,
                 ),
+                "move-side" : (
+                    name: "move-side",
+                    frames: [
+                        (
+                            source: (3, 104),
+                        ),
+                        (
+                            source: (20, 104),
+                        ),
+                        (
+                            source: (37, 104),
+                        ),
+                        (
+                            source: (37, 104),
+                        ),
+                        (
+                            source: (20, 104),
+                        ),
+                        (
+                            source: (3, 104),
+                        ),
+                    ],
+                    fps: 4,
+                ),
             },
         ),
         (Blue, OrangeStar): (

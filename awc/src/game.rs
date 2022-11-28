@@ -1,8 +1,8 @@
-use std::{collections::HashMap};
+use std::{collections::{HashMap, VecDeque}};
 
 use glam::uvec2;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement, event::{Event, EventI}, command::{Command, CommandI, self}};
 use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
@@ -12,6 +12,8 @@ pub struct Game
     pub map : map::Map,
     components : component::Components,
     players : Table<player::ID, player::Player>,
+    event_queue : VecDeque<Event>,
+
     unit_factory : Factory<unit::Template>,
     tile_factory : Factory<tile::Template>
 }
@@ -29,6 +31,8 @@ impl Game{
             map: map::Map::new(uvec2(10, 10)), 
             players: Table::new(), 
             components : component::Components::new(), 
+            event_queue : VecDeque::new(),
+
             unit_factory : Factory::new(),
             tile_factory : Factory::new()
         }
@@ -47,6 +51,7 @@ impl Game{
     pub fn get_player(&self, player_id : &player::ID) -> Option<&Player>{
         self.players.get_entry(player_id)
     }
+
 
     pub fn create_tile(&mut self, type_id : tile::TypeID, pos : map::Pos) -> Result<EntityID, Error>{
     
@@ -71,6 +76,7 @@ impl Game{
 
         None
     }
+
 
     pub fn create_unit(&mut self, type_id : Option<unit::TypeID>, pos : map::Pos, owner : player::ID) -> Result<EntityID, Error>{
 
@@ -99,30 +105,23 @@ impl Game{
         Err(Error::InvalidPosition)
     }
 
-    pub fn calc_path(&self, entity_id : ID, dest : map::Pos) -> Result<movement::Path, movement::Error>{
-        
-        let pos = self.components.get_position(&entity_id).expect("Entity didn't have a position");
-        if let Some(movement) = self.components.get_movement(&entity_id){
-            let movement = &movement.movement;
-            if let Some(path) = movement.get_path(&self, pos.pos, dest){
-                return Ok(path);
+    pub fn get_unit_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
+        for unit in self.map.units(){
+            let pos = self.components.get_position(unit).unwrap();
+            if pos.pos == *target_pos{
+                return Some(unit.clone())
             }
-
-            return Err(movement::Error::CouldNotReachTarget);
         }
 
-        Err(movement::Error::EntityCannotMove)
+        None
     }
 
-    pub fn calc_move_area(&self, entity_id : ID) -> Result<movement::MovementArea, movement::Error>{
+    pub fn calc_path(&self, entity_id : ID, dest : map::Pos) -> Result<movement::Path, movement::Error> {
+       movement::calc_path(&self, entity_id, dest)
+    }
 
-        let pos = self.components.get_position(&entity_id).expect("Entity didn't have a position");
-        if let Some(movement) = self.components.get_movement(&entity_id){
-            let movement = &movement.movement;
-            return Ok(movement.get_area(&self, &pos.pos));
-        }
-
-        Err(movement::Error::EntityCannotMove)
+    pub fn calc_move_area(&self, entity_id : ID) -> Result<movement::MovementArea, movement::Error> {
+        movement::calc_move_area(&self, entity_id)
     }
 
     fn create_unit_from_template(&mut self, type_id : unit::TypeID) -> Result<ID, Error>{
@@ -145,16 +144,6 @@ impl Game{
         Err(Error::TemplateNotFound)
     }
 
-    pub fn get_unit_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
-        for unit in self.map.units(){
-            let pos = self.components.get_position(unit).unwrap();
-            if pos.pos == *target_pos{
-                return Some(unit.clone())
-            }
-        }
-
-        None
-    }
 
     pub fn set_map_size(&mut self, size : map::Size){
         self.map.size = size;
@@ -218,6 +207,8 @@ impl Game{
         Ok(())
     }
 
+
+
     pub fn insert_component(&mut self, entity : EntityID, component : component::Component){
         self.components.insert(entity, component)
     }
@@ -228,6 +219,21 @@ impl Game{
 
     pub fn components_mut(&mut self) -> &mut component::Components{
         &mut self.components
+    }
+
+
+    pub(crate) fn push_event(&mut self, event : Event){
+        self.event_queue.push_back(event);
+    }
+
+    pub(crate) fn run_events(&mut self){
+        while let Some(event) = self.event_queue.pop_front(){
+            event.run(self);
+        }
+    }
+
+    pub fn run_command(&mut self, command : Command) -> Result<(), command::Error>{
+        command.execute(self)
     }
 
     pub fn add_unit_template(&mut self, id : ID, unit_template : unit::Template){

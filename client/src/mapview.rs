@@ -83,15 +83,15 @@ impl MapView{
         None
     }
 
-    pub fn draw_map(&mut self, game : &game::Game, pos : UVec2, target_size : UVec2){
+    pub fn draw_map(&mut self, game : &game::Game, view_pos : UVec2, target_size : UVec2){
         
         // Update cam pos
         self.cam_pos = self.calc_cam_pos(game.map.size, target_size);
-        self.draw_tiles(game, pos, target_size);
-        self.draw_units(game, pos, target_size);
+        self.draw_tiles(game, view_pos, target_size);
+        self.draw_units(game, view_pos, target_size);
     }
 
-    fn draw_tiles(&mut self, game : &game::Game, pos : UVec2, target_size : UVec2){
+    fn draw_tiles(&mut self, game : &game::Game, view_pos : UVec2, target_size : UVec2){
         let map = &game.map;
         let components = game.components();
 
@@ -123,8 +123,8 @@ impl MapView{
                         
                         // Draw tile
                         let sprite = tile_sprite.sprite(&borders);
+                        let draw_pos = view_pos + draw_pos;
                         let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
-                        let draw_pos = pos + draw_pos;
                         sprite.draw_scaled(&self.spritesheet, draw_pos.as_vec2(), scale);
                         
                         // Highlight tile
@@ -137,7 +137,7 @@ impl MapView{
         }
     }
 
-    fn draw_units(&mut self, game : &game::Game, pos : UVec2, target_size : UVec2){
+    fn draw_units(&mut self, game : &game::Game, view_pos : UVec2, target_size : UVec2){
         let map = &game.map;
         let components = game.components();
 
@@ -158,7 +158,7 @@ impl MapView{
                         }
 
                         let scale = self.tile_size.as_vec2() / sprite.size.as_vec2();
-                        let draw_pos = pos + draw_pos;
+                        let draw_pos = view_pos + draw_pos;
                         sprite.draw_scaled(&self.unitsheet, draw_pos.as_vec2(), scale);
                     }
                 }

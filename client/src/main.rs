@@ -2,6 +2,8 @@ use std::env;
 use std::fs;
 
 use assets::MasterFile;
+use awc::command::Command;
+use awc::command;
 use awc::component::EntityType;
 use awc::tile;
 use awc::map;
@@ -95,27 +97,10 @@ async fn main() {
         let (x, y) = mouse_position();
         let mouse_pos = uvec2(x as u32, y as u32);
         if let Some(map_pos) = map_view.get_map_pos(game.map.size, pos, target_size, mouse_pos)
-        {
-            
-            
+        {     
             if is_mouse_button_released(MouseButton::Left){
                 
-                if let Some(tile) = game.get_tile_in_pos(&map_pos){
-
-                    if let Some(u) = move_unit{
-                        let path = game.calc_path(u, map_pos);
-                        println!("Path to {} is: {:?}", map_pos, path);
-                        map_view.clear_highlighted_tiles();
-                        move_unit = None;
-                    }
-
-                    /* 
-                    let entity_type = game.components_mut().get_type_mut(&tile).unwrap();
-                    entity_type.type_id = tile_type;
-                    */
-                }
-                
-
+                // Select Unit
                 if let Some(unit) = game.get_unit_in_pos(&map_pos){
                     move_unit = Some(unit);
                     println!("Selected unit {:?}", unit);
@@ -125,6 +110,30 @@ async fn main() {
                         map_view.highlight_tiles(area.get_tiles(), Color::from_rgba(10, 10, 180, 50));
                     }
                 }
+                // Apply movement
+                else if let Some(tile) = game.get_tile_in_pos(&map_pos){
+
+                    if let Some(u) = move_unit{
+                        let path = game.calc_path(u, map_pos);
+                        println!("Path to {} is: {:?}", map_pos, path);
+
+                        if path.is_ok() {
+                            println!("Moving unit");
+                            let command = Command::Move(command::Move::new(u, map_pos));
+                            if let Err(res) = game.run_command(command){
+                                println!("Error on running last cmd {:?}", res);
+                            }
+                        }
+
+                        map_view.clear_highlighted_tiles();
+                        move_unit = None;
+                    }
+
+                    /* 
+                    let entity_type = game.components_mut().get_type_mut(&tile).unwrap();
+                    entity_type.type_id = tile_type;
+                    */
+                }    
             }
 
             if is_mouse_button_released(MouseButton::Right){
@@ -162,12 +171,14 @@ async fn main() {
             map_view.set_cam_pos(cam_pos);
             println!("Right pressed: {}", cam_pos);
         }
-
+        
         // Drawing \\
         clear_background(RED);
         
         // Draw Map
         map_view.draw_map(&game, pos, target_size);
+
+        draw_rectangle(0., 0., 64., 64., Color::from_rgba(0, 0, 0, 255));
         
         /*
         // Draw UI
