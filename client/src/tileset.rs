@@ -3,10 +3,9 @@ use awc::tile;
 use macroquad::prelude::IVec2;
 use serde::{Deserialize, Serialize};
 
-use crate::{spritesheet, assets::{MasterFile}};
+use crate::{spritesheet};
 
 pub type Tileset = HashMap<awc::tile::TypeID, BorderedTile>;
-impl MasterFile<BorderedTile> for Tileset{}
 
 #[derive(Clone, Hash, Debug, Deserialize, Serialize)]
 pub enum BorderMaskEntry{

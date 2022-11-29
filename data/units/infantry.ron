@@ -1,0 +1,24 @@
+(
+    weapons: [
+        (
+            range: (
+                min: 0,
+                max: 1,
+            ),
+            dmg: 20,
+            ammo: 99,
+            max_ammo: 99,
+            attackable_units: {
+                (0): true,
+                (1): true,
+            },
+        ),
+    ],
+    movement: Some((
+        range: 3,
+        traverse_cost: {
+            (2): 2,
+            (1): 1,
+        },
+    )),
+)

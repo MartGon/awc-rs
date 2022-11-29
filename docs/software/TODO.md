@@ -15,7 +15,7 @@
     - Move sprite around path
         - Flip sprite based on movement direction around path
 
-- Serialize/Deserialize template units
+- Serialize/Deserialize template units - DONE
 - Implement commands
     - Move - DONE
     - Attack

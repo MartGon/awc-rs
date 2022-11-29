@@ -3,13 +3,9 @@ use std::collections::HashMap;
 use awc::{*, player::{Team, Faction}};
 use serde::{Serialize, Deserialize};
 
-use crate::{spritesheet::AnimatedSprite, assets::MasterFile};
+use crate::{spritesheet::AnimatedSprite};
 
 pub type UnitSet = HashMap<unit::TypeID, Unit>; 
-
-impl MasterFile<Unit> for UnitSet{}
-
-
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct Unit{

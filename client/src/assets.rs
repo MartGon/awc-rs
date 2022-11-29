@@ -36,6 +36,10 @@ pub trait MasterFile<T: Serialize + DeserializeOwned>{
     }
 }
 
+impl<T: Serialize + DeserializeOwned> MasterFile<T> for T{
+
+}
+
 fn load_from_master_file<T: Serialize + DeserializeOwned, ID: Hash + Copy + Eq + DeserializeOwned, P: AsRef<Path> + Into<String> + Clone, F: Fn() -> T>(master_file : P, default : F) -> Result<(HashMap<ID, T>, ErrorMap<ID>), self::Error>{
     let tileset_str = fs::read_to_string(&master_file).map_err(|e| self::Error::FileNotFound(e, master_file.clone().into()));
     let tileset = ron::from_str::<HashMap<ID, String>>(&tileset_str.unwrap()).map_err(|e| self::Error::ParsingError(e, master_file.into())).unwrap();

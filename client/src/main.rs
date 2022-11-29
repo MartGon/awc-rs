@@ -46,7 +46,15 @@ async fn main() {
     let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
     let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
     let infantry_template = unit::Template::new(&[infantry_weapon], Some(infantry_movement));
-    game.add_unit_template(0.into(), infantry_template);
+
+    let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None));
+    let res = unit_templates.unwrap();
+    for (_id, e) in res.1{
+        log::error!("Error while loading {}", e);
+    }
+    for (id, unit_template) in res.0{
+        game.add_unit_template(id, unit_template)
+    }
 
     // Load map data
     let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");
@@ -58,7 +66,7 @@ async fn main() {
     let tilesheet = Texture2D::from_image(&tilesheet);
     
     // Load tileset 
-    let tileset = tileset::Tileset::load_from_master_file_default("sprites/tileset.ron");
+    let tileset = tileset::BorderedTile::load_from_master_file_default("sprites/tileset.ron");
     let res = tileset.unwrap();
     for (_id, e) in res.1{
         log::error!("Error while loading {}", e);
@@ -78,7 +86,7 @@ async fn main() {
     let unitsheet = Texture2D::from_image(&unitsheet);
 
     // Load UnitSet
-    let unitset = unitset::UnitSet::load_from_master_file_default("sprites/unitset.ron");
+    let unitset = unitset::Unit::load_from_master_file_default("sprites/unitset.ron");
     let res = unitset.unwrap();
     for (_id, e) in res.1{
         log::error!("Error while loading {}", e);
@@ -146,6 +154,14 @@ async fn main() {
                     let entity_type = game.components_mut().get_type_mut(&tile).unwrap();
                     if let EntityType::Tile = entity_type.entity_type{
                         tile_type = entity_type.type_id;
+                    }
+                }
+            }
+
+            if is_key_released(KeyCode::S){
+                if let Some(tile) = game.get_tile_in_pos(&map_pos){
+                    if let Err(err) = game.create_unit(Some(0.into()), map_pos, 0.into()){
+                        println!("Could not create unit {:?}", err);
                     }
                 }
             }
