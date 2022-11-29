@@ -17,8 +17,10 @@
 
 - Serialize/Deserialize template units
 - Implement commands
-    - Move
+    - Move - DONE
     - Attack
+
+- Event Listeners
 
 
 - MasterFile as trait in an asset crate? / Let the user load everything on their own.

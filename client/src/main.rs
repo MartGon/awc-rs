@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::env;
 use std::fs;
 
@@ -21,6 +22,10 @@ mod mapview;
 
 use macroquad::prelude::*;
 
+type UnitTemplates = HashMap<unit::TypeID, unit::Template>;
+impl MasterFile<unit::Template> for UnitTemplates{
+
+}
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
@@ -53,7 +58,7 @@ async fn main() {
     let tilesheet = Texture2D::from_image(&tilesheet);
     
     // Load tileset 
-    let tileset = tileset::Tileset::load_from_master_file("sprites/tileset.ron");
+    let tileset = tileset::Tileset::load_from_master_file_default("sprites/tileset.ron");
     let res = tileset.unwrap();
     for (_id, e) in res.1{
         log::error!("Error while loading {}", e);
@@ -73,7 +78,7 @@ async fn main() {
     let unitsheet = Texture2D::from_image(&unitsheet);
 
     // Load UnitSet
-    let unitset = unitset::UnitSet::load_from_master_file("sprites/unitset.ron");
+    let unitset = unitset::UnitSet::load_from_master_file_default("sprites/unitset.ron");
     let res = unitset.unwrap();
     for (_id, e) in res.1{
         log::error!("Error while loading {}", e);

@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use crate::{spritesheet, assets::{MasterFile}};
 
 pub type Tileset = HashMap<awc::tile::TypeID, BorderedTile>;
-
 impl MasterFile<BorderedTile> for Tileset{}
 
 #[derive(Clone, Hash, Debug, Deserialize, Serialize)]
@@ -86,7 +85,7 @@ impl Borders{
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct BorderedTile{
     sprites : Vec<(BordersMask, spritesheet::Sprite)>,
     default : spritesheet::Sprite,
@@ -118,11 +117,5 @@ impl BorderedTile{
             }
         }
         &self.default
-    }
-}
-
-impl Default for BorderedTile{
-    fn default() -> Self {
-        Self { sprites: Default::default(), default: Default::default() }
     }
 }
