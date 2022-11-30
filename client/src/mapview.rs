@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use awc::{*, component::{EntityType}};
-use crate::glam::{UVec2, ivec2, uvec2};
+use crate::{glam::{UVec2, ivec2, uvec2}, spritesheet::{Sprite, self}};
 use crate::glam;
-use macroquad::{texture::Texture2D, shapes::draw_rectangle, prelude::Color};
+use macroquad::{texture::Texture2D, shapes::draw_rectangle, prelude::{Color, PINK}};
 
-use crate::{tileset::{self, Borders}, spritesheet::{Drawable, AnimatedSprite}, unitset};
+use crate::{tileset::{self, Borders}, spritesheet::{AnimatedSprite}, unitset};
 
 pub struct MapView{
     spritesheet : Texture2D,
@@ -152,14 +152,27 @@ impl MapView{
                         let owner = components.get_owner(unit).expect("A unit didn't have an owner");
                         let owner = game.get_player(&owner.owner).expect("Could not find player in game by component's id");
                         
-                        let mut sprite = &AnimatedSprite::default();
-                        if let Some(proper_sprite) = unit_sprite.sprite_faction(owner.team, owner.faction){
-                            sprite = &proper_sprite;
-                        }
+                        let mut sprite : Option<Sprite> = None;
+                        if let Some(animated_sprite) = unit_sprite.sprite_faction(owner.team, owner.faction){
+                            
+                            sprite = animated_sprite.frame("idle");
 
-                        let scale = self.tile_size.as_vec2() / sprite.size.as_vec2();
+                            if let Some(turn) = game.get_turn(){
+                                if turn.is_waiting(*unit){
+                                    sprite = animated_sprite.frame("wait");
+                                }
+                            }
+                        }
+                        
                         let draw_pos = view_pos + draw_pos;
-                        sprite.draw_scaled(&self.unitsheet, draw_pos.as_vec2(), scale);
+                        if let Some(sprite) = sprite{
+                            let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
+                            sprite.draw_scaled(&self.unitsheet, draw_pos.as_vec2(), scale);
+                        }
+                        // Draw pink rectangle
+                        else{
+                            draw_rectangle(draw_pos.x as f32, draw_pos.y as f32, self.tile_size.x as f32, self.tile_size.y as f32, PINK);
+                        }
                     }
                 }
             }

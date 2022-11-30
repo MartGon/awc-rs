@@ -86,35 +86,26 @@ impl Borders{
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct BorderedTile{
-    sprites : Vec<(BordersMask, spritesheet::Sprite)>,
-    default : spritesheet::Sprite,
+    sprites : Vec<(BordersMask, spritesheet::AnimatedSprite)>,
+    default : spritesheet::AnimatedSprite,
 }
 
 impl BorderedTile{
 
-    pub fn new_short(default : spritesheet::Sprite) -> BorderedTile{
+    pub fn new_short(default : spritesheet::AnimatedSprite) -> BorderedTile{
         BorderedTile::new(default, &[])
     }
 
-    pub fn new(default : spritesheet::Sprite, sprites: &[(BordersMask, spritesheet::Sprite)]) -> BorderedTile{
+    pub fn new(default : spritesheet::AnimatedSprite, sprites: &[(BordersMask, spritesheet::AnimatedSprite)]) -> BorderedTile{
         BorderedTile { default,  sprites: sprites.into_iter().cloned().collect() }
     }
 
-    pub fn sprite_mut(&mut self, border : &Borders) -> &mut spritesheet::Sprite{
-        for (b, sprite) in self.sprites.iter_mut(){   
-            if b.matches(border){
-                return sprite;
-            }
-        }
-        &mut self.default
-    }
-
-    pub fn sprite(&self, border : &Borders) -> &spritesheet::Sprite{
+    pub fn sprite(&self, border : &Borders) -> spritesheet::Sprite{
         for (b, sprite) in self.sprites.iter(){   
             if b.matches(border){
-                return sprite;
+                return sprite.frame("idle").expect("Tile sprite didn't have idle anim");
             }
         }
-        &self.default
+        self.default.frame("idle").expect("There was no default frame")
     }
 }

@@ -60,6 +60,7 @@ async fn main() {
     let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");
     let map_data = ron::from_str::<map::Data>(&map_data_str).expect("Error on str -> ron");
     game.load_map_data(map_data).expect("Error on loading map data");
+    game.start();
 
     // Load SpriteSheet
     let tilesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
@@ -135,6 +136,15 @@ async fn main() {
                             let command = Command::Move(command::Move::new(u, map_pos));
                             if let Err(res) = game.run_command(command){
                                 println!("Error on running last cmd {:?}", res);
+                            }
+                            else{
+                                let wait = Command::Wait(command::Wait::new(u));
+                                if let Err(res) = game.run_command(wait){
+                                    println!("Error on waiting unit {:?}", res);
+                                }
+                                else{
+                                    println!("Unit {:?} is now waiting", u);
+                                }
                             }
                         }
 

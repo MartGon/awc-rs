@@ -2,7 +2,7 @@ use std::{collections::{HashMap, VecDeque}};
 
 use glam::uvec2;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement, event::{Event, EventI}, command::{Command, CommandI, self}};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement, event::{Event, EventI}, command::{Command, CommandI, self}, turn::{Turn}};
 use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
@@ -13,6 +13,7 @@ pub struct Game
     components : component::Components,
     players : Table<player::ID, player::Player>,
     event_queue : VecDeque<Event>,
+    current_turn : Option<Turn>,
 
     unit_factory : Factory<unit::Template>,
     tile_factory : Factory<tile::Template>
@@ -32,6 +33,7 @@ impl Game{
             players: Table::new(), 
             components : component::Components::new(), 
             event_queue : VecDeque::new(),
+            current_turn : None,
 
             unit_factory : Factory::new(),
             tile_factory : Factory::new()
@@ -221,6 +223,24 @@ impl Game{
         &mut self.components
     }
 
+    pub fn get_turn(&self) -> Option<&Turn>{
+        match &self.current_turn{
+            Some(t) => Some(t),
+            None => None,
+        }
+    }
+
+    pub fn get_turn_mut(&mut self)-> Option<&mut Turn>{
+        match &mut self.current_turn{
+            Some(t) => Some(t),
+            None => None,
+        }
+    }
+
+    pub fn start(&mut self){
+        self.current_turn = Some(Turn::new(0, 0.into()));
+    }
+
 
     pub(crate) fn push_event(&mut self, event : Event){
         self.event_queue.push_back(event);
@@ -244,10 +264,4 @@ impl Game{
         self.tile_factory.insert(id, tile_template);
     }
 
-}
-
-pub struct Turn
-{
-    pub turn : i32,
-    pub player : player::ID
 }

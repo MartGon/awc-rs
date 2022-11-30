@@ -13,6 +13,7 @@ pub trait CommandI{
 pub enum Command{
     Move(Move),
     Attack(Attack),
+    Wait(Wait)
 }
 
 impl CommandI for Command{
@@ -20,6 +21,7 @@ impl CommandI for Command{
         match &self{
             Command::Move(m) => m.execute(game),
             Command::Attack(_) => todo!(),
+            Command::Wait(w) => w.execute(game),
         }
     }
 }
@@ -72,4 +74,25 @@ impl CommandI for Move{
 
 pub struct Attack{
 
+}
+
+#[derive(new)]
+pub struct Wait{
+    pub entity_id : ID,
+}
+
+impl CommandI for Wait{
+    fn execute(&self, game : &mut game::Game) -> Result<(), Error> {
+        
+        let pos = game.components().get_position(&self.entity_id);
+        if pos.is_some() {
+            let wait_event = event::Wait::new(self.entity_id);
+            game.push_event(Event::Wait(wait_event));
+            game.run_events();
+
+            return Ok(());
+        }
+
+        Err(Error::EntityNotFound(self.entity_id))
+    }
 }

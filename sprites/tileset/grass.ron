@@ -1,7 +1,17 @@
 BorderedTile(
     sprites: [],
-    default: Idle(IdleSprite(
-        pos: UVec2(3, 14),
-        size: UVec2(16, 16),
-    )),
+    default: AnimatedSprite(
+        animations: { "idle":  
+            Animation(
+                size: UVec2(16, 16),
+                name: "idle",
+                frames: [
+                    AnimationFrame(
+                        source: UVec2(3, 14),
+                    ),
+                ],
+                fps: 4,
+            ),
+        },
+    )
 )

@@ -10,11 +10,6 @@
     - Build Movement Area - DONE
         - Show visual effect - DONE
 
-- Movement animation
-    - Apply movement animatino to unit sprite
-    - Move sprite around path
-        - Flip sprite based on movement direction around path
-
 - Serialize/Deserialize template units - DONE
 - Implement commands
     - Move - DONE
@@ -22,6 +17,13 @@
 
 - Event Listeners
 
+- Turn System
+    - Disabled/Waiting units
+
+- Movement animation
+    - Apply movement animatino to unit sprite
+    - Move sprite around path
+        - Flip sprite based on movement direction around path
 
 - MasterFile as trait in an asset crate? / Let the user load everything on their own.
 - Check out iced. Looks pretty good

@@ -1,10 +1,11 @@
 (
     sprites: {
         (Red, OrangeStar): (
-            size: (16, 16),
+            
             animations: {
                 "idle" : (
                     name: "idle",
+                    size: (16, 16),
                     frames: [
                         (
                             source: (3, 199),
@@ -30,10 +31,11 @@
             },
         ),
         (Blue, OrangeStar): (
-            size: (16, 16),
+            
             animations: {
                 "idle": (
                     name: "idle",
+                    size: (16, 16),
                     frames: [
                         (
                             source: (392, 199),
@@ -60,10 +62,11 @@
         ),
 
         (Red, BlueMoon): (
-            size: (16, 16),
+            
             animations: {
                 "idle" : (
                     name: "idle",
+                    size: (16, 16),
                     frames: [
                         (
                             source: (3, 218),
@@ -90,10 +93,11 @@
         ),
 
         (Blue, BlueMoon): (
-            size: (16, 16),
+            
             animations: {
                 "idle" : (
                     name: "idle",
+                    size: (16, 16),
                     frames: [
                         (
                             source: (392, 218),

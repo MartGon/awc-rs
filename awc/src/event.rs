@@ -1,4 +1,4 @@
-use crate::{component, map, game};
+use crate::{component, map, game, turn::Turn};
 
 pub trait EventI {
     
@@ -9,6 +9,7 @@ pub enum Event
 {
     Move(Move),
     Attack(Attack),
+    Wait(Wait),
     TakeDmg(TakeDmg),
     Spawn(Spawn),
     Die(Die),
@@ -26,6 +27,7 @@ impl EventI for Event{
             Event::Die(_) => todo!(),
             Event::StartTurn(_) => todo!(),
             Event::EndTurn(_) => todo!(),
+            Event::Wait(w) => w.run(game),
         }
     }
 }
@@ -51,6 +53,19 @@ pub struct Attack
     pub target : component::EntityID,
 }
 
+#[derive(new)]
+pub struct Wait
+{
+    pub entity_id : component::EntityID,
+}
+
+impl EventI for Wait{
+    fn run(&self, game : &mut game::Game) {
+        let turn = game.get_turn_mut().expect("Game hasn't started");
+        turn.entity_wait(self.entity_id);
+    }
+}
+
 pub struct TakeDmg
 {
     pub attacker : component::EntityID,
@@ -73,10 +88,10 @@ pub struct Die
 
 pub struct StartTurn
 {
-    pub turn : game::Turn,
+    pub turn : Turn,
 }
 
 pub struct EndTurn
 {
-    pub turn : game::Turn,
+    pub turn : Turn,
 }

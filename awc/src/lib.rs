@@ -1,6 +1,7 @@
 
 mod table;
 
+pub mod turn;
 pub mod command;
 pub mod event;
 pub mod component;
