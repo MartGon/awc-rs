@@ -45,7 +45,6 @@ async fn main() {
     // Load game data
     let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
     let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
-    let infantry_template = unit::Template::new(&[infantry_weapon], Some(infantry_movement));
 
     let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None));
     let res = unit_templates.unwrap();

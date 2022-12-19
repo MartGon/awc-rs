@@ -29,6 +29,7 @@ impl CommandI for Command{
 #[derive(Debug)]
 pub enum Error{
     EntityNotFound(ID),
+    EntityIsWaiting(ID),
     MoveError(movement::Error)
 }
 
@@ -49,6 +50,12 @@ impl CommandI for Move{
         
         let pos = game.components().get_position(&self.entity_id);
         if pos.is_some() {
+
+            let turn = game.get_turn().unwrap();
+
+            if turn.is_waiting(self.entity_id){
+                return Err(Error::EntityIsWaiting(self.entity_id));
+            }
 
             let (path, _cost) = movement::calc_path(game, self.entity_id, self.dest)?;
             if path.len() >= 2{

@@ -14,11 +14,14 @@
 - Implement commands
     - Move - DONE
     - Attack
+    - Wait - DONE
 
 - Event Listeners
 
 - Turn System
-    - Disabled/Waiting units
+    - Disabled/Waiting units - DONE
+    - HasAttacked units
+    - HasMoved units
 
 - Movement animation
     - Apply movement animatino to unit sprite

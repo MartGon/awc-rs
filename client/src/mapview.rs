@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use awc::{*, component::{EntityType}};
-use crate::{glam::{UVec2, ivec2, uvec2}, spritesheet::{Sprite, self}};
+use crate::{glam::{UVec2, ivec2, uvec2}, spritesheet::{Sprite}};
 use crate::glam;
 use macroquad::{texture::Texture2D, shapes::draw_rectangle, prelude::{Color, PINK}};
 
-use crate::{tileset::{self, Borders}, spritesheet::{AnimatedSprite}, unitset};
+use crate::{tileset::{self, Borders}, unitset};
 
 pub struct MapView{
     spritesheet : Texture2D,
@@ -146,33 +146,31 @@ impl MapView{
             let unit_pos = components.get_position(&unit).unwrap().pos;
             if let Some(draw_pos) = self.get_draw_pos(unit_pos, target_size){
                 let utype = components.get_type(unit).unwrap();
-                if utype.is_unit(){
-                    if let Some(unit_sprite) = self.unitset.get(&utype.type_id){
+                if let Some(unit_sprite) = self.unitset.get(&utype.type_id){
+                    
+                    let owner = components.get_owner(unit).expect("A unit didn't have an owner");
+                    let owner = game.get_player(&owner.owner).expect("Could not find player in game by component's id");
+                    
+                    let mut sprite : Option<Sprite> = None;
+                    if let Some(animated_sprite) = unit_sprite.sprite_faction(owner.team, owner.faction){
                         
-                        let owner = components.get_owner(unit).expect("A unit didn't have an owner");
-                        let owner = game.get_player(&owner.owner).expect("Could not find player in game by component's id");
-                        
-                        let mut sprite : Option<Sprite> = None;
-                        if let Some(animated_sprite) = unit_sprite.sprite_faction(owner.team, owner.faction){
-                            
-                            sprite = animated_sprite.frame("idle");
+                        sprite = animated_sprite.frame("idle");
 
-                            if let Some(turn) = game.get_turn(){
-                                if turn.is_waiting(*unit){
-                                    sprite = animated_sprite.frame("wait");
-                                }
+                        if let Some(turn) = game.get_turn(){
+                            if turn.is_waiting(*unit){
+                                sprite = animated_sprite.frame("wait");
                             }
                         }
-                        
-                        let draw_pos = view_pos + draw_pos;
-                        if let Some(sprite) = sprite{
-                            let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
-                            sprite.draw_scaled(&self.unitsheet, draw_pos.as_vec2(), scale);
-                        }
-                        // Draw pink rectangle
-                        else{
-                            draw_rectangle(draw_pos.x as f32, draw_pos.y as f32, self.tile_size.x as f32, self.tile_size.y as f32, PINK);
-                        }
+                    }
+                    
+                    let draw_pos = view_pos + draw_pos;
+                    if let Some(sprite) = sprite{
+                        let scale = self.tile_size.as_vec2() / sprite.size().as_vec2();
+                        sprite.draw_scaled(&self.unitsheet, draw_pos.as_vec2(), scale);
+                    }
+                    // Draw pink rectangle
+                    else{
+                        draw_rectangle(draw_pos.x as f32, draw_pos.y as f32, self.tile_size.x as f32, self.tile_size.y as f32, PINK);
                     }
                 }
             }
