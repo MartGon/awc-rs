@@ -22,7 +22,7 @@ use serde::{Deserialize, Serialize};
 use crate::table::TableID;
 use std::{hash::Hash, borrow::Borrow};
 
-#[derive(Copy, Hash, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Copy, Hash, Debug, PartialEq, Eq, Clone, Serialize, Deserialize, PartialOrd, Ord)]
 pub struct ID(pub u32);
 
 impl TableID for ID{

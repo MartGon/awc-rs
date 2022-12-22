@@ -28,3 +28,16 @@ pub struct Unit
     pub armament : Option<component::Armament>,
     pub movement : Option<component::Movement>,
 }
+
+// Could replace this with an Enum. 
+// EXTRA: Could use a mask as well, instead of a bunch of booleans
+// Ready state means the unit can do anything
+// Attacked state means the unit can still move
+// Moved state means the unit can still attack
+// Waiting state means the unit cannot do anything
+
+pub struct State{
+    pub has_attacked : bool,
+    pub has_moved : bool,
+    pub is_waiting : bool,
+}

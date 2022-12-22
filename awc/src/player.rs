@@ -26,10 +26,11 @@ pub struct Player
     pub funds : i32,
     pub team : Team,
     pub faction : Faction,
+    pub was_defeated : bool,
 }
 
 impl Player{
     pub fn new(id : ID, team : Team, faction : Faction) -> Player{
-        Player { id, funds: 0, team, faction}
+        Player { id, funds: 0, team, faction, was_defeated : false}
     }
 }

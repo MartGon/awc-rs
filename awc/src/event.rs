@@ -26,7 +26,7 @@ impl EventI for Event{
             Event::Spawn(_) => todo!(),
             Event::Die(_) => todo!(),
             Event::StartTurn(_) => todo!(),
-            Event::EndTurn(_) => todo!(),
+            Event::EndTurn(e) => e.run(game),
             Event::Wait(w) => w.run(game),
         }
     }
@@ -69,7 +69,7 @@ impl EventI for Wait{
 pub struct TakeDmg
 {
     pub attacker : component::EntityID,
-    pub vicitim : component::EntityID,
+    pub victim : component::EntityID,
     pub dmg_taken : i32,
 }
 
@@ -94,4 +94,10 @@ pub struct StartTurn
 pub struct EndTurn
 {
     pub turn : Turn,
+}
+
+impl EventI for EndTurn{
+    fn run(&self, game : &mut game::Game) {
+        game.end_turn();
+    }
 }

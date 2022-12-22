@@ -55,6 +55,8 @@ impl Game{
     }
 
 
+    // Tile
+
     pub fn create_tile(&mut self, type_id : tile::TypeID, pos : map::Pos) -> Result<EntityID, Error>{
     
         if self.map.is_pos_valid(pos){
@@ -79,6 +81,7 @@ impl Game{
         None
     }
 
+    // Units
 
     pub fn create_unit(&mut self, type_id : Option<unit::TypeID>, pos : map::Pos, owner : player::ID) -> Result<EntityID, Error>{
 
@@ -147,6 +150,8 @@ impl Game{
     }
 
 
+    // Map data
+
     pub fn set_map_size(&mut self, size : map::Size){
         self.map.size = size;
 
@@ -210,6 +215,7 @@ impl Game{
     }
 
 
+    // Components
 
     pub fn insert_component(&mut self, entity : EntityID, component : component::Component){
         self.components.insert(entity, component)
@@ -223,6 +229,9 @@ impl Game{
         &mut self.components
     }
 
+
+    // Turns
+
     pub fn get_turn(&self) -> Option<&Turn>{
         match &self.current_turn{
             Some(t) => Some(t),
@@ -230,17 +239,52 @@ impl Game{
         }
     }
 
-    pub fn get_turn_mut(&mut self)-> Option<&mut Turn>{
+    pub fn current_turn(&self) -> &Turn{
+        self.current_turn.as_ref().expect("Game hasn't started")
+    }
+
+    pub(crate) fn get_turn_mut(&mut self)-> Option<&mut Turn>{
         match &mut self.current_turn{
             Some(t) => Some(t),
             None => None,
         }
     }
 
+    pub(crate) fn end_turn(&mut self) {
+        let next_player = self.find_next_turn_player();
+        let current_day = self.current_turn().day;
+        let next_day = if self.current_turn().player > next_player.id { current_day + 1 } else{ current_day };
+        self.current_turn = Some(Turn::new(next_day, next_player.id));
+    }
+
+    fn find_next_player(&self, pid : player::ID) -> &Player{
+        let next_pid = ID::new(pid.0 + 1);
+
+        let next_player : &Player;
+        if let Some(player) = self.players.get_entry(&next_pid){
+            next_player = player;
+        }
+        else{
+            next_player = self.players.get_entry(&ID::new(0)).expect("There are no players");
+        }
+
+        next_player
+    }
+
+    fn find_next_turn_player(&self) -> &Player{
+        let pid = self.current_turn().player;
+        let next_player = self.find_next_player(pid);
+
+        if next_player.was_defeated{
+            self.find_next_player(next_player.id)
+        }else {
+            next_player
+        }
+    }
+
     pub fn start(&mut self){
         self.current_turn = Some(Turn::new(0, 0.into()));
     }
-
 
     pub(crate) fn push_event(&mut self, event : Event){
         self.event_queue.push_back(event);

@@ -39,6 +39,7 @@ async fn main() {
     let mut game = Game::new();
     let p1 = game.create_player(Team::Red, Faction::OrangeStar);
     let p2 = game.create_player(Team::Blue, Faction::BlueMoon);
+    let p3 = game.create_player(Team::Red, Faction::BlueMoon);
     println!("Player 1 id: {:?}", p1);
     println!("Player 2 id: {:?}", p2);
 
@@ -172,6 +173,21 @@ async fn main() {
                     if let Err(err) = game.create_unit(Some(0.into()), map_pos, 0.into()){
                         println!("Could not create unit {:?}", err);
                     }
+                }
+            }
+
+            if is_key_released(KeyCode::Enter){
+
+                let turn = game.current_turn();
+                println!("Current player {:?}, Current day {}", turn.player, turn.day);
+
+                let command = Command::EndTurn(command::EndTurn::new());
+                if let Err(res) = game.run_command(command){
+                    println!("Error on running last cmd {:?}", res);
+                }
+                else{
+                    let turn = game.current_turn();
+                    println!("Next player {:?}, Next day {}", turn.player, turn.day);
                 }
             }
         }

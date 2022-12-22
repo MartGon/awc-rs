@@ -13,7 +13,8 @@ pub trait CommandI{
 pub enum Command{
     Move(Move),
     Attack(Attack),
-    Wait(Wait)
+    Wait(Wait),
+    EndTurn(EndTurn)
 }
 
 impl CommandI for Command{
@@ -22,6 +23,7 @@ impl CommandI for Command{
             Command::Move(m) => m.execute(game),
             Command::Attack(_) => todo!(),
             Command::Wait(w) => w.execute(game),
+            Command::EndTurn(e) => e.execute(game)
         }
     }
 }
@@ -101,5 +103,21 @@ impl CommandI for Wait{
         }
 
         Err(Error::EntityNotFound(self.entity_id))
+    }
+}
+
+#[derive(new)]
+pub struct EndTurn{
+
+}
+
+impl CommandI for EndTurn{
+    fn execute(&self, game : &mut game::Game) -> Result<(), Error> {
+
+        let end_turn = event::EndTurn{turn : game.get_turn().expect("Turn didn't exist").clone()};
+        game.push_event(Event::EndTurn(end_turn));
+        game.run_events();
+
+        return Ok(());
     }
 }

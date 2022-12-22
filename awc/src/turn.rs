@@ -2,9 +2,10 @@ use std::collections::HashMap;
 
 use crate::{player, ID};
 
+#[derive(Clone)]
 pub struct Turn{
-    day : u32,
-    player : player::ID,
+    pub day : u32,
+    pub player : player::ID,
     waiting_entities : HashMap<ID, ()>,
 }
 

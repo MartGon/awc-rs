@@ -16,15 +16,22 @@
     - Attack
     - Wait - DONE
 
-- Event Listeners
+- Events
+    - Start Turn
+    - End Turn
+
+- Event Listeners (Component?)
+    - The UI should work by using an event listener. Polls every event and plays the corresponding animations.
 
 - Turn System
     - Disabled/Waiting units - DONE
     - HasAttacked units
     - HasMoved units
 
+- Win conditions
+
 - Movement animation
-    - Apply movement animatino to unit sprite
+    - Apply movement animation to unit sprite
     - Move sprite around path
         - Flip sprite based on movement direction around path
 
