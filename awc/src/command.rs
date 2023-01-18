@@ -4,10 +4,11 @@ use crate::event::Event;
 use crate::game;
 use crate::map;
 use crate::movement;
+use crate::player;
 
 pub trait CommandI{
 
-    fn execute(&self, game : &mut game::Game) -> Result<(), Error>;
+    fn execute(&self, game : &mut game::Game, author : &player::ID) -> Result<(), Error>;
 }
 
 pub enum Command{
@@ -18,12 +19,12 @@ pub enum Command{
 }
 
 impl CommandI for Command{
-    fn execute(&self, game : &mut game::Game) -> Result<(), Error> {
+    fn execute(&self, game : &mut game::Game, author : &player::ID) -> Result<(), Error> {
         match &self{
-            Command::Move(m) => m.execute(game),
+            Command::Move(m) => m.execute(game, author),
             Command::Attack(_) => todo!(),
-            Command::Wait(w) => w.execute(game),
-            Command::EndTurn(e) => e.execute(game)
+            Command::Wait(w) => w.execute(game, author),
+            Command::EndTurn(e) => e.execute(game, author)
         }
     }
 }
@@ -32,6 +33,7 @@ impl CommandI for Command{
 pub enum Error{
     EntityNotFound(ID),
     EntityIsWaiting(ID),
+    EntityNotOwnedByPlayer(ID, ID),
     MoveError(movement::Error)
 }
 
@@ -41,6 +43,19 @@ impl From<movement::Error> for Error{
     }
 }
 
+fn check_owner(game : &mut game::Game, author : &player::ID, entity_id : &ID) -> Result<(), Error>{
+    if let Some(owner) = game.components().get_owner(entity_id){
+        if owner.owner != *author{
+            return Err(Error::EntityNotOwnedByPlayer(*entity_id, *author));
+        }
+        else {
+            return Ok(())
+        }
+    }
+
+    return Err(Error::EntityNotOwnedByPlayer(*entity_id, *author));
+}
+
 #[derive(new)]
 pub struct Move{
     pub entity_id : ID,
@@ -48,8 +63,10 @@ pub struct Move{
 }
 
 impl CommandI for Move{
-    fn execute(&self, game : &mut game::Game) -> Result<(), Error>{
+    fn execute(&self, game : &mut game::Game, author : &player::ID) -> Result<(), Error>{
         
+        check_owner(game, author, &self.entity_id)?;
+
         let pos = game.components().get_position(&self.entity_id);
         if pos.is_some() {
 
@@ -91,8 +108,10 @@ pub struct Wait{
 }
 
 impl CommandI for Wait{
-    fn execute(&self, game : &mut game::Game) -> Result<(), Error> {
+    fn execute(&self, game : &mut game::Game, author : &player::ID) -> Result<(), Error> {
         
+        check_owner(game, author, &self.entity_id)?;
+
         let pos = game.components().get_position(&self.entity_id);
         if pos.is_some() {
             let wait_event = event::Wait::new(self.entity_id);
@@ -112,7 +131,7 @@ pub struct EndTurn{
 }
 
 impl CommandI for EndTurn{
-    fn execute(&self, game : &mut game::Game) -> Result<(), Error> {
+    fn execute(&self, game : &mut game::Game, author : &player::ID) -> Result<(), Error> {
 
         let end_turn = event::EndTurn{turn : game.get_turn().expect("Turn didn't exist").clone()};
         game.push_event(Event::EndTurn(end_turn));

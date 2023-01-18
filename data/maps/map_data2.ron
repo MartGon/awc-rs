@@ -50,7 +50,7 @@
         ),
         (10, 5): (
             utype: (
-                type_id: (0),
+                type_id: (1),
                 entity_type: Unit,
             ),
             position: (
@@ -60,7 +60,7 @@
                 health: 100.0,
             ),
             owner: (
-                owner: (0),
+                owner: (2),
             ),
             direction: None,
             armament: None,

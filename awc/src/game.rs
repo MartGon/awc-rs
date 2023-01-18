@@ -296,8 +296,8 @@ impl Game{
         }
     }
 
-    pub fn run_command(&mut self, command : Command) -> Result<(), command::Error>{
-        command.execute(self)
+    pub fn run_command(&mut self, command : Command, author : &player::ID) -> Result<(), command::Error>{
+        command.execute(self, author)
     }
 
     pub fn add_unit_template(&mut self, id : ID, unit_template : unit::Template){

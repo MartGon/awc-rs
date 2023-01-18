@@ -110,6 +110,7 @@ async fn main() {
         // Inpput handling \\
         let (x, y) = mouse_position();
         let mouse_pos = uvec2(x as u32, y as u32);
+        let cur_player = game.current_turn().player;
         if let Some(map_pos) = map_view.get_map_pos(game.map.size, pos, target_size, mouse_pos)
         {     
             if is_mouse_button_released(MouseButton::Left){
@@ -134,12 +135,12 @@ async fn main() {
                         if path.is_ok() {
                             println!("Moving unit");
                             let command = Command::Move(command::Move::new(u, map_pos));
-                            if let Err(res) = game.run_command(command){
+                            if let Err(res) = game.run_command(command, &cur_player){
                                 println!("Error on running last cmd {:?}", res);
                             }
                             else{
                                 let wait = Command::Wait(command::Wait::new(u));
-                                if let Err(res) = game.run_command(wait){
+                                if let Err(res) = game.run_command(wait, &cur_player){
                                     println!("Error on waiting unit {:?}", res);
                                 }
                                 else{
@@ -182,7 +183,7 @@ async fn main() {
                 println!("Current player {:?}, Current day {}", turn.player, turn.day);
 
                 let command = Command::EndTurn(command::EndTurn::new());
-                if let Err(res) = game.run_command(command){
+                if let Err(res) = game.run_command(command, &cur_player){
                     println!("Error on running last cmd {:?}", res);
                 }
                 else{
