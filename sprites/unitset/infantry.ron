@@ -15,17 +15,9 @@
                         (
                             source: (37, 104),
                         ),
-                        (
-                            source: (37, 104),
-                        ),
-                        (
-                            source: (20, 104),
-                        ),
-                        (
-                            source: (3, 104),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
                 "wait" : (
                     name: "wait",
@@ -40,17 +32,9 @@
                         (
                             source: (373, 104),
                         ),
-                        (
-                            source: (373, 104),
-                        ),
-                        (
-                            source: (356, 104),
-                        ),
-                        (
-                            source: (339, 104),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         ),
@@ -69,18 +53,10 @@
                         ),
                         (
                             source: (426, 104),
-                        ),
-                        (
-                            source: (426, 104),
-                        ),
-                        (
-                            source: (409, 104),
-                        ),
-                        (
-                            source: (392, 104),
-                        ),
+                        )
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         ),

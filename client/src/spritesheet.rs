@@ -58,8 +58,7 @@ impl AnimatedSprite{
         let str :  String = anim.into();
         if let Some(anim) = self.animations.get(&str)
         {
-            let frame_time = get_time();
-            let frame_index = (frame_time * anim.fps as f64) as usize % anim.frames.len();
+            let frame_index = self.get_frame_index(anim);
             let frame = &anim.frames[frame_index];
 
             return Some(Sprite::new(frame.source, anim.size));
@@ -67,6 +66,20 @@ impl AnimatedSprite{
 
         None
     }
+
+    fn get_frame_index(&self, anim : &Animation) -> usize{
+        let frame_time = get_time();
+        let base_frames_len = anim.frames.len();
+
+        let frames_len = if anim.rev_loop { base_frames_len * 2} else { base_frames_len} ;
+        let mut frame_index = (frame_time * anim.fps as f64) as usize % frames_len;
+        if anim.rev_loop && frame_index >= base_frames_len{
+            frame_index = frames_len - frame_index - 1;
+        }
+
+        frame_index
+    }
+
 }
 
 #[derive(Clone, Deserialize, Serialize, Default, Debug)]
@@ -75,26 +88,29 @@ pub struct Animation{
     pub size : UVec2,
     pub frames : Vec<AnimationFrame>,
     pub fps : u32,
+
+    #[serde(default)]
+    pub rev_loop : bool,
 }
 
 impl Animation{
 
     #[allow(dead_code)]
     pub fn new(name : String, size : UVec2, fps : u32, frames : &[AnimationFrame]) -> Animation{
-        Animation { name, size, frames: frames.to_vec(), fps: fps }
+        Animation { name, size, frames: frames.to_vec(), fps: fps, rev_loop : false }
     }
     
     #[allow(dead_code)]
     pub fn new_short(name : String, size : UVec2, fps : u32, frames_pos : &[UVec2]) -> Animation{
-        Animation { name, size, fps : fps, frames : frames_pos.into_iter().map(|x| AnimationFrame::new(x.clone())).collect()}
+        Animation { name, size, fps : fps, frames : frames_pos.into_iter().map(|x| AnimationFrame::new(x.clone())).collect(), rev_loop : false}
     }
 
     pub fn new_shorter_x(name : String, size : UVec2, fps : u32, frame_y : u32, frames_x : &[u32]) -> Animation{
-        Animation { name, size, fps : fps, frames : frames_x.into_iter().map(|x| AnimationFrame::new(uvec2(*x, frame_y))).collect()}
+        Animation { name, size, fps : fps, frames : frames_x.into_iter().map(|x| AnimationFrame::new(uvec2(*x, frame_y))).collect(), rev_loop : false}
     }
 
     pub fn new_shorter_y(name : String, size : UVec2, fps : u32, frame_x : u32, frames_y : &[u32]) -> Animation{
-        Animation { name, size, fps : fps, frames : frames_y.into_iter().map(|y| AnimationFrame::new(uvec2(frame_x, *y))).collect()}
+        Animation { name, size, fps : fps, frames : frames_y.into_iter().map(|y| AnimationFrame::new(uvec2(frame_x, *y))).collect(), rev_loop : false}
     }
 }
 
