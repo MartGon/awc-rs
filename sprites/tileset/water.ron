@@ -34,20 +34,9 @@ BorderedTile(
                             AnimationFrame(
                                 source: UVec2(54, 322),
                             ),
-                            AnimationFrame(
-                                source: UVec2(54, 322),
-                            ),
-                            AnimationFrame(
-                                source: UVec2(54, 252),
-                            ),
-                            AnimationFrame(
-                                source: UVec2(54, 182),
-                            ),
-                            AnimationFrame(
-                                source: UVec2(54, 112),
-                            ),
                         ],
                         fps: 4,
+                        rev_loop: true,
                     ),
                 },
             )),
@@ -84,20 +73,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(54, 356),
                         ),
-                        AnimationFrame(
-                            source: UVec2(54, 356),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(54, 286),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(54, 216),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(54, 146),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -134,20 +112,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(3, 373),
                         ),
-                        AnimationFrame(
-                            source: UVec2(3, 373),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 303),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 233),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 163),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -184,20 +151,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(37, 373),
                         ),
-                        AnimationFrame(
-                            source: UVec2(37, 373),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 303),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 233),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 163),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -230,20 +186,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(37, 322),
                         ),
-                        AnimationFrame(
-                            source: UVec2(37, 322),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 252),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 182),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 112),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -276,20 +221,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(3, 322),
                         ),
-                        AnimationFrame(
-                            source: UVec2(3, 322),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 252),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 182),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 112),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -322,20 +256,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(37, 356),
                         ),
-                        AnimationFrame(
-                            source: UVec2(37, 356),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 286),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 216),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 146),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -368,20 +291,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(3, 356),
                         ),
-                        AnimationFrame(
-                            source: UVec2(3, 356),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 286),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 216),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 146),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -410,20 +322,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(20, 322),
                         ),
-                        AnimationFrame(
-                            source: UVec2(20, 322),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(20, 252),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(20, 182),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(20, 112),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -452,20 +353,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(20, 356),
                         ),
-                        AnimationFrame(
-                            source: UVec2(20, 356),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(20, 286),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(20, 216),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(20, 146),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -494,17 +384,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(37, 339),
                         ),
-                        AnimationFrame(
-                            source: UVec2(37, 339),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 269),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(37, 129),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -534,17 +416,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(3, 339),
                         ),
-                        AnimationFrame(
-                            source: UVec2(3, 339),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 269),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(3, 129),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -574,17 +448,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(71, 339),
                         ),
-                        AnimationFrame(
-                            source: UVec2(71, 339),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(71, 269),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(71, 129),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -614,17 +480,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(88, 339),
                         ),
-                        AnimationFrame(
-                            source: UVec2(88, 339),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(88, 269),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(88, 129),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -654,20 +512,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(71, 322),
                         ),
-                        AnimationFrame(
-                            source: UVec2(71, 322),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(71, 252),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(71, 182),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(71, 112),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -697,20 +544,9 @@ BorderedTile(
                         AnimationFrame(
                             source: UVec2(88, 322),
                         ),
-                        AnimationFrame(
-                            source: UVec2(88, 322),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(88, 252),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(88, 182),
-                        ),
-                        AnimationFrame(
-                            source: UVec2(88, 112),
-                        ),
                     ],
                     fps: 4,
+                    rev_loop: true,
                 ),
             },
         )),
@@ -734,17 +570,9 @@ BorderedTile(
                     AnimationFrame(
                         source: UVec2(20, 339),
                     ),
-                    AnimationFrame(
-                        source: UVec2(20, 339),
-                    ),
-                    AnimationFrame(
-                        source: UVec2(20, 269),
-                    ),
-                    AnimationFrame(
-                        source: UVec2(20, 129),
-                    ),
                 ],
                 fps: 4,
+                rev_loop: true,
             ),
         },
     ),
