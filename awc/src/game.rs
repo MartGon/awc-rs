@@ -11,9 +11,11 @@ pub struct Game
 {
     pub map : map::Map,
     components : component::Components,
-    players : Table<player::ID, player::Player>,
-    event_queue : VecDeque<Event>,
+    players : Table<player::ID, player::Player>,    
     current_turn : Option<Turn>,
+
+    event_queue : VecDeque<Event>,
+    event_history : Table<crate::ID, Event>,
 
     unit_factory : Factory<unit::Template>,
     tile_factory : Factory<tile::Template>
@@ -33,6 +35,7 @@ impl Game{
             players: Table::new(), 
             components : component::Components::new(), 
             event_queue : VecDeque::new(),
+            event_history : Table::new(),
             current_turn : None,
 
             unit_factory : Factory::new(),
@@ -297,7 +300,12 @@ impl Game{
     }
 
     pub fn run_command(&mut self, command : Command, author : &player::ID) -> Result<(), command::Error>{
-        command.execute(self, author)
+        let ret = command.execute(self, author);
+        if let Ok(_) = ret{
+            self.run_events();
+        }
+
+        ret
     }
 
     pub fn add_unit_template(&mut self, id : ID, unit_template : unit::Template){

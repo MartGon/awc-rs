@@ -1,6 +1,8 @@
 use crate::ID;
 use crate::event;
 use crate::event::Event;
+use crate::event::EventType;
+use crate::event::Trigger;
 use crate::game;
 use crate::map;
 use crate::movement;
@@ -70,7 +72,7 @@ impl CommandI for Move{
         let pos = game.components().get_position(&self.entity_id);
         if pos.is_some() {
 
-            let turn = game.get_turn().unwrap();
+            let turn = game.current_turn();
 
             if turn.is_waiting(self.entity_id){
                 return Err(Error::EntityIsWaiting(self.entity_id));
@@ -82,10 +84,9 @@ impl CommandI for Move{
                     let origin = path.iter().nth(i - 1).expect("Path didn't contain a single pos");
                     let dest = path.iter().nth(i).expect("Path didn't have a second pos");
                     let move_event = event::Move::new(self.entity_id, *origin, *dest);
-                    game.push_event(Event::Move(move_event));
+                    let event = Event::new(EventType::Move(move_event), Trigger::PlayerCommand);
+                    game.push_event(event);
                 }
-
-                game.run_events();
 
                 return Ok(());
             }
@@ -115,8 +116,8 @@ impl CommandI for Wait{
         let pos = game.components().get_position(&self.entity_id);
         if pos.is_some() {
             let wait_event = event::Wait::new(self.entity_id);
-            game.push_event(Event::Wait(wait_event));
-            game.run_events();
+            let event = Event::new(EventType::Wait(wait_event), Trigger::PlayerCommand);
+            game.push_event(event);
 
             return Ok(());
         }
@@ -133,9 +134,9 @@ pub struct EndTurn{
 impl CommandI for EndTurn{
     fn execute(&self, game : &mut game::Game, author : &player::ID) -> Result<(), Error> {
 
-        let end_turn = event::EndTurn{turn : game.get_turn().expect("Turn didn't exist").clone()};
-        game.push_event(Event::EndTurn(end_turn));
-        game.run_events();
+        let end_turn = event::EndTurn{turn : game.current_turn().clone()};
+        let event = Event::new(EventType::EndTurn(end_turn), Trigger::PlayerCommand);
+        game.push_event(event);
 
         return Ok(());
     }

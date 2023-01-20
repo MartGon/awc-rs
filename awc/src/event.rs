@@ -1,11 +1,28 @@
-use crate::{component, map, game, turn::Turn};
+use crate::{component, map, game, turn::Turn, ID};
 
 pub trait EventI {
     
     fn run(&self, game : &mut game::Game);
 }
 
-pub enum Event
+pub enum Trigger{
+    Event,
+    PlayerCommand
+}
+
+// TODO: When do we assign an id?
+//  Option 1: On Push to history
+//      Problem: Difficulty to assign trigger id on PRE execution
+//  Option 2: On creation. Game provides interface to create events or give a free id
+//      // Problem 1: Cancelled events consume ids, but are never used on a post increment method
+//      // Problem 2: Ids may not match execution order
+pub struct Event{
+    id : ID,
+    event_type : EventType,
+    trigger : Trigger,
+}
+
+pub enum EventType
 {
     Move(Move),
     Attack(Attack),
@@ -17,17 +34,23 @@ pub enum Event
     EndTurn(EndTurn),
 }
 
+impl Event{
+    pub(crate) fn new(event_type : EventType, trigger : Trigger) -> Event{
+        Event { id: ID::default(), event_type, trigger }
+    }
+}
+
 impl EventI for Event{
     fn run(&self, game : &mut game::Game) {
-        match &self{
-            Event::Move(m) => m.run(game),
-            Event::Attack(_) => todo!(),
-            Event::TakeDmg(_) => todo!(),
-            Event::Spawn(_) => todo!(),
-            Event::Die(_) => todo!(),
-            Event::StartTurn(_) => todo!(),
-            Event::EndTurn(e) => e.run(game),
-            Event::Wait(w) => w.run(game),
+        match &self.event_type{
+            EventType::Move(m) => m.run(game),
+            EventType::Attack(_) => todo!(),
+            EventType::TakeDmg(_) => todo!(),
+            EventType::Spawn(_) => todo!(),
+            EventType::Die(_) => todo!(),
+            EventType::StartTurn(_) => todo!(),
+            EventType::EndTurn(e) => e.run(game),
+            EventType::Wait(w) => w.run(game),
         }
     }
 }

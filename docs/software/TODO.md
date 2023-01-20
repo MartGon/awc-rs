@@ -19,9 +19,16 @@
 - Events
     - Start Turn
     - End Turn
+    - Event History on game. Each entry has an ID and turn ID, and triggered by id
+    - Commands could return the vec with the triggered events?
 
 - Event Listeners (Component?)
     - The UI should work by using an event listener. Polls every event and plays the corresponding animations.
+    - Lua Hooks go here
+
+- Restrict some of the game methods to creation stage
+    - Option 1: Don't allow them if the game is started
+    - Option 2: Create a pre-game struct with those functions, which create a game struct afterwards: + Less code in game. Call it GamePreview (?)
 
 - Turn System
     - Disabled/Waiting units - DONE
