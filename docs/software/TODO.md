@@ -19,7 +19,7 @@
 - Events
     - Start Turn
     - End Turn
-    - Event History on game. Each entry has an ID and turn ID, and triggered by id
+    - Event History on game.
     - Commands could return the vec with the triggered events?
 
 - Event Listeners (Component?)

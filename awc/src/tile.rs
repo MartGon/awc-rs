@@ -8,7 +8,7 @@ pub struct Template
 }
 
 impl Template{
-    fn create_instance(&self, id : &crate::ID) -> Tile {
+    fn _create_instance(&self, id : &crate::ID) -> Tile {
         Tile { 
             utype: component::Type::new_tile(*id), 
             position : component::Position::default(), 

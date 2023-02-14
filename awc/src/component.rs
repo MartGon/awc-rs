@@ -3,9 +3,6 @@ use crate::{weapon, movement, player, map, ID};
 use component_derive::ComponentCollection;
 use serde::{Serialize, Deserialize};
 
-
-
-
 pub type EntityID = super::ID;
 
 #[derive(ComponentCollection)]

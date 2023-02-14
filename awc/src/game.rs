@@ -14,8 +14,9 @@ pub struct Game
     players : Table<player::ID, player::Player>,    
     current_turn : Option<Turn>,
 
-    event_queue : VecDeque<Event>,
-    event_history : Table<crate::ID, Event>,
+    events : Table<ID, Event>,
+    event_queue : VecDeque<ID>,
+    event_history : Vec<ID>,
 
     unit_factory : Factory<unit::Template>,
     tile_factory : Factory<tile::Template>
@@ -34,14 +35,18 @@ impl Game{
             map: map::Map::new(uvec2(10, 10)), 
             players: Table::new(), 
             components : component::Components::new(), 
-            event_queue : VecDeque::new(),
-            event_history : Table::new(),
             current_turn : None,
+
+            event_queue : VecDeque::new(),
+            events : Table::new(),
+            event_history : Vec::new(),
 
             unit_factory : Factory::new(),
             tile_factory : Factory::new()
         }
     }
+
+    // Players
 
     pub fn create_player(&mut self, team : Team, faction : Faction) -> player::ID{
         let player_id = self.players.next_id();
@@ -289,13 +294,30 @@ impl Game{
         self.current_turn = Some(Turn::new(0, 0.into()));
     }
 
-    pub(crate) fn push_event(&mut self, event : Event){
-        self.event_queue.push_back(event);
+    // Events / Commands
+
+    pub(crate) fn push_event(&mut self, event : Event) -> ID{
+        let id = self.events.new_entry(event);
+        self.event_queue.push_back(id);
+
+        id
     }
 
     pub(crate) fn run_events(&mut self){
-        while let Some(event) = self.event_queue.pop_front(){
-            event.run(self);
+        while let Some(event_id) = self.event_queue.front().cloned(){
+            let event = self.events.get_entry(&event_id).expect("Could not find event by event id").clone();
+
+            // Notify PRE
+
+            if let Some(post_event_id) = self.event_queue.front().cloned(){
+                if post_event_id == event_id{
+                    event.run(self);
+                    self.event_queue.pop_front();
+                    self.event_history.push(event_id);
+
+                    // Notify Post
+                }
+            }
         }
     }
 
@@ -307,6 +329,8 @@ impl Game{
 
         ret
     }
+
+    // Templates
 
     pub fn add_unit_template(&mut self, id : ID, unit_template : unit::Template){
         self.unit_factory.insert(id, unit_template);

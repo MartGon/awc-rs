@@ -132,7 +132,7 @@ pub struct EndTurn{
 }
 
 impl CommandI for EndTurn{
-    fn execute(&self, game : &mut game::Game, author : &player::ID) -> Result<(), Error> {
+    fn execute(&self, game : &mut game::Game, _author : &player::ID) -> Result<(), Error> {
 
         let end_turn = event::EndTurn{turn : game.current_turn().clone()};
         let event = Event::new(EventType::EndTurn(end_turn), Trigger::PlayerCommand);

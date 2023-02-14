@@ -5,6 +5,7 @@ pub trait EventI {
     fn run(&self, game : &mut game::Game);
 }
 
+#[derive(Clone)]
 pub enum Trigger{
     Event,
     PlayerCommand
@@ -12,16 +13,20 @@ pub enum Trigger{
 
 // TODO: When do we assign an id?
 //  Option 1: On Push to history
-//      Problem: Difficulty to assign trigger id on PRE execution
+//      Problem: Difficulty to assign trigger id on PRE execution triggered event
 //  Option 2: On creation. Game provides interface to create events or give a free id
-//      // Problem 1: Cancelled events consume ids, but are never used on a post increment method
+//      // Problem 1: Cancelled events consume ids, but are never used again on a post increment method
 //      // Problem 2: Ids may not match execution order
+//      // Solultion: Contain events in a table. Use a vector to hold history of event ids in execution order. Oldest first
+
+#[derive(Clone)]
 pub struct Event{
-    id : ID,
-    event_type : EventType,
-    trigger : Trigger,
+    pub id : ID,
+    pub event_type : EventType,
+    pub trigger : Trigger,
 }
 
+#[derive(Clone)]
 pub enum EventType
 {
     Move(Move),
@@ -55,7 +60,7 @@ impl EventI for Event{
     }
 }
 
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct Move
 {
     pub unit : component::EntityID,
@@ -70,13 +75,14 @@ impl EventI for Move{
     }
 }
 
+#[derive(Clone)]
 pub struct Attack
 {
     pub unit : component::EntityID,
     pub target : component::EntityID,
 }
 
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct Wait
 {
     pub entity_id : component::EntityID,
@@ -89,6 +95,7 @@ impl EventI for Wait{
     }
 }
 
+#[derive(Clone)]
 pub struct TakeDmg
 {
     pub attacker : component::EntityID,
@@ -96,6 +103,7 @@ pub struct TakeDmg
     pub dmg_taken : i32,
 }
 
+#[derive(Clone)]
 pub struct Spawn
 {
     pub unit : component::EntityID,
@@ -103,17 +111,20 @@ pub struct Spawn
     pub spawned_by : Option<component::EntityID>
 }
 
+#[derive(Clone)]
 pub struct Die
 {
     pub unit : component::EntityID,
     pub killer : Option<component::EntityID>,
 }
 
+#[derive(Clone)]
 pub struct StartTurn
 {
     pub turn : Turn,
 }
 
+#[derive(Clone)]
 pub struct EndTurn
 {
     pub turn : Turn,
