@@ -13,3 +13,4 @@ component_derive = { path = "src/component_storage/component_derive"}
 component_storage = { path = "src/component_storage"}
 derive-new = "0.5.9"
 pathfinding = "3.0.14"
+num_enum = "0.5.9"

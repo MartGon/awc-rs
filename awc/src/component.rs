@@ -1,5 +1,5 @@
 
-use crate::{weapon, movement, player, map, ID};
+use crate::{weapon, movement, player, map, ID, effect};
 use component_derive::ComponentCollection;
 use serde::{Serialize, Deserialize};
 
@@ -15,7 +15,8 @@ pub enum Component
     Armament(Armament),
     Movement(Movement),
     Owner(Owner),
-    CaptureState(CaptureState)
+    CaptureState(CaptureState),
+    Effects(Effects)
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -136,4 +137,9 @@ pub struct Owner
 pub struct CaptureState
 {
     pub progress : i32,
+}
+
+pub struct Effects
+{
+    pub effects : Vec<effect::Effect>
 }

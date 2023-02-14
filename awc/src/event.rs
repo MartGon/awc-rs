@@ -11,23 +11,36 @@ pub enum Trigger{
     PlayerCommand
 }
 
-// TODO: When do we assign an id?
-//  Option 1: On Push to history
-//      Problem: Difficulty to assign trigger id on PRE execution triggered event
-//  Option 2: On creation. Game provides interface to create events or give a free id
-//      // Problem 1: Cancelled events consume ids, but are never used again on a post increment method
-//      // Problem 2: Ids may not match execution order
-//      // Solultion: Contain events in a table. Use a vector to hold history of event ids in execution order. Oldest first
+#[derive(Clone, PartialEq, Eq)]
+pub enum Notification{
+    Pre,
+    Post
+}
 
 #[derive(Clone)]
 pub struct Event{
     pub id : ID,
-    pub event_type : EventType,
+    pub sub_type : SubType,
+    pub sub_event : SubEvent,
     pub trigger : Trigger,
 }
 
+#[derive(Clone, PartialEq, Eq)]
+pub enum SubType
+{
+    Move = 0,
+    Attack,
+    Wait,
+    TakeDmg,
+    Spawn,
+    Die,
+    StartTurn,
+    EndTurn,
+}
+
+
 #[derive(Clone)]
-pub enum EventType
+pub enum SubEvent
 {
     Move(Move),
     Attack(Attack),
@@ -39,23 +52,39 @@ pub enum EventType
     EndTurn(EndTurn),
 }
 
+impl SubEvent{
+    fn sub_type(&self) -> SubType {
+        match self {
+            SubEvent::Move(_) => SubType::Move,
+            SubEvent::Attack(_) => SubType::Attack,
+            SubEvent::Wait(_) => SubType::Wait,
+            SubEvent::TakeDmg(_) => SubType::TakeDmg,
+            SubEvent::Spawn(_) => SubType::Spawn,
+            SubEvent::Die(_) => SubType::Die,
+            SubEvent::StartTurn(_) => SubType::StartTurn,
+            SubEvent::EndTurn(_) => SubType::EndTurn,
+        }
+    }
+}
+
+
 impl Event{
-    pub(crate) fn new(event_type : EventType, trigger : Trigger) -> Event{
-        Event { id: ID::default(), event_type, trigger }
+    pub(crate) fn new(sub_event : SubEvent, trigger : Trigger) -> Event{
+        Event { id: ID::default(), sub_type: sub_event.sub_type(), sub_event, trigger }
     }
 }
 
 impl EventI for Event{
     fn run(&self, game : &mut game::Game) {
-        match &self.event_type{
-            EventType::Move(m) => m.run(game),
-            EventType::Attack(_) => todo!(),
-            EventType::TakeDmg(_) => todo!(),
-            EventType::Spawn(_) => todo!(),
-            EventType::Die(_) => todo!(),
-            EventType::StartTurn(_) => todo!(),
-            EventType::EndTurn(e) => e.run(game),
-            EventType::Wait(w) => w.run(game),
+        match &self.sub_event{
+            SubEvent::Move(m) => m.run(game),
+            SubEvent::Attack(_) => todo!(),
+            SubEvent::TakeDmg(_) => todo!(),
+            SubEvent::Spawn(_) => todo!(),
+            SubEvent::Die(_) => todo!(),
+            SubEvent::StartTurn(_) => todo!(),
+            SubEvent::EndTurn(e) => e.run(game),
+            SubEvent::Wait(w) => w.run(game),
         }
     }
 }

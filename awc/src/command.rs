@@ -1,7 +1,7 @@
 use crate::ID;
 use crate::event;
 use crate::event::Event;
-use crate::event::EventType;
+use crate::event::SubEvent;
 use crate::event::Trigger;
 use crate::game;
 use crate::map;
@@ -84,7 +84,7 @@ impl CommandI for Move{
                     let origin = path.iter().nth(i - 1).expect("Path didn't contain a single pos");
                     let dest = path.iter().nth(i).expect("Path didn't have a second pos");
                     let move_event = event::Move::new(self.entity_id, *origin, *dest);
-                    let event = Event::new(EventType::Move(move_event), Trigger::PlayerCommand);
+                    let event = Event::new(SubEvent::Move(move_event), Trigger::PlayerCommand);
                     game.push_event(event);
                 }
 
@@ -116,7 +116,7 @@ impl CommandI for Wait{
         let pos = game.components().get_position(&self.entity_id);
         if pos.is_some() {
             let wait_event = event::Wait::new(self.entity_id);
-            let event = Event::new(EventType::Wait(wait_event), Trigger::PlayerCommand);
+            let event = Event::new(SubEvent::Wait(wait_event), Trigger::PlayerCommand);
             game.push_event(event);
 
             return Ok(());
@@ -135,7 +135,7 @@ impl CommandI for EndTurn{
     fn execute(&self, game : &mut game::Game, _author : &player::ID) -> Result<(), Error> {
 
         let end_turn = event::EndTurn{turn : game.current_turn().clone()};
-        let event = Event::new(EventType::EndTurn(end_turn), Trigger::PlayerCommand);
+        let event = Event::new(SubEvent::EndTurn(end_turn), Trigger::PlayerCommand);
         game.push_event(event);
 
         return Ok(());
