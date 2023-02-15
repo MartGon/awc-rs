@@ -26,6 +26,9 @@
     - The UI should work by using an event listener. Polls every event and plays the corresponding animations.
     - Lua Hooks go here
 
+- Entity (Unit/Tile) traits
+    - Think of them just like MTG keywords. They always trigger on the same events. For example, most units would have the wait trait, which makes them leave the wait state after the EndTurn event.
+
 - Restrict some of the game methods to creation stage
     - Option 1: Don't allow them if the game is started
     - Option 2: Create a pre-game struct with those functions, which create a game struct afterwards: + Less code in game. Call it GamePreview (?)

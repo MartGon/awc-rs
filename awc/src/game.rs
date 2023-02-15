@@ -1,13 +1,14 @@
-use std::{collections::{HashMap, VecDeque}};
+use std::{collections::{HashMap, VecDeque}, fs};
 
 use glam::uvec2;
+use mlua::Lua;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement, event::{Event, EventI}, command::{Command, CommandI, self}, turn::{Turn}};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement::{self, Path}, event::{Event, EventI}, command::{Command, CommandI, self}, turn::{Turn}, script::{self, Script}};
 use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
 
-pub struct Game
+pub struct Game<'a>
 {
     pub map : map::Map,
     components : component::Components,
@@ -19,18 +20,22 @@ pub struct Game
     event_history : Vec<ID>,
 
     unit_factory : Factory<unit::Template>,
-    tile_factory : Factory<tile::Template>
+    tile_factory : Factory<tile::Template>,
+
+    lua_vm : Lua,
+    scripts : HashMap<String, script::Script<'a>>,
 }
 
 #[derive(Debug)]
 pub enum Error{
     InvalidPosition,
     PlayerNotFound,
-    TemplateNotFound
+    TemplateNotFound,
+    ScriptError,
 }
 
-impl Game{
-    pub fn new() -> Game{
+impl<'a> Game<'a>{
+    pub fn new() -> Game<'a>{
         Game { 
             map: map::Map::new(uvec2(10, 10)), 
             players: Table::new(), 
@@ -42,7 +47,10 @@ impl Game{
             event_history : Vec::new(),
 
             unit_factory : Factory::new(),
-            tile_factory : Factory::new()
+            tile_factory : Factory::new(),
+
+            lua_vm : Lua::new(),
+            scripts : HashMap::new()
         }
     }
 
@@ -338,6 +346,16 @@ impl Game{
 
     pub fn add_tile_template(&mut self, id : ID, tile_template : tile::Template){
         self.tile_factory.insert(id, tile_template);
+    }
+
+    // Scripts
+
+    pub fn load_script<S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, name : S, script_file : P) -> Result<(), Error>{
+
+        let script = Script::from_file(&mut self.lua_vm, name.clone().into(), script_file).expect("Error on loading script");
+        self.scripts.insert(name.into(), script);
+
+        Ok(())
     }
 
 }

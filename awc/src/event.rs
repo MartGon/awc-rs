@@ -20,7 +20,6 @@ pub enum Notification{
 #[derive(Clone)]
 pub struct Event{
     pub id : ID,
-    pub sub_type : SubType,
     pub sub_event : SubEvent,
     pub trigger : Trigger,
 }
@@ -53,7 +52,7 @@ pub enum SubEvent
 }
 
 impl SubEvent{
-    fn sub_type(&self) -> SubType {
+    pub fn sub_type(&self) -> SubType {
         match self {
             SubEvent::Move(_) => SubType::Move,
             SubEvent::Attack(_) => SubType::Attack,
@@ -70,7 +69,7 @@ impl SubEvent{
 
 impl Event{
     pub(crate) fn new(sub_event : SubEvent, trigger : Trigger) -> Event{
-        Event { id: ID::default(), sub_type: sub_event.sub_type(), sub_event, trigger }
+        Event { id: ID::default(), sub_event, trigger }
     }
 }
 

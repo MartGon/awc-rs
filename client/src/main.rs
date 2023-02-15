@@ -46,7 +46,9 @@ async fn main() {
     // Load game data
     let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
     let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
+    game.load_script("Test", "");
 
+    /*
     let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None));
     let res = unit_templates.unwrap();
     for (_id, e) in res.1{
@@ -60,7 +62,6 @@ async fn main() {
     let map_data_str = fs::read_to_string("data/maps/map_data2.ron").expect("Could not read map data");
     let map_data = ron::from_str::<map::Data>(&map_data_str).expect("Error on str -> ron");
     game.load_map_data(map_data).expect("Error on loading map data");
-    game.start();
 
     // Load SpriteSheet
     let tilesheet = Image::from_file_with_format(include_bytes!("../../sprites/spritesheet2.png"), Some(ImageFormat::Png));
@@ -100,6 +101,10 @@ async fn main() {
 
     let mut tile_type = tile::TypeID::new(0);
     let mut move_unit : Option<awc::ID> = None;
+
+    // Start game
+    game.start();
+
     loop {
 
         let screen_size = vec2(screen_width(), screen_height());
@@ -238,5 +243,7 @@ async fn main() {
          */
 
         next_frame().await
+        
     }
+     */
 }

@@ -13,6 +13,7 @@ pub mod player;
 pub mod tile;
 pub mod unit;
 pub mod effect;
+pub mod script;
 
 #[macro_use]
 extern crate derive_new;
