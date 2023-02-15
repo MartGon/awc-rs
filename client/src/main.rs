@@ -21,6 +21,7 @@ mod assets;
 mod mapview;
 
 use macroquad::prelude::*;
+use mlua::Lua;
 
 type UnitTemplates = HashMap<unit::TypeID, unit::Template>;
 impl MasterFile<unit::Template> for UnitTemplates{
@@ -34,19 +35,23 @@ async fn main() {
     env_logger::init();
     env::set_var("RUST_LOG", "error");
     env::set_var("RUST_BACKTRACE", "1");
+    let mut lua = Lua::new();
+    {
+        // Create game
+        let mut game = Game::new();
+        let p1 = game.create_player(Team::Red, Faction::OrangeStar);
+        let p2 = game.create_player(Team::Blue, Faction::BlueMoon);
+        let p3 = game.create_player(Team::Red, Faction::BlueMoon);
+        println!("Player 1 id: {:?}", p1);
+        println!("Player 2 id: {:?}", p2);
 
-    // Create game
-    let mut game = Game::new();
-    let p1 = game.create_player(Team::Red, Faction::OrangeStar);
-    let p2 = game.create_player(Team::Blue, Faction::BlueMoon);
-    let p3 = game.create_player(Team::Red, Faction::BlueMoon);
-    println!("Player 1 id: {:?}", p1);
-    println!("Player 2 id: {:?}", p2);
+        // Load game data
+        let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
+        let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
 
-    // Load game data
-    let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
-    let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
-    game.load_script("Test", "");
+        
+        game.load_script(&mut lua, "Test", "").expect("Something failed");
+    }
 
     /*
     let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None));

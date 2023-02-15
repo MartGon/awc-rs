@@ -22,7 +22,6 @@ pub struct Game<'a>
     unit_factory : Factory<unit::Template>,
     tile_factory : Factory<tile::Template>,
 
-    lua_vm : Lua,
     scripts : HashMap<String, script::Script<'a>>,
 }
 
@@ -49,7 +48,6 @@ impl<'a> Game<'a>{
             unit_factory : Factory::new(),
             tile_factory : Factory::new(),
 
-            lua_vm : Lua::new(),
             scripts : HashMap::new()
         }
     }
@@ -350,9 +348,9 @@ impl<'a> Game<'a>{
 
     // Scripts
 
-    pub fn load_script<S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, name : S, script_file : P) -> Result<(), Error>{
+    pub fn load_script<S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, lua : &'a mut Lua, name : S, script_file : P) -> Result<(), Error>{
 
-        let script = Script::from_file(&mut self.lua_vm, name.clone().into(), script_file).expect("Error on loading script");
+        let script = Script::from_file(lua, name.clone().into(), script_file).expect("Error on loading script");
         self.scripts.insert(name.into(), script);
 
         Ok(())
