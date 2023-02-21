@@ -22,9 +22,9 @@ pub struct Script<'a>{
     func : LuaFunction<'a>
 }
 
-impl<'a> Script<'a>{
+impl<'a : 'b, 'b> Script<'a>{
 
-    pub fn from_file<P: AsRef<std::path::Path> + Into<String> + Clone>(lua : &'a mut Lua, name : String, file : P) -> Result<Script<'a>, self::Error>{
+    pub fn from_file<P: AsRef<std::path::Path> + Into<String> + Clone>(lua : &'a Lua, name : String, file : P) -> Result<Script<'b>, self::Error>{
         let code = fs::read_to_string(&file).map_err(|e| self::Error::FileNotFound(e, file.clone().into()))?;
         let func = lua.load(&code).into_function().map_err(|e| self::Error::CompileError(e, file.clone().into()))?;
         let script = Script{

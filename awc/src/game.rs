@@ -1,14 +1,14 @@
 use std::{collections::{HashMap, VecDeque}, fs};
 
 use glam::uvec2;
-use mlua::Lua;
+use mlua::prelude::*;
 
 use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement::{self, Path}, event::{Event, EventI}, command::{Command, CommandI, self}, turn::{Turn}, script::{self, Script}};
 use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
 
-pub struct Game<'a>
+pub struct Game<'a: 'b, 'b>
 {
     pub map : map::Map,
     components : component::Components,
@@ -22,7 +22,8 @@ pub struct Game<'a>
     unit_factory : Factory<unit::Template>,
     tile_factory : Factory<tile::Template>,
 
-    scripts : HashMap<String, script::Script<'a>>,
+    lua_vm : &'a Lua,
+    scripts : HashMap<String, Script<'b>>,
 }
 
 #[derive(Debug)]
@@ -33,8 +34,8 @@ pub enum Error{
     ScriptError,
 }
 
-impl<'a> Game<'a>{
-    pub fn new() -> Game<'a>{
+impl<'a: 'b, 'b> Game<'a, 'b>{
+    pub fn new(lua_vm : &'a Lua) -> Game<'a, 'b>{
         Game { 
             map: map::Map::new(uvec2(10, 10)), 
             players: Table::new(), 
@@ -47,8 +48,9 @@ impl<'a> Game<'a>{
 
             unit_factory : Factory::new(),
             tile_factory : Factory::new(),
-
-            scripts : HashMap::new()
+            
+            lua_vm,
+            scripts : HashMap::new(),
         }
     }
 
@@ -348,9 +350,9 @@ impl<'a> Game<'a>{
 
     // Scripts
 
-    pub fn load_script<S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, lua : &'a mut Lua, name : S, script_file : P) -> Result<(), Error>{
+    pub fn load_script<'c: 'b, S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, name : S, script_file : P) -> Result<(), Error>{
 
-        let script = Script::from_file(lua, name.clone().into(), script_file).expect("Error on loading script");
+        let script = Script::from_file(self.lua_vm, name.clone().into(), script_file).expect("Error on loading script");
         self.scripts.insert(name.into(), script);
 
         Ok(())
