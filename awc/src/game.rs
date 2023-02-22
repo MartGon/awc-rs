@@ -350,10 +350,10 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
     // Scripts
 
-    pub fn load_script<'c: 'b, S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, name : S, script_file : P) -> Result<(), Error>{
+    pub fn load_script<'c: 'b, S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, name : &S, script_file : P) -> Result<(), Error>{
 
         let script = Script::from_file(self.lua_vm, name.clone().into(), script_file).expect("Error on loading script");
-        self.scripts.insert(name.into(), script);
+        self.scripts.insert(name.clone().into(), script);
 
         Ok(())
     }

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::env;
 use std::fs;
+use std::path::Path;
 
 use assets::MasterFile;
 use awc::command::Command;
@@ -24,9 +25,10 @@ use macroquad::prelude::*;
 use mlua::Lua;
 
 type UnitTemplates = HashMap<unit::TypeID, unit::Template>;
-impl MasterFile<unit::Template> for UnitTemplates{
+type Scripts = HashMap<String, String>;
 
-}
+impl MasterFile<unit::Template> for UnitTemplates{}
+impl MasterFile<String> for Scripts{}
 
 #[macroquad::main("BasicShapes")]
 async fn main() {
@@ -51,9 +53,15 @@ async fn main() {
         let infantry_weapon = weapon::Weapon::new(weapon::Range::new(0, 1), 20, 99, &[(0.into(), true), (1.into(), true)]);
         let infantry_movement = movement::Movement::new(3, &[(1.into(), 1), (2.into(), 2)]);
 
-        game.load_script("Test", "").expect("Something failed");
+            // Load Scripts
+        let scripts = assets::load_master_file::<String, &str>("data/scripts.ron").unwrap();
+        for (id, script_path) in scripts{
+            game.load_script(&id, script_path).expect("Something failed");
+            println!("Loaded script: {}", id);
+        }
         
-        /*        let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None));
+            // Load unit templates
+        let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None));
         let res = unit_templates.unwrap();
         for (_id, e) in res.1{
             log::error!("Error while loading {}", e);
@@ -249,7 +257,7 @@ async fn main() {
             next_frame().await
             
         }
-        */
+        
 
     }
 

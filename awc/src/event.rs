@@ -30,6 +30,7 @@ pub enum SubType
     Move = 0,
     Attack,
     Wait,
+    Wake,
     TakeDmg,
     Spawn,
     Die,
