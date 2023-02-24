@@ -139,6 +139,7 @@ pub struct CaptureState
     pub progress : i32,
 }
 
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct Effects
 {
     pub effects : Vec<effect::Effect>

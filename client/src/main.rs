@@ -61,7 +61,7 @@ async fn main() {
         }
         
             // Load unit templates
-        let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None));
+        let unit_templates = awc::unit::Template::load_from_master_file::<unit::TypeID, &str>("data/units.ron", unit::Template::new(&[], None, &[]));
         let res = unit_templates.unwrap();
         for (_id, e) in res.1{
             log::error!("Error while loading {}", e);

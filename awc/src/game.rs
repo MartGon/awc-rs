@@ -3,7 +3,7 @@ use std::{collections::{HashMap, VecDeque}, fs};
 use glam::uvec2;
 use mlua::prelude::*;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement::{self, Path}, event::{Event, EventI}, command::{Command, CommandI, self}, turn::{Turn}, script::{self, Script}};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement::{self, Path}, event::{Event, EventI, Notification}, command::{Command, CommandI, self}, turn::{Turn}, script::{self, Script}};
 use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
@@ -197,6 +197,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
                     direction : if let Some(dir) = self.components.directions.entry(id) { Some(dir.clone()) } else { None},
                     armament : if let Some(armament) = self.components.armaments.entry(id) { Some(armament.clone() )} else { None },
                     movement : if let Some(movement) = self.components.movements.entry(id){ Some(movement.clone()) } else { None },
+                    effects : if let Some(effects) = self.components.effectss.entry(id){ Some(effects.clone()) } else { None },
                 }
             )).collect(),
         }
@@ -223,6 +224,9 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
             }
             if let Some(armamnet) = unit.armament{
                 self.components.insert(id, component::Component::Armament(armamnet));
+            }
+            if let Some(effects) = unit.effects{
+                self.components.insert(id, component::Component::Effects(effects));
             }
             
         }
@@ -316,6 +320,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
             let event = self.events.get_entry(&event_id).expect("Could not find event by event id").clone();
 
             // Notify PRE
+            self.notifiy_event(&event, Notification::Pre);
 
             if let Some(post_event_id) = self.event_queue.front().cloned(){
                 if post_event_id == event_id{
@@ -325,6 +330,16 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
                     // Notify Post
                 }
+            }
+        }
+    }
+
+    fn notifiy_event(&mut self, event : &Event, not_type : Notification){
+        for (id, effects) in self.components.effectss.into_iter(){
+            for e in &effects.effects{
+                if let Some(script) = self.scripts.get(&e.script){
+                    e.notify(script, (not_type.clone(), event.sub_event.sub_type()), event);    
+                }    
             }
         }
     }

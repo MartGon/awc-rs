@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{component, map, game, turn::Turn, ID};
 
 pub trait EventI {
@@ -11,7 +13,7 @@ pub enum Trigger{
     PlayerCommand
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Notification{
     Pre,
     Post
@@ -24,7 +26,7 @@ pub struct Event{
     pub trigger : Trigger,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SubType
 {
     Move = 0,

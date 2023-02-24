@@ -1,4 +1,4 @@
-use std::{hash::Hash, collections::HashMap};
+use std::{hash::Hash, collections::{HashMap, hash_map::IntoIter}};
 
 pub struct ComponentStorage<ID: Hash + Eq, T>
 {
@@ -27,5 +27,14 @@ impl<Id: Hash + Eq, V> ComponentStorage<Id, V> {
 
     pub fn entry(&self, id : &Id) -> Option<&V>{
         self.components.get(&id)
+    }
+}
+
+impl<'a, ID: Hash + Eq, V>IntoIterator for &'a ComponentStorage<ID, V>{
+    type Item = (&'a ID, &'a V);
+    type IntoIter = std::collections::hash_map::Iter<'a, ID, V>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.components.iter()
     }
 }

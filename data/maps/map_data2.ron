@@ -47,6 +47,14 @@
                 gas: 100,
                 max_gas: 100,
             )),
+            effects: Some(Effects(effects : [( 
+                type_id : ID(1),
+                listens_to : [
+                    (Pre, Move),
+                ],
+                name : "Move-Watcher",
+                script : "Test"),
+            ])),
         ),
         (10, 5): (
             utype: (

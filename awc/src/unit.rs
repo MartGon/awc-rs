@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::{weapon, movement, component::{self}};
+use crate::{weapon, movement, effect, component::{self}};
 
 pub type TypeID = super::ID;
 
@@ -9,11 +9,12 @@ pub struct Template
 {
     pub weapons : Vec<weapon::Weapon>,
     pub movement : Option<movement::Movement>,
+    pub effects : Vec<effect::Effect>,
 }
 
 impl Template{
-    pub fn new(weapons : &[weapon::Weapon], movement : Option<movement::Movement>) -> Template{
-        Template { weapons : weapons.to_vec(), movement }
+    pub fn new(weapons : &[weapon::Weapon], movement : Option<movement::Movement>, effects : &[effect::Effect]) -> Template{
+        Template { weapons : weapons.to_vec(), movement, effects : effects.to_vec() }
     }
 }
 
@@ -27,6 +28,7 @@ pub struct Unit
     pub direction : Option<component::Direction>,
     pub armament : Option<component::Armament>,
     pub movement : Option<component::Movement>,
+    pub effects : Option<component::Effects>,
 }
 
 // Could replace this with an Enum. 
