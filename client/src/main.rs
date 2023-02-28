@@ -42,7 +42,7 @@ async fn main() {
     let mut lua = Lua::new();
     {
         // Create game
-        let mut game = Game::new(&mut lua);
+        let mut game = Game::new(&lua);
         let p1 = game.create_player(Team::Red, Faction::OrangeStar);
         let p2 = game.create_player(Team::Blue, Faction::BlueMoon);
         let p3 = game.create_player(Team::Red, Faction::BlueMoon);
@@ -258,7 +258,7 @@ async fn main() {
             
         }
         
-
+        
     }
 
 }

@@ -1,4 +1,4 @@
-use std::{fs, io, fmt};
+use std::{fs, fmt};
 
 use mlua::prelude::*;
 

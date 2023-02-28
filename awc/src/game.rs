@@ -304,6 +304,8 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
     pub fn start(&mut self){
         self.current_turn = Some(Turn::new(0, 0.into()));
+
+        self.init_scripts().expect("Failed to init scripts");
     }
 
     // Events / Commands
@@ -365,7 +367,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
     // Scripts
 
-    pub fn load_script<'c: 'b, S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, name : &S, script_file : P) -> Result<(), Error>{
+    pub fn load_script<S: Into<String> + Clone, P: AsRef<std::path::Path> + Into<String> + Clone>(&mut self, name : &S, script_file : P) -> Result<(), Error>{
 
         let script = Script::from_file(self.lua_vm, name.clone().into(), script_file).expect("Error on loading script");
         self.scripts.insert(name.clone().into(), script);
@@ -373,4 +375,31 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
         Ok(())
     }
 
+    fn init_scripts(&mut self) -> Result<(), Error>{
+
+        let lua = self.lua_vm;
+        let my_sum = self.lua_vm.create_function(|l, (a, b) : (i32, i32)|{
+
+            Ok(a + b)
+        }).expect("Function code is wrong");
+        lua.globals().set("my_sum", my_sum).expect("Error setting function");
+
+        lua.scope(|scope| {
+            let udata = scope.create_nonstatic_userdata(self)?;
+            lua.globals().set("game", udata)?;
+
+            Ok(())
+        }).expect("error");
+
+        Ok(())
+    }
+
+}
+
+impl<'a: 'b, 'b> LuaUserData for &mut Game<'a, 'b>{
+    fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(_fields: &mut F) {}
+
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        //methods.add_method(name, method)
+    }
 }
