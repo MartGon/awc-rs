@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::event;
 use crate::ID;
 use crate::script::Script;
+use crate::game::Game;
 
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -16,9 +17,10 @@ pub struct Effect
 }
 
 impl Effect{
-    pub fn notify(&self, script : &Script, notification : (event::Notification, event::SubType), event : &event::Event){
+    pub fn notify(&self, game : &Game, script : &Script, not_type : event::Notification, event : &event::Event){
+        let notification = (not_type, event.sub_event.sub_type());
         if self.listens_to.contains(&notification){
-            script.exec();
+            script.exec(game);
         }
     }
 }

@@ -340,7 +340,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
         for (id, effects) in self.components.effectss.into_iter(){
             for e in &effects.effects{
                 if let Some(script) = self.scripts.get(&e.script){
-                    e.notify(script, (not_type.clone(), event.sub_event.sub_type()), event);    
+                    e.notify(self, script, not_type.clone(), event);    
                 }    
             }
         }
@@ -384,22 +384,19 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
         }).expect("Function code is wrong");
         lua.globals().set("my_sum", my_sum).expect("Error setting function");
 
-        lua.scope(|scope| {
-            let udata = scope.create_nonstatic_userdata(self)?;
-            lua.globals().set("game", udata)?;
-
-            Ok(())
-        }).expect("error");
-
         Ok(())
     }
 
 }
 
-impl<'a: 'b, 'b> LuaUserData for &mut Game<'a, 'b>{
+impl<'a: 'b, 'b> LuaUserData for &Game<'a, 'b>{
     fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(_fields: &mut F) {}
 
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        //methods.add_method(name, method)
+        methods.add_method("print_map_size", |_, game, ()|{
+            let size = game.map.size;
+            println!("Map size is {}", size);
+            Ok(())
+        });
     }
 }

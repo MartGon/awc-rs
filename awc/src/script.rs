@@ -2,6 +2,8 @@ use std::{fs, fmt};
 
 use mlua::prelude::*;
 
+use crate::game::Game;
+
 #[derive(Debug)]
 pub enum Error{
     FileNotFound(std::io::Error, String),
@@ -19,7 +21,8 @@ impl fmt::Display for Error{
 
 pub struct Script<'a>{
     pub name : String,
-    func : LuaFunction<'a>
+    func : LuaFunction<'a>,
+    lua : &'a Lua,
 }
 
 impl<'a : 'b, 'b> Script<'a>{
@@ -29,13 +32,23 @@ impl<'a : 'b, 'b> Script<'a>{
         let func = lua.load(&code).into_function().map_err(|e| self::Error::CompileError(e, file.clone().into()))?;
         let script = Script{
             name,
-            func
+            func,
+            lua,
         };
         Ok(script)
     }
 
-    pub fn exec(&self, ){
-        self.func.call::<_, ()>(()).expect(format!("Script code is incorrect. Script name: {}", self.name).as_str());
+    pub fn exec(&self, game : &Game){
+        let lua = self.lua;
+        lua.scope(|scope| {
+            let udata = scope.create_nonstatic_userdata(game)?;
+            lua.globals().set("Game", udata)?;
+
+            self.func.call::<_, ()>(()).expect(format!("Script code is incorrect. Script name: {}", self.name).as_str());
+
+            Ok(())
+        }).expect("error");
+        
     }
 
 }
