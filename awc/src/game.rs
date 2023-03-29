@@ -9,12 +9,14 @@ use crate::component::*;
 type Factory<T> = HashMap<ID, T>;
 
 pub struct Game<'a: 'b, 'b>
-{
+{   
+    // Move this to GameState. Read/only in lua
     pub map : map::Map,
     components : component::Components,
     players : Table<player::ID, player::Player>,    
     current_turn : Option<Turn>,
 
+    // Move these to its own struct
     events : Table<ID, Event>,
     event_queue : VecDeque<ID>,
     event_history : Vec<ID>,
@@ -337,7 +339,9 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     }
 
     fn notifiy_event(&mut self, event : &Event, not_type : Notification){
-        for (id, effects) in self.components.effectss.into_iter(){
+        let effects = &self.components.effectss;
+        let effects : HashMap<ID, Effects> = effects.into_iter().map(|a| (a.0.clone(), a.1.clone())).collect();
+        for (id, effects) in effects{
             for e in &effects.effects{
                 if let Some(script) = self.scripts.get(&e.script){
                     e.notify(self, script, not_type.clone(), event);    

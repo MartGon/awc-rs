@@ -38,3 +38,12 @@ impl<'a, ID: Hash + Eq, V>IntoIterator for &'a ComponentStorage<ID, V>{
         self.components.iter()
     }
 }
+
+impl<ID: Hash + Eq, V>IntoIterator for ComponentStorage<ID, V>{
+    type Item = (ID, V);
+    type IntoIter = std::collections::hash_map::IntoIter<ID, V>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.components.into_iter()
+    }
+}
