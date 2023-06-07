@@ -63,7 +63,7 @@ impl Movement{
     fn successors(&self, game: &game::Game, origin : &map::Pos) -> Vec<(map::Pos, MoveCost)>{
         let neighs = Movement::get_neighbors_pos(*origin);
         neighs.into_iter().filter_map(|p|{
-            if game.map.is_pos_valid(p) {
+            if game.game_state.map.is_pos_valid(p) {
                 if let Some(tile_id) = game.get_tile_in_pos(&p){
                     let tile_type = game.components().get_type(&tile_id).expect("Movement: Tile didn't have a type");
                     if let Some(move_cost) = self.get_move_cost(tile_type.type_id){

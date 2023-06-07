@@ -8,13 +8,16 @@ use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
 
+pub struct GameState{
+    pub map : map::Map,
+    pub components : component::Components,
+    pub players : Table<player::ID, player::Player>,    
+    pub current_turn : Option<Turn>,
+}
+
 pub struct Game<'a: 'b, 'b>
 {   
-    // Move this to GameState. Read/only in lua
-    pub map : map::Map,
-    components : component::Components,
-    players : Table<player::ID, player::Player>,    
-    current_turn : Option<Turn>,
+    pub game_state : GameState,
 
     // Move these to its own struct
     events : Table<ID, Event>,
@@ -39,10 +42,13 @@ pub enum Error{
 impl<'a: 'b, 'b> Game<'a, 'b>{
     pub fn new(lua_vm : &'a Lua) -> Game<'a, 'b>{
         Game { 
-            map: map::Map::new(uvec2(10, 10)), 
-            players: Table::new(), 
-            components : component::Components::new(), 
-            current_turn : None,
+
+            game_state : GameState{
+                map: map::Map::new(uvec2(10, 10)), 
+                players: Table::new(), 
+                components : component::Components::new(), 
+                current_turn : None
+            },
 
             event_queue : VecDeque::new(),
             events : Table::new(),
@@ -59,17 +65,17 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     // Players
 
     pub fn create_player(&mut self, team : Team, faction : Faction) -> player::ID{
-        let player_id = self.players.next_id();
+        let player_id = self.game_state.players.next_id();
         let player = Player::new(player_id, team, faction);
-        self.players.new_entry(player)
+        self.game_state.players.new_entry(player)
     }
 
     pub fn get_player_mut(&mut self, player_id : &player::ID) -> Option<&mut Player>{
-        self.players.get_entry_mut(player_id)
+        self.game_state.players.get_entry_mut(player_id)
     }
 
     pub fn get_player(&self, player_id : &player::ID) -> Option<&Player>{
-        self.players.get_entry(player_id)
+        self.game_state.players.get_entry(player_id)
     }
 
 
@@ -77,11 +83,11 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
     pub fn create_tile(&mut self, type_id : tile::TypeID, pos : map::Pos) -> Result<EntityID, Error>{
     
-        if self.map.is_pos_valid(pos){
-            let id = self.components.alloc_id();
-            self.components.insert(id, Component::Type(component::Type { type_id ,entity_type: EntityType::Tile}));
-            self.components.insert(id, Component::Position(Position {pos}));
-            self.map.add_tile(id);
+        if self.game_state.map.is_pos_valid(pos){
+            let id = self.game_state.components.alloc_id();
+            self.game_state.components.insert(id, Component::Type(component::Type { type_id ,entity_type: EntityType::Tile}));
+            self.game_state.components.insert(id, Component::Position(Position {pos}));
+            self.game_state.map.add_tile(id);
             return Ok(id)
         }
 
@@ -89,8 +95,8 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     }
 
     pub fn get_tile_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
-        for tile in self.map.tiles(){
-            let pos = self.components.get_position(tile).unwrap();
+        for tile in self.game_state.map.tiles(){
+            let pos = self.game_state.components.get_position(tile).unwrap();
             if pos.pos == *target_pos{
                 return Some(tile.clone())
             }
@@ -103,7 +109,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
     pub fn create_unit(&mut self, type_id : Option<unit::TypeID>, pos : map::Pos, owner : player::ID) -> Result<EntityID, Error>{
 
-        if self.map.is_pos_valid(pos){
+        if self.game_state.map.is_pos_valid(pos){
 
             if self.get_player(&owner).is_some(){
                 
@@ -112,12 +118,12 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
                     id = self.create_unit_from_template(type_id)?;
                 }
                 else{
-                    id = self.components.alloc_id();
+                    id = self.game_state.components.alloc_id();
                 }
-                self.components.insert(id, Component::Health(Health::default()));
-                self.components.insert(id, Component::Owner(Owner{owner}));
-                self.components.insert(id, Component::Position(Position{pos}));
-                self.map.add_unit(id);
+                self.game_state.components.insert(id, Component::Health(Health::default()));
+                self.game_state.components.insert(id, Component::Owner(Owner{owner}));
+                self.game_state.components.insert(id, Component::Position(Position{pos}));
+                self.game_state.map.add_unit(id);
                 return Ok(id);
             }
             else{
@@ -129,8 +135,8 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     }
 
     pub fn get_unit_in_pos(&self, target_pos : &map::Pos) -> Option<EntityID>{
-        for unit in self.map.units(){
-            let pos = self.components.get_position(unit).unwrap();
+        for unit in self.game_state.map.units(){
+            let pos = self.game_state.components.get_position(unit).unwrap();
             if pos.pos == *target_pos{
                 return Some(unit.clone())
             }
@@ -150,16 +156,16 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     fn create_unit_from_template(&mut self, type_id : unit::TypeID) -> Result<ID, Error>{
 
         if let Some(template) = self.unit_factory.get(&type_id).cloned(){
-            let id = self.components.alloc_id();
+            let id = self.game_state.components.alloc_id();
             if !template.weapons.is_empty() {
-                self.components.insert(id, Component::Armament(component::Armament::new(template.weapons)));
+                self.game_state.components.insert(id, Component::Armament(component::Armament::new(template.weapons)));
             }
             if let Some(movement) = template.movement{
-                self.components.insert(id, Component::Movement(component::Movement::new(movement)));
+                self.game_state.components.insert(id, Component::Movement(component::Movement::new(movement)));
             }
             
-            self.components.insert(id, Component::Type(component::Type::new(type_id, EntityType::Unit)));
-            self.components.insert(id, Component::Health(Health::default()));
+            self.game_state.components.insert(id, Component::Type(component::Type::new(type_id, EntityType::Unit)));
+            self.game_state.components.insert(id, Component::Health(Health::default()));
 
             return Ok(id);
         }
@@ -171,35 +177,35 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     // Map data
 
     pub fn set_map_size(&mut self, size : map::Size){
-        self.map.size = size;
+        self.game_state.map.size = size;
 
         // TODO: Remove tiles/units out of range?
     }
 
     pub fn get_map_data(&self, alphabet : HashMap<tile::TypeID,char> ) -> map::Data{
-        map::Data{alphabet, size : self.map.size, 
+        map::Data{alphabet, size : self.game_state.map.size, 
             
-            tiles : self.map.tiles().map(|id| (
-                self.components.positions.entry(id).unwrap().pos, 
-                if let EntityType::Tile = self.components.types.entry(id).unwrap().entity_type{
-                    self.components.types.entry(id).unwrap().type_id
+            tiles : self.game_state.map.tiles().map(|id| (
+                self.game_state.components.positions.entry(id).unwrap().pos, 
+                if let EntityType::Tile = self.game_state.components.types.entry(id).unwrap().entity_type{
+                    self.game_state.components.types.entry(id).unwrap().type_id
                 }
                 else{
                     panic!("WTF")
                 }
             )).collect(),
             
-            units : self.map.units().map(|id|(
-                self.components.positions.entry(id).unwrap().pos,
+            units : self.game_state.map.units().map(|id|(
+                self.game_state.components.positions.entry(id).unwrap().pos,
                 unit::Unit{
-                    utype : self.components.types.entry(id).unwrap().clone(),
-                    position : self.components.positions.entry(id).unwrap().clone(),
-                    health : self.components.healths.entry(id).unwrap().clone(),
-                    owner : self.components.owners.entry(id).unwrap().clone(),
-                    direction : if let Some(dir) = self.components.directions.entry(id) { Some(dir.clone()) } else { None},
-                    armament : if let Some(armament) = self.components.armaments.entry(id) { Some(armament.clone() )} else { None },
-                    movement : if let Some(movement) = self.components.movements.entry(id){ Some(movement.clone()) } else { None },
-                    effects : if let Some(effects) = self.components.effectss.entry(id){ Some(effects.clone()) } else { None },
+                    utype : self.game_state.components.types.entry(id).unwrap().clone(),
+                    position : self.game_state.components.positions.entry(id).unwrap().clone(),
+                    health : self.game_state.components.healths.entry(id).unwrap().clone(),
+                    owner : self.game_state.components.owners.entry(id).unwrap().clone(),
+                    direction : if let Some(dir) = self.game_state.components.directions.entry(id) { Some(dir.clone()) } else { None},
+                    armament : if let Some(armament) = self.game_state.components.armaments.entry(id) { Some(armament.clone() )} else { None },
+                    movement : if let Some(movement) = self.game_state.components.movements.entry(id){ Some(movement.clone()) } else { None },
+                    effects : if let Some(effects) = self.game_state.components.effectss.entry(id){ Some(effects.clone()) } else { None },
                 }
             )).collect(),
         }
@@ -209,7 +215,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
         // TODO: Remove old map's tiles components
 
-        self.map = map::Map::new(data.size);
+        self.game_state.map = map::Map::new(data.size);
         
         // Restore tiles
         for (pos, tile) in data.tiles{
@@ -220,15 +226,15 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
         for (pos, unit) in data.units{
             let id = self.create_unit(None, pos, unit.owner.owner)?;
 
-            self.components.types.insert(id, unit.utype);
+            self.game_state.components.types.insert(id, unit.utype);
             if let Some(movement) = unit.movement{
-                self.components.insert(id, component::Component::Movement(movement));
+                self.game_state.components.insert(id, component::Component::Movement(movement));
             }
             if let Some(armamnet) = unit.armament{
-                self.components.insert(id, component::Component::Armament(armamnet));
+                self.game_state.components.insert(id, component::Component::Armament(armamnet));
             }
             if let Some(effects) = unit.effects{
-                self.components.insert(id, component::Component::Effects(effects));
+                self.game_state.components.insert(id, component::Component::Effects(effects));
             }
             
         }
@@ -240,33 +246,33 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     // Components
 
     pub fn insert_component(&mut self, entity : EntityID, component : component::Component){
-        self.components.insert(entity, component)
+        self.game_state.components.insert(entity, component)
     }
 
     pub fn components(&self) -> &component::Components{
-        &self.components
+        &self.game_state.components
     }
 
     pub fn components_mut(&mut self) -> &mut component::Components{
-        &mut self.components
+        &mut self.game_state.components
     }
 
 
     // Turns
 
     pub fn get_turn(&self) -> Option<&Turn>{
-        match &self.current_turn{
+        match &self.game_state.current_turn{
             Some(t) => Some(t),
             None => None,
         }
     }
 
     pub fn current_turn(&self) -> &Turn{
-        self.current_turn.as_ref().expect("Game hasn't started")
+        self.game_state.current_turn.as_ref().expect("Game hasn't started")
     }
 
     pub(crate) fn get_turn_mut(&mut self)-> Option<&mut Turn>{
-        match &mut self.current_turn{
+        match &mut self.game_state.current_turn{
             Some(t) => Some(t),
             None => None,
         }
@@ -276,18 +282,18 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
         let next_player = self.find_next_turn_player();
         let current_day = self.current_turn().day;
         let next_day = if self.current_turn().player > next_player.id { current_day + 1 } else{ current_day };
-        self.current_turn = Some(Turn::new(next_day, next_player.id));
+        self.game_state.current_turn = Some(Turn::new(next_day, next_player.id));
     }
 
     fn find_next_player(&self, pid : player::ID) -> &Player{
         let next_pid = ID::new(pid.0 + 1);
 
         let next_player : &Player;
-        if let Some(player) = self.players.get_entry(&next_pid){
+        if let Some(player) = self.game_state.players.get_entry(&next_pid){
             next_player = player;
         }
         else{
-            next_player = self.players.get_entry(&ID::new(0)).expect("There are no players");
+            next_player = self.game_state.players.get_entry(&ID::new(0)).expect("There are no players");
         }
 
         next_player
@@ -305,7 +311,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     }
 
     pub fn start(&mut self){
-        self.current_turn = Some(Turn::new(0, 0.into()));
+        self.game_state.current_turn = Some(Turn::new(0, 0.into()));
 
         self.init_scripts().expect("Failed to init scripts");
     }
@@ -339,7 +345,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
     }
 
     fn notifiy_event(&mut self, event : &Event, not_type : Notification){
-        let effects = &self.components.effectss;
+        let effects = &self.game_state.components.effectss;
         let effects : HashMap<ID, Effects> = effects.into_iter().map(|a| (a.0.clone(), a.1.clone())).collect();
         for (id, effects) in effects{
             for e in &effects.effects{
@@ -394,13 +400,17 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 }
 
 impl<'a: 'b, 'b> LuaUserData for &Game<'a, 'b>{
-    fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(_fields: &mut F) {}
+    fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(_fields: &mut F) {
+        
+    }
 
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
         methods.add_method("print_map_size", |_, game, ()|{
-            let size = game.map.size;
+            let size = game.game_state.map.size;
             println!("Map size is {}", size);
             Ok(())
         });
+
     }
 }
