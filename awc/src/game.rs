@@ -3,7 +3,7 @@ use std::{collections::{HashMap, VecDeque}, fs};
 use glam::uvec2;
 use mlua::prelude::*;
 
-use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement::{self, Path}, event::{Event, EventI, Notification}, command::{Command, CommandI, self}, turn::{Turn}, script::{self, Script}};
+use crate::{map::{self}, player::{self, Player, Team, Faction}, component::{self, EntityID, EntityType}, table::Table, tile, unit::{self}, ID, movement::{self, Path}, event::{Event, EventI, Notification, SubEvent, self}, command::{Command, CommandI, self}, turn::{Turn}, script::{self, Script}};
 use crate::component::*;
 
 type Factory<T> = HashMap<ID, T>;
@@ -350,7 +350,7 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
         for (id, effects) in effects{
             for e in &effects.effects{
                 if let Some(script) = self.scripts.get(&e.script){
-                    e.notify(self, script, not_type.clone(), event);    
+                    e.notify(&mut self.game_state, script, not_type.clone(), event);    
                 }    
             }
         }
@@ -399,15 +399,22 @@ impl<'a: 'b, 'b> Game<'a, 'b>{
 
 }
 
-impl<'a: 'b, 'b> LuaUserData for &Game<'a, 'b>{
+impl LuaUserData for &mut GameState{
     fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(_fields: &mut F) {
         
     }
 
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
 
-        methods.add_method("print_map_size", |_, game, ()|{
-            let size = game.game_state.map.size;
+        methods.add_method_mut("end_turn", |_, game_state, ()|{
+            let size = game_state.map.size;
+            game_state.current_turn.as_mut().unwrap().day = 10;
+            println!("Map size is {}", size);
+            Ok(())
+        });
+
+        methods.add_method("print_map_size", |_, game_state, ()|{
+            let size = game_state.map.size;
             println!("Map size is {}", size);
             Ok(())
         });

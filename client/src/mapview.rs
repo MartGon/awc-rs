@@ -86,13 +86,13 @@ impl MapView{
     pub fn draw_map(&mut self, game : &game::Game, view_pos : UVec2, target_size : UVec2){
         
         // Update cam pos
-        self.cam_pos = self.calc_cam_pos(game.map.size, target_size);
+        self.cam_pos = self.calc_cam_pos(game.game_state.map.size, target_size);
         self.draw_tiles(game, view_pos, target_size);
         self.draw_units(game, view_pos, target_size);
     }
 
     fn draw_tiles(&mut self, game : &game::Game, view_pos : UVec2, target_size : UVec2){
-        let map = &game.map;
+        let map = &game.game_state.map;
         let components = game.components();
 
         for tile in map.tiles(){       
@@ -138,7 +138,7 @@ impl MapView{
     }
 
     fn draw_units(&mut self, game : &game::Game, view_pos : UVec2, target_size : UVec2){
-        let map = &game.map;
+        let map = &game.game_state.map;
         let components = game.components();
 
         for unit in map.units(){

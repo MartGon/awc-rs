@@ -2,7 +2,7 @@ use std::{fs, fmt};
 
 use mlua::prelude::*;
 
-use crate::game::Game;
+use crate::game::{Game, GameState};
 
 #[derive(Debug)]
 pub enum Error{
@@ -38,10 +38,10 @@ impl<'a : 'b, 'b> Script<'a>{
         Ok(script)
     }
 
-    pub fn exec(&self, game : &Game){
+    pub fn exec(&self, game_state : &mut GameState){
         let lua = self.lua;
         lua.scope(|scope| {
-            let udata = scope.create_nonstatic_userdata(game)?;
+            let udata = scope.create_nonstatic_userdata(game_state)?;
             lua.globals().set("Game", udata)?;
 
             self.func.call::<_, ()>(()).expect(format!("Script code is incorrect. Script name: {}", self.name).as_str());
