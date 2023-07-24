@@ -30,7 +30,7 @@ type Scripts = HashMap<String, String>;
 impl MasterFile<unit::Template> for UnitTemplates{}
 impl MasterFile<String> for Scripts{}
 
-#[macroquad::main("BasicShapes")]
+#[macroquad::main("awc-rs")]
 async fn main() {
 
     // Debug
@@ -242,7 +242,7 @@ async fn main() {
             // Draw Map
             map_view.draw_map(&game, pos, target_size);
 
-            draw_rectangle(0., 0., 64., 64., Color::from_rgba(0, 0, 0, 255));
+            //draw_rectangle(0., 0., 64., 64., Color::from_rgba(0, 0, 0, 255));
             
             /*
             // Draw UI
