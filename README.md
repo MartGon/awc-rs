@@ -19,15 +19,15 @@ At the moment, the game is  still a work in progress. Here's a summary of the ro
 - [x] Basic event system
 - [x] Basic team and faction system
 - [x] Movement command and pathfinding
-- [] Attack command
-- [] Special action command (Capture cities, resupply, etc.)
-- [] Lua API
-- [] Game win conditions and objectives
-- [] CO powers
-- [] Factory/Airport system
-- [] Fog of war system
-- [] Online Multiplayer 
+- [ ] Attack command
+- [ ] Special action command (Capture cities, resupply, etc.)
+- [ ] Lua API
+- [ ] Game win conditions and objectives
+- [ ] CO powers
+- [ ] Factory/Airport system
+- [ ] Fog of war system
+- [ ] Online Multiplayer 
 
 ## About 
 
-My third project made in Rust. A continuation/rewrite of [an older project](https://github.com/MartGon/AWC)
+My third project made in Rust. A continuation/rewrite of [an older project](https://github.com/MartGon/AWC).
